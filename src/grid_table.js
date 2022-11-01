@@ -3887,7 +3887,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 			isRendered[metadataNode.id] = true;
 
-			if (i < childRowValEltsLen - 1) {
+			if (i < childRowValEltsLen) {
 				// Not all children were rendered.
 
 				lastRenderedTr[metadataNode.id] = childTr;
