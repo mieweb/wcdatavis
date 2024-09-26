@@ -8,6 +8,8 @@ RUN apk add coreutils bash gawk make git rsync nodejs npm python3
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
+RUN mkdir -p /github/workspace
+WORKDIR /github/workspace
 
 # Code file to execute when the docker container starts up (`entrypoint.sh`)
 ENTRYPOINT ["/entrypoint.sh"]
