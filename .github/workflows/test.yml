@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: [ self-hosted ]
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Build docs in container
+      uses: ./.github/actions/container
+      with:
+        task: make docs-publish
