@@ -27,18 +27,25 @@ npm-teardown:
 
 .PHONY:	python-setup
 python-setup:
-	@if [[ -z "$(PYTHON_VER)" ]] ; then \
-		printf '\033[31;1mUnable to find Python versions installed via pyenv.\033[0m\n' ; \
-		exit 1 ; \
-	fi
-	@if pyenv versions --bare | grep '^datavis$$' ; then \
-		printf '\033[34;1mRemoving existing "datavis" virtualenv first.\033[0m\n' ; \
-		pyenv virtualenv-delete -f datavis ; \
-	fi
-	@printf '\033[32;1mCreating new "datavis" virtualenv based on Python $(PYTHON_VER).\033[0m\n'
-	pyenv virtualenv "$(PYTHON_VER)" datavis
-	pyenv local datavis
-	pip install -r requirements.txt
+    ifeq ($(DOCKER_ENV), 1)
+		echo "Running inside Docker"
+		pip install --break-system-packages -r requirements.txt
+    else
+		@if [[ -z "$(PYTHON_VER)" ]] ; then \
+			printf '\033[31;1mUnable to find Python versions installed via pyenv.\033[0m\n' ; \
+			exit 1 ; \
+		fi
+		@if pyenv versions --bare | grep '^datavis$$' ; then \
+			printf '\033[34;1mRemoving existing "datavis" virtualenv first.\033[0m\n' ; \
+			pyenv virtualenv-delete -f datavis ; \
+		fi
+		@printf '\033[32;1mCreating new "datavis" virtualenv based on Python $(PYTHON_VER).\033[0m\n'
+		pyenv virtualenv "$(PYTHON_VER)" datavis
+		pyenv local datavis
+		pip install -r requirements.txt
+    endif
+
+
 
 .PHONY:	python-teardown
 python-teardown:
@@ -55,6 +62,7 @@ jsdoc-teardown:
 
 .PHONY:	setup
 setup:	npm-setup python-setup
+	echo "You should have run git submodule update --init outside the containter"
 	git submodule update --init
 	$(MAKE) jsdoc-setup
 
