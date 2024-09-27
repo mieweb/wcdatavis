@@ -41,7 +41,7 @@
     "papaparse": "=5.4.1",
     "sprintf-js": "=1.1.3",
     "squirrelly": "=9.0.0",
-    "sumoselect": "git+ssh://git@github.mieweb.com:datavis/jquery.sumoselect.git#master2",
+    "sumoselect": "file:./third-party/jquery.sumoselect",
     "underscore": "=1.13.6"
   },
   "devDependencies": {
