@@ -16,4 +16,4 @@ jobs:
     - name: Build docs in container
       uses: ./.github/actions/container
       with:
-        task: make doc
+        task: build-docs
