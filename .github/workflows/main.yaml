@@ -1,0 +1,57 @@
+name: Build and Test with Docker Container Cache
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  build:
+    runs-on: [ self-hosted ]
+
+    steps:
+    # Checkout the code and install node deps
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with: 
+        token: ${{ secrets.QA_PAT }}
+        submodules: true
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Install npm dependencies
+      run: npm install
+
+    # Set up Docker Buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    # Set up Docker cache directory in the runner's workspace
+    - name: Set up Docker cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.workspace }}/.docker-cache
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+
+    # Build Docker Image using buildx with cache
+    - name: Build Docker Image with Cache
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        tags: datavis-dev:latest
+        load: true  # Load the image into the local Docker cache for use in later steps
+        cache-from: type=local,src=${{ runner.workspace }}/.docker-cache
+        cache-to: type=local,dest=${{ runner.workspace }}/.docker-cache,mode=max
+
+    # Run a container from the built image
+    - name: Install npm deps
+      run: npm install
+
+    # Run a container from the built image
+    - name: Make the Documentation (using the container)
+      run: docker run --rm -v ${{ github.workspace }}:/app datavis-dev:latest make setup; make doc
