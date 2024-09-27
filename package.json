@@ -42,6 +42,7 @@
     "sprintf-js": "=1.1.3",
     "squirrelly": "=9.0.0",
     "sumoselect": "file:./third-party/jquery.sumoselect",
+    "taffydb": "^2.7.3",
     "underscore": "=1.13.6"
   },
   "devDependencies": {
