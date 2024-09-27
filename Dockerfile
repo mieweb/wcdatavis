@@ -8,5 +8,6 @@ ENV DOCKER_ENV=1
 # Copies your code file from your action repository to the filesystem path `/` of the container
 RUN mkdir -p /app
 WORKDIR /app
+RUN git config --global --add safe.directory /app
 
 
