@@ -3,6 +3,8 @@ FROM alpine:3.20
 
 RUN apk add coreutils bash gawk make git rsync nodejs npm python3 py3-pip
 
+ENV DOCKER_ENV=1
+
 # You need this when testing interactively, but not when using this as a GitHub action.
 # ADD --keep-git-dir=true git@github.mieweb.com:datavis/wcdatavis.git#v2.2.2 /github/workspace
 
