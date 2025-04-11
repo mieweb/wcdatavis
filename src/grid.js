@@ -465,7 +465,9 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 	self.selected = {}; // Information about what rows are selected.
 
 	self._validateFeatures();
-	self._validateId(self.defn.id);
+	if (!defn.element) {
+		self._validateId(self.defn.id);
+	}
 	self.element = defn.element;
 
 	self.debug(null, 'Definition: %O', defn);
