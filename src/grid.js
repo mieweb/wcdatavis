@@ -466,6 +466,7 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 
 	self._validateFeatures();
 	self._validateId(self.defn.id);
+	self.element = defn.element;
 
 	self.debug(null, 'Definition: %O', defn);
 	self.debug(null, 'Options: %O', opts);
