@@ -55,10 +55,10 @@ import {
 import { OperationsPalette } from './operations_palette.js';
 import { FileSource } from './source.js';
 import { trans } from './trans.js';
-import {GridTablePlain} from './renderers/grid/table/plain.js';
-import {GridTableGroupDetail} from './renderers/grid/table/group_detail.js';
-import {GridTableGroupSummary} from './renderers/grid/table/group_summary.js';
-import {GridTablePivot} from './renderers/grid/table/pivot.js';
+import { GridTablePlain } from './renderers/grid/table/plain.js';
+import { GridTableGroupDetail } from './renderers/grid/table/group_detail.js';
+import { GridTableGroupSummary } from './renderers/grid/table/group_summary.js';
+import { GridTablePivot } from './renderers/grid/table/pivot.js';
 
 // Server-Side Filter/Sort {{{1
 
@@ -95,7 +95,7 @@ import {GridTablePivot} from './renderers/grid/table/pivot.js';
  * says they do.
  */
 
-function makeJsonHaving(filters) {
+function makeJsonHaving (filters) {
 	var having = {};
 	var numClauses = 0;
 	_.each(filters, function (f) {
@@ -153,7 +153,7 @@ function makeJsonHaving(filters) {
  * @return {object} A description of the sort that can be used by the system report code.
  */
 
-function makeJsonOrderBy(o) {
+function makeJsonOrderBy (o) {
 	if (o.sortcolumn === null) {
 		return null;
 	}
@@ -526,9 +526,14 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 	/*
 	 * Set up other container elements.
 	 */
-
-	self.ui.root = jQuery(document.getElementById(self.id))
-		.addClass('wcdv_grid')
+	if (self.element) {
+		console.log('Datavis: using element');
+		self.ui.root = jQuery(self.element);
+	} else {
+		console.log('Datavis: using id');
+		self.ui.root = jQuery(document.getElementById(self.id));
+	}
+	self.ui.root.addClass('wcdv_grid')
 		.attr('data-title', self.id + '_title');
 
 	self.ui.root.children().remove();
@@ -540,8 +545,8 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 		// the height of the table automatically.  See DV-196.
 		// Remove the height CSS property here, so the renderer can use it for data-ttheight instead.
 		if (self.features.floatingHeader &&
-				getProp(self.defn, 'table', 'floatingHeader', 'method') === 'tabletool' &&
-				window.TableTool != null) {
+			getProp(self.defn, 'table', 'floatingHeader', 'method') === 'tabletool' &&
+			window.TableTool != null) {
 			self.ui.root.css('height', '');
 		}
 	}
@@ -575,13 +580,13 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 	self.ui.autoLimit = jQuery('<div>', {
 		'class': 'wcdv_warning_banner auto_limit_warning'
 	})
-	.text(trans('GRID.TITLEBAR.DATA_LIMITED_WARNING'))
-	.on('click', function () {
-		self.ui.autoLimit.hide();
-		self.view.unlimit();
-		self.refresh();
-	})
-	.hide();
+		.text(trans('GRID.TITLEBAR.DATA_LIMITED_WARNING'))
+		.on('click', function () {
+			self.ui.autoLimit.hide();
+			self.view.unlimit();
+			self.refresh();
+		})
+		.hide();
 
 	self.ui.content = jQuery('<div>', {
 		'class': 'wcdv_grid_content'
@@ -732,7 +737,7 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 			.append(self.ui.autoLimit)
 			.append(self.ui.grid)
 			.append(self.ui.footer))
-	;
+		;
 
 	var initialRender = true;
 
@@ -855,7 +860,7 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 // Mixins {{{2
 
 mixinEventHandling(Grid, [
-		'showControls'
+	'showControls'
 	, 'hideControls'
 	, 'renderBegin'
 	, 'renderEnd'
@@ -1026,16 +1031,16 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		'class': 'wcdv_icon_button wcdv_spinner'
 	})
 		.appendTo(titlebar)
-	;
+		;
 
 	self._setSpinner(self.opts.runImmediately ? 'loading' : 'not-loaded');
 
-	self.ui.title = jQuery('<strong>', {'id': id + '_title', 'data-parent': id})
+	self.ui.title = jQuery('<strong>', { 'id': id + '_title', 'data-parent': id })
 		.addClass('wcdv_title')
 		.text(self.opts.title)
 		.appendTo(titlebar);
 
-	var notHeader = jQuery('<span>', {'class': 'headingInfo'})
+	var notHeader = jQuery('<span>', { 'class': 'headingInfo' })
 		.on('click', function (evt) {
 			evt.stopPropagation();
 		})
@@ -1051,7 +1056,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 	self.ui.clearFilter = jQuery('<span>')
 		.hide()
 		.append(' (')
-		.append(jQuery('<span>', {'class': 'link'})
+		.append(jQuery('<span>', { 'class': 'link' })
 			.text(trans('GRID.TITLEBAR.CLEAR_FILTER'))
 			.on('click', function (evt) {
 				evt.stopPropagation();
@@ -1061,8 +1066,8 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		.append(')')
 		.appendTo(notHeader);
 
-	self.ui.cancelFetchBtn = jQuery('<button>', {'type': 'button'})
-		.css({'margin-left': '0.5em'})
+	self.ui.cancelFetchBtn = jQuery('<button>', { 'type': 'button' })
+		.css({ 'margin-left': '0.5em' })
 		.text(trans('GRID.TITLEBAR.CANCEL'))
 		.on('click', function (evt) {
 			evt.stopPropagation();
@@ -1126,7 +1131,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 			self.export();
 		})
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	self._setExportStatus('notReady');
 
@@ -1144,7 +1149,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		})
 		.append(fontAwesome('fa-refresh'))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	var pWinEffect = {
 		effect: 'fade',
@@ -1168,7 +1173,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		.addClass('wcdv_dlg_warning_banner')
 		.appendTo(pWin);
 
-	var pWinTextArea = jQuery('<textarea>', {'style': 'font-family: monospace; font-size: 10pt; width: 100%', 'rows': '20', 'readonly': true})
+	var pWinTextArea = jQuery('<textarea>', { 'style': 'font-family: monospace; font-size: 10pt; width: 100%', 'rows': '20', 'readonly': true })
 		.appendTo(pWin);
 
 	// This is the "gear" icon that shows/hides the controls below the toolbar.  The controls are used
@@ -1200,7 +1205,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		})
 		.append(jQuery(fontAwesome('fa-cog')))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	// Create the down-chevron button that shows/hides everything under the titlebar.
 
@@ -1216,7 +1221,7 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		})
 		.append(jQuery(fontAwesome('fa-chevron-down')))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 };
 
 // #clear {{{2
@@ -1287,12 +1292,12 @@ Grid.prototype.redraw = function (contOk, contFail) {
 				}
 				else if (data.isGroup) {
 					switch (self.defn.table.groupMode) {
-					case 'summary':
-						rendererCtor = GridRenderer.registry.get(getPropDef('table_group_summary', self.defn, 'whenGroup', 'renderer'));
-						break;
-					case 'detail':
-						rendererCtor = GridRenderer.registry.get(getPropDef('table_group_detail', self.defn, 'whenGroup', 'renderer'));
-						break;
+						case 'summary':
+							rendererCtor = GridRenderer.registry.get(getPropDef('table_group_summary', self.defn, 'whenGroup', 'renderer'));
+							break;
+						case 'detail':
+							rendererCtor = GridRenderer.registry.get(getPropDef('table_group_detail', self.defn, 'whenGroup', 'renderer'));
+							break;
 					}
 
 					rendererCtorOpts = deepCopy(self.defn.table.whenGroup);
@@ -1610,7 +1615,7 @@ Grid.prototype.hideControls = function () {
 	// We need this to happen after both of the async functions (to hide the
 	// controls & toolbar) happen below.
 
-	var l = new Lock('Hide Controls', {start: 2});
+	var l = new Lock('Hide Controls', { start: 2 });
 	l.onUnlock(function () {
 		if (window.Tabletool) {
 			window.Tabletool.update();
@@ -1646,7 +1651,7 @@ Grid.prototype.showControls = function () {
 	// We need this to happen after both of the async functions (to show the
 	// controls & toolbar) happen below.
 
-	var l = new Lock('Show Controls', {start: 2});
+	var l = new Lock('Show Controls', { start: 2 });
 	l.onUnlock(function () {
 		if (window.Tabletool) {
 			window.Tabletool.update();
@@ -1696,15 +1701,15 @@ Grid.prototype._setSpinner = function (what) {
 	var self = this;
 
 	switch (what) {
-	case 'loading':
-		self.ui.spinner.html(fontAwesome('fa-refresh', 'fa-spin', trans('GRID.TITLEBAR.LOADING')));
-		break;
-	case 'not-loaded':
-		self.ui.spinner.html(fontAwesome('fa-ban', null, trans('GRID.TITLEBAR.NOT_LOADED')));
-		break;
-	case 'working':
-		self.ui.spinner.html(fontAwesome('fa-circle-o-notch', 'fa-spin', trans('GRID.TITLEBAR.WORKING')));
-		break;
+		case 'loading':
+			self.ui.spinner.html(fontAwesome('fa-refresh', 'fa-spin', trans('GRID.TITLEBAR.LOADING')));
+			break;
+		case 'not-loaded':
+			self.ui.spinner.html(fontAwesome('fa-ban', null, trans('GRID.TITLEBAR.NOT_LOADED')));
+			break;
+		case 'working':
+			self.ui.spinner.html(fontAwesome('fa-circle-o-notch', 'fa-spin', trans('GRID.TITLEBAR.WORKING')));
+			break;
 	}
 };
 
@@ -1882,7 +1887,7 @@ Grid.prototype.export = function () {
 		var fileName = (self.opts.title || self.id) + '.csv';
 		var csv = self.renderer.getCsv();
 		var contentType = 'text/csv';
-		var blob = new Blob([csv], {'type': contentType});
+		var blob = new Blob([csv], { 'type': contentType });
 
 		presentDownload(blob, fileName);
 	}
@@ -1899,20 +1904,20 @@ Grid.prototype._setExportStatus = function (status) {
 	var self = this;
 
 	switch (status) {
-	case 'notReady':
-		self.csvReady = false;
-		self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.GENERATE_CSV'));
-		self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
-		self.ui.exportBtn.append(fontAwesome('fa-file-o'));
-		break;
-	case 'ready':
-		self.csvReady = true;
-		self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.DOWNLOAD_CSV'));
-		self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
-		self.ui.exportBtn.append(fontAwesome('fa-download'));
-		break;
-	default:
-		throw new Error('Call Error: invalid status "' + status + '"');
+		case 'notReady':
+			self.csvReady = false;
+			self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.GENERATE_CSV'));
+			self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
+			self.ui.exportBtn.append(fontAwesome('fa-file-o'));
+			break;
+		case 'ready':
+			self.csvReady = true;
+			self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.DOWNLOAD_CSV'));
+			self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
+			self.ui.exportBtn.append(fontAwesome('fa-download'));
+			break;
+		default:
+			throw new Error('Call Error: invalid status "' + status + '"');
 	}
 };
 
@@ -2022,69 +2027,69 @@ Grid.prototype.setColConfig = function (colConfig, opts) {
 	}
 
 	switch (opts.from) {
-	case 'defn':
-		setCurrent();
-		setInitial();
-		self.colConfigRestricted = true;
-		break;
-	case 'prefs':
-		if (self.colConfigRestricted) {
-			self.colConfig.each(function (v, k) {
-				if (colConfig.isSet(k)) {
-					_.defaults(colConfig.get(k), v);
-				}
-			});
-
-			// The column configuration is restricted by defn, so remove anything from prefs that's
-			// missing from defn.
-
-			removeMissing(self.colConfig, 'defn', colConfig, 'prefs');
-
-			// Add anything that's in defn but not in prefs.
-
-			addMissing(self.colConfig, 'defn', colConfig, 'prefs');
-		}
-
-		setCurrent();
-		break;
-	case 'reset':
-	case 'ui':
-		setCurrent();
-		break;
-	case 'typeInfo':
-		// Column configuration derived from typeInfo merges with existing config (by removing config on
-		// columns that don't exist in the source, and by adding defaults for columns that exist in the
-		// source but aren't specified in the current config).  It can also set the initial, filling in
-		// when no defn is specified.
-
-		if (self.colConfig == null) {
+		case 'defn':
 			setCurrent();
-		}
-		else {
-			self.colConfig = self.shadowColConfig.clone();
-			if (self.renderer != null) {
-				self.renderer.colConfig = self.colConfig;
+			setInitial();
+			self.colConfigRestricted = true;
+			break;
+		case 'prefs':
+			if (self.colConfigRestricted) {
+				self.colConfig.each(function (v, k) {
+					if (colConfig.isSet(k)) {
+						_.defaults(colConfig.get(k), v);
+					}
+				});
+
+				// The column configuration is restricted by defn, so remove anything from prefs that's
+				// missing from defn.
+
+				removeMissing(self.colConfig, 'defn', colConfig, 'prefs');
+
+				// Add anything that's in defn but not in prefs.
+
+				addMissing(self.colConfig, 'defn', colConfig, 'prefs');
 			}
 
-			// Delete fields from existing colConfig which aren't in the source.
+			setCurrent();
+			break;
+		case 'reset':
+		case 'ui':
+			setCurrent();
+			break;
+		case 'typeInfo':
+			// Column configuration derived from typeInfo merges with existing config (by removing config on
+			// columns that don't exist in the source, and by adding defaults for columns that exist in the
+			// source but aren't specified in the current config).  It can also set the initial, filling in
+			// when no defn is specified.
 
-			if (removeMissing(colConfig, 'source', self.colConfig, 'existing')) {
-				updated = true;
+			if (self.colConfig == null) {
+				setCurrent();
 			}
+			else {
+				self.colConfig = self.shadowColConfig.clone();
+				if (self.renderer != null) {
+					self.renderer.colConfig = self.colConfig;
+				}
 
-			// Add fields from source that are missing from existing colConfig.  Columns set explicitly in
-			// the grid's definition are there to limit what we see, so don't try to add to them.
+				// Delete fields from existing colConfig which aren't in the source.
 
-			if (!self.colConfigRestricted) {
-				if (addMissing(colConfig, 'source', self.colConfig, 'existing')) {
+				if (removeMissing(colConfig, 'source', self.colConfig, 'existing')) {
 					updated = true;
 				}
+
+				// Add fields from source that are missing from existing colConfig.  Columns set explicitly in
+				// the grid's definition are there to limit what we see, so don't try to add to them.
+
+				if (!self.colConfigRestricted) {
+					if (addMissing(colConfig, 'source', self.colConfig, 'existing')) {
+						updated = true;
+					}
+				}
 			}
-		}
-		if (self.initColConfig == null) {
-			setInitial();
-		}
-		break;
+			if (self.initColConfig == null) {
+				setInitial();
+			}
+			break;
 	}
 
 	if (!updated) {
