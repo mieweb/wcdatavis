@@ -469,6 +469,7 @@ var Grid = makeSubclass('Grid', Object, function (defn, opts, cb) {
 		self._validateId(self.defn.id);
 	} else {
 		self.id = defn.id;
+		setProp(id + '_gridContainer', defn, 'table', 'id');
 	}
 	self.element = defn.element;
 
