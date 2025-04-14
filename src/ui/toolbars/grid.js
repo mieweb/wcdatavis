@@ -191,6 +191,17 @@ var GroupToolbar = makeSubclass('GroupToolbar', ToolbarSection, function (grid) 
 		}
 	);
 
+	self.ui.showExpandedGroups = makeToggleCheckbox(
+		grid.defn,
+		['table', 'whenGroup', 'showExpandedGroups'],
+		false,
+		trans('GRID_TOOLBAR.GROUP.EXPAND_ALL'),
+		self.ui.root,
+		function (isChecked) {
+			grid.redraw();
+		}
+	);
+
 	self.ui.pinRowVals = makeToggleCheckbox(
 		grid.defn,
 		['table', 'whenGroup', 'pinRowvals'],
@@ -201,6 +212,8 @@ var GroupToolbar = makeSubclass('GroupToolbar', ToolbarSection, function (grid) 
 			grid.redraw();
 		}
 	);
+
+	//make a toggle for expanded groups
 
 	self.ui.columnConfig = jQuery('<button>', {
 		'type': 'button'
