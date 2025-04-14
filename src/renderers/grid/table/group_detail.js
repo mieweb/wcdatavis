@@ -231,6 +231,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 
 GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, cont, opts) {
 	var self = this;
+	// self.ui.tbl.append(self.ui.tbody);
 
 	// TYPES OF CHECKBOXES:
 	//
@@ -461,6 +462,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 		var elt = jQuery(this);
 		var tr = elt.closest('tr');
+
 		var op = tr.attr('data-wcdv-expanded') === '0' ? 'show' : 'hide';
 
 		if (op === 'show') {
@@ -509,13 +511,15 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 		var limitConfig = self.defn.table.limit;
 
-		var showMoreTr;
+		var showMoreTr,lastInsertedTr;
 
 		if (afterElement != null && startIndex > 0) {
 			showMoreTr = afterElement.nextAll('tr.wcdvgrid_more[data-wcdv-in-group="' + metadataId + '"]');
 			afterElement = showMoreTr.prev();
 			showMoreTr.remove();
 		}
+
+		var isExpanded = self.defn.table.whenGroup.showExpandedGroups ? '1' : '0';
 
 		if (metadataNode.children) {
 			// We're rendering sub-groups.
@@ -552,7 +556,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				childTr = jQuery('<tr>')
 					.attr('data-wcdv-in-group', metadataNode.id)
 					.attr('data-wcdv-toggles-group', childMetadataNode.id)
-					.attr('data-wcdv-expanded', '0')
+					.attr('data-wcdv-expanded', isExpanded)
 				;
 
 				// Insert spacer columns for previous group fields.
@@ -564,13 +568,12 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 				var disabled = childMetadataNode.children == null && childMetadataNode.rows.length === 0;
 
-				expandBtn = jQuery('<button>', {
-					'type': 'button',
-					'class': 'wcdv_icon_button wcdv_expand_button',
-					'data-wcdv-expanded': '0',
-					'disabled': disabled
-				})
-					.html(fontAwesome(disabled ? 'fa-square-o' : 'fa-plus-square-o'));
+                expandBtn = jQuery('<button>', {
+                    'type': 'button',
+                    'class': 'wcdv_icon_button wcdv_expand_button',
+                    'data-wcdv-expanded': isExpanded,
+                    'disabled': disabled
+                }).html(fontAwesome(isExpanded === '1' ? (disabled ? 'fa-square-o':'fa-minus-square-o' ) : (disabled ? 'fa-square-o' : 'fa-plus-square-o')));
 
 				jQuery('<th>', {'class': 'wcdv_group_col_spacer'})
 					.append(expandBtn)
@@ -648,8 +651,6 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 					self.ui.tbody.append(childTr);
 				}
 
-				afterElement = childTr;
-
 				var rowRenderCb = getProp(self.opts, 'events', 'rowRender');
 				if (typeof rowRenderCb === 'function') {
 					rowRenderCb(childTr, {
@@ -659,6 +660,12 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 						rowValElt: childMetadataNode.rowValCell.value,
 						groupMetadata: childMetadataNode
 					});
+				}
+				if(self.defn.table.whenGroup.showExpandedGroups){
+					afterElement = render(childMetadataNode.id, 0, childTr);
+					
+				} else {
+					afterElement = childTr;
 				}
 			}
 
@@ -712,6 +719,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 				childTr.after(showMoreTr);
 			}
+			lastInsertedTr = afterElement;
 		}
 		else if (metadataNode.rows) {
 			// We're rendering data rows.
@@ -862,6 +870,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 				rowTr.after(showMoreTr);
 			}
+			lastInsertedTr = rowTr;
 		}
 
 		self._updateSelectionGui();
@@ -873,6 +882,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				break;
 			}
 		}
+		return lastInsertedTr;
 	}
 
 	// showMore() {{{3
