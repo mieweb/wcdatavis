@@ -25,6 +25,7 @@ import {GROUP_FUNCTION_REGISTRY} from './group_fun.js';
 import {Grid} from './grid.js';
 import {GridFilterSet} from './grid_filter.js';
 import {GroupFunWin} from './group_fun_win.js';
+import types from './types.js';
 
 /*
  * Grid controls are the rounded boxes that appear between the toolbar and the grid.  They allow
@@ -1270,6 +1271,40 @@ GroupControl.prototype.sortableSync = function () {
 GroupControl.prototype.addField = function (field, displayText, opts) {
 	var self = this;
 
+	// Make sure we have typeInfo.  We need that so we can detect when the user is dragging a field
+	// with a type that doesn't permit grouping (e.g. JSON).
+
+	if (self.typeInfo == null) {
+		return self.view.getTypeInfo(function (ok, typeInfo) {
+			if (!ok) {
+				console.error('[DataVis // Control(Group) // Add] Failed to retrieve typeInfo');
+				return;
+			}
+			self.typeInfo = typeInfo;
+			return self.addField(field, displayText, opts);
+		});
+	}
+
+	var fti = self.typeInfo.get(field)
+	if (fti == null) {
+		console.error('[DataVis // Control(Group) // Add] Field not in typeInfo: %s', field);
+		self.ui.dropdown.val('');
+		return;
+	}
+
+	var tc = types.registry.get(fti.type);
+	if (tc == null) {
+		console.error('[DataVis // Control(Group) // Add] Field "%s" type "%s" not in registry', field, fti.type);
+		self.ui.dropdown.val('');
+		return;
+	}
+
+	if (!tc.supports.group) {
+		console.info('[DataVis // Control(Group) // Add] Field "%s" type "%s" does not support grouping', field, fti.type);
+		self.ui.dropdown.val('');
+		return;
+	}
+
 	opts = deepDefaults(opts, {
 		autoShowFunWin: false,
 		updateView: true
@@ -1448,6 +1483,40 @@ PivotControl.prototype.sortableSync = function () {
 
 PivotControl.prototype.addField = function (field, displayText, opts) {
 	var self = this;
+
+	// Make sure we have typeInfo.  We need that so we can detect when the user is dragging a field
+	// with a type that doesn't permit grouping (e.g. JSON).
+
+	if (self.typeInfo == null) {
+		return self.view.getTypeInfo(function (ok, typeInfo) {
+			if (!ok) {
+				console.error('[DataVis // Control(Pivot) // Add] Failed to retrieve typeInfo');
+				return;
+			}
+			self.typeInfo = typeInfo;
+			return self.addField(field, displayText, opts);
+		});
+	}
+
+	var fti = self.typeInfo.get(field)
+	if (fti == null) {
+		console.error('[DataVis // Control(Pivot) // Add] Field not in typeInfo: %s', field);
+		self.ui.dropdown.val('');
+		return;
+	}
+
+	var tc = types.registry.get(fti.type);
+	if (tc == null) {
+		console.error('[DataVis // Control(Pivot) // Add] Field "%s" type "%s" not in registry', field, fti.type);
+		self.ui.dropdown.val('');
+		return;
+	}
+
+	if (!tc.supports.group) {
+		console.info('[DataVis // Control(Pivot) // Add] Field "%s" type "%s" does not support grouping', field, fti.type);
+		self.ui.dropdown.val('');
+		return;
+	}
 
 	opts = deepDefaults(opts, {
 		autoShowFunWin: false,

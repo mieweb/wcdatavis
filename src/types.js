@@ -107,6 +107,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -538,6 +541,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -659,6 +665,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: types.registry.get('number').natRep,
 		compare: types.registry.get('number').compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -770,6 +779,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -897,6 +909,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -1010,6 +1025,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -1246,7 +1264,10 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: natRep,
 		compare: compare,
-		add: add
+		add: add,
+		supports: {
+			group: true
+		}
 	});
 })();
 
@@ -1330,6 +1351,9 @@ types.universalCmp = function (a, b) {
 		format: format,
 		natRep: null,
 		compare: null,
+		supports: {
+			group: false
+		}
 	});
 })();
 
