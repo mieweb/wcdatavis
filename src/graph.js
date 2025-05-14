@@ -18,9 +18,9 @@ import {
 } from './util/misc.js';
 import OrdMap from './util/ordmap.js';
 
-import {ComputedView} from './computed_view.js';
-import {Prefs} from './prefs.js';
-import {trans} from './trans.js';
+import { ComputedView } from './computed_view.js';
+import { Prefs } from './prefs.js';
+import { trans } from './trans.js';
 
 import GRAPH_RENDERER_REGISTRY from './reg/graph_renderer.js';
 
@@ -243,7 +243,14 @@ Graph.prototype._makeUserInterface = function () {
 	//     `-- div.wcdv_graph_render (ui.graph)
 
 	self.ui = {};
-	self.ui.root = jQuery(document.getElementById(self.id));
+	if (self.element) {
+		console.log('Datavis: using element');
+		self.ui.root = jQuery(self.element);
+	} else {
+		console.log('Datavis: using id');
+		self.ui.root = jQuery(document.getElementById(self.id));
+	}
+
 
 	self.ui.root.addClass('wcdv_graph');
 	self.ui.root.children().remove();
@@ -265,7 +272,7 @@ Graph.prototype._makeUserInterface = function () {
 	self.ui.toolbar = jQuery('<div>')
 		.addClass('wcdv_grid_toolbar')
 		.appendTo(self.ui.content)
-	;
+		;
 
 	if (!self.opts.showToolbar) {
 		self.ui.toolbar.hide();
@@ -296,7 +303,7 @@ Graph.prototype._makeUserInterface = function () {
 		.append(self.ui.content
 			.append(self.ui.toolbar)
 			.append(self.ui.graph))
-	;
+		;
 };
 
 // #_addTitleWidgets {{{2
@@ -317,7 +324,7 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 		'class': 'wcdv_icon_button wcdv_spinner'
 	})
 		.appendTo(titlebar)
-	;
+		;
 
 	self._setSpinner(self.opts.runImmediately ? 'loading' : 'not-loaded');
 
@@ -345,7 +352,7 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 		})
 		.append(fontAwesome('fa-download'))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	// Create the Refresh button
 
@@ -361,7 +368,7 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 		})
 		.append(fontAwesome('fa-refresh'))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	// This is the "gear" icon that shows/hides the controls below the toolbar.  The controls are used
 	// to set the group, pivot, aggregate, and filters.  Ideally the user only has to utilize these
@@ -379,7 +386,7 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 		})
 		.append(jQuery(fontAwesome('fa-cog')))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 
 	// Create the down-chevron button that shows/hides everything under the titlebar.
 
@@ -395,7 +402,7 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 		})
 		.append(jQuery(fontAwesome('fa-chevron-down')))
 		.appendTo(self.ui.titlebar_controls)
-	;
+		;
 };
 
 // #_addAggregateButtons {{{2
@@ -598,19 +605,19 @@ Graph.prototype.drawInteractive = function () {
 	// for bar charts (since they're on their side).
 
 	switch (graphType) {
-	case 'bar':
-		config.group.graphs[graphType].options = {
-			vAxis: {
-				minValue: minValue
-			}
-		};
-		break;
-	default:
-		config.group.graphs[graphType].options = {
-			vAxis: {
-				minValue: minValue
-			}
-		};
+		case 'bar':
+			config.group.graphs[graphType].options = {
+				vAxis: {
+					minValue: minValue
+				}
+			};
+			break;
+		default:
+			config.group.graphs[graphType].options = {
+				vAxis: {
+					minValue: minValue
+				}
+			};
 	}
 
 	// Copy everything... not strictly necessary AFAIK, but it's safe.
@@ -659,38 +666,38 @@ Graph.prototype.checkGraphConfig = function () {
 		}
 
 		switch (config.graphType) {
-		case 'area':
-		case 'bar':
-		case 'column':
-		case 'line':
-		case 'pie':
-			if (config.valueField != null && config.valueFields != null) {
-				throw new Error('Graph config error: data format "' + dataFormat + '": can\'t define both `valueField` and `valueFields`');
-			}
-
-			// Turn the singular "valueField" into the plural "valueFields."
-
-			if (config.valueField != null) {
-				if (!_.isString(config.valueField)) {
-					throw new Error('Graph config error: data format "' + dataFormat + '": `valueField` must be a string');
-				}
-				config.valueFields = [config.valueField];
-				delete config.valueField;
-			}
-
-			// Check the "valueFields" property, if it exists.
-
-			if (config.valueFields != null) {
-				if (!_.isArray(config.valueFields)) {
-					throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields` must be an array');
+			case 'area':
+			case 'bar':
+			case 'column':
+			case 'line':
+			case 'pie':
+				if (config.valueField != null && config.valueFields != null) {
+					throw new Error('Graph config error: data format "' + dataFormat + '": can\'t define both `valueField` and `valueFields`');
 				}
 
-				_.each(config.valueFields, function (f, i) {
-					if (!_.isString(f)) {
-						throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields[' + i + ']` must be a string');
+				// Turn the singular "valueField" into the plural "valueFields."
+
+				if (config.valueField != null) {
+					if (!_.isString(config.valueField)) {
+						throw new Error('Graph config error: data format "' + dataFormat + '": `valueField` must be a string');
 					}
-				});
-			}
+					config.valueFields = [config.valueField];
+					delete config.valueField;
+				}
+
+				// Check the "valueFields" property, if it exists.
+
+				if (config.valueFields != null) {
+					if (!_.isArray(config.valueFields)) {
+						throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields` must be an array');
+					}
+
+					_.each(config.valueFields, function (f, i) {
+						if (!_.isString(f)) {
+							throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields[' + i + ']` must be a string');
+						}
+					});
+				}
 		}
 	});
 };
@@ -827,15 +834,15 @@ Graph.prototype._setSpinner = function (what) {
 	var self = this;
 
 	switch (what) {
-	case 'loading':
-		self.ui.spinner.html(fontAwesome('fa-refresh', 'fa-spin', 'Loading...'));
-		break;
-	case 'not-loaded':
-		self.ui.spinner.html(fontAwesome('fa-ban', null, 'Not Loaded'));
-		break;
-	case 'working':
-		self.ui.spinner.html(fontAwesome('fa-circle-o-notch', 'fa-spin', 'Working...'));
-		break;
+		case 'loading':
+			self.ui.spinner.html(fontAwesome('fa-refresh', 'fa-spin', 'Loading...'));
+			break;
+		case 'not-loaded':
+			self.ui.spinner.html(fontAwesome('fa-ban', null, 'Not Loaded'));
+			break;
+		case 'working':
+			self.ui.spinner.html(fontAwesome('fa-circle-o-notch', 'fa-spin', 'Working...'));
+			break;
 	}
 };
 
@@ -925,8 +932,8 @@ GraphControl.prototype.draw = function () {
 
 		self.ui.root.append(
 			jQuery('<span>', { 'class': 'wcdv_title' })
-			.append(self.ui.plainCheckbox)
-			.append('Plain Data')
+				.append(self.ui.plainCheckbox)
+				.append('Plain Data')
 		);
 
 		self.ui.plainCategoryField = jQuery('<select>')
@@ -950,13 +957,13 @@ GraphControl.prototype.draw = function () {
 		self.ui.plainConfig = jQuery('<div>')
 			.append(
 				jQuery('<div>')
-				.append('Category Field: ')
-				.append(self.ui.plainCategoryField)
+					.append('Category Field: ')
+					.append(self.ui.plainCategoryField)
 			)
 			.append(
 				jQuery('<div>')
-				.append('Value Field: ')
-				.append(self.ui.plainValueField)
+					.append('Value Field: ')
+					.append(self.ui.plainValueField)
 			)
 			.appendTo(self.ui.root);
 
