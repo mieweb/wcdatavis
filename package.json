@@ -61,7 +61,7 @@
     "lodash": "=4.17.21",
     "mermaid": "=10.8.0",
     "mocha": "=10.2.0",
-    "rollup": "=4.9.6",
+    "rollup": "=4.22.4",
     "selenium-webdriver": "=4.17.0",
     "serve": "=14.2.1",
     "serve-handler": "=6.1.5",
