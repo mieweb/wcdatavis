@@ -1,4 +1,4 @@
-tornado==6.4
+tornado==6.5
 Babel==2.14.0
 dicttoxml==1.7.16
 json5==0.9.17
