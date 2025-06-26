@@ -59,7 +59,7 @@
     "jshint": "=2.13.6",
     "json5": "=2.2.3",
     "lodash": "=4.17.21",
-    "mermaid": "=10.8.0",
+    "mermaid": "=10.9.3",
     "mocha": "=10.2.0",
     "rollup": "=4.9.6",
     "selenium-webdriver": "=4.17.0",
