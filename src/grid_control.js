@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import jQuery from 'jquery';
 
 import { trans } from './trans.js';
@@ -7,15 +5,20 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	defaults,
 	determineColumns,
+	each,
 	fontAwesome,
 	gensym,
 	getProp,
 	log,
 	makeSubclass,
+	map,
 	mapLimit,
+	mapObject,
 	mixinEventHandling,
 	objFromArray,
+	without,
 } from './util/misc.js';
 
 import './util/jquery.js';
@@ -415,9 +418,9 @@ AggregateControlField.prototype.draw = function () {
 		self.fieldDropdowns.push(select);
 	}
 
-	_.each(determineColumns(self.control.colConfig, null, self.control.typeInfo), function (fieldName) {
+	each(determineColumns(self.control.colConfig, null, self.control.typeInfo), function (fieldName) {
 		var text = getProp(self.control.colConfig.get(fieldName), 'displayText') || fieldName;
-		_.each(self.fieldDropdowns, function (dropdown, i) {
+		each(self.fieldDropdowns, function (dropdown, i) {
 			jQuery('<option>', { 'value': fieldName }).text(text).appendTo(dropdown);
 		});
 	});
@@ -425,7 +428,7 @@ AggregateControlField.prototype.draw = function () {
 	// For each field dropdown, set its value to whatever we received.  This has the effect of making
 	// the user interface match the internal aggregate configuration.
 
-	_.each(self.fieldDropdowns, function (dropdown, i) {
+	each(self.fieldDropdowns, function (dropdown, i) {
 		if (getProp(self.opts, 'fields', i)) {
 			var matchingOption = dropdown.children('option').filter(function (eltIndex, elt) {
 				return jQuery(elt).attr('value') === self.opts.fields[i];
@@ -506,7 +509,7 @@ AggregateControlField.prototype._makeOptionsDialog = function (aggDefn) {
 	var table = jQuery('<table>').appendTo(self.ui.optionsDiv);
 	var opts = {};
 
-	_.each(aggDefn.prototype.options, function (optConfig, optName) {
+	each(aggDefn.prototype.options, function (optConfig, optName) {
 		optConfig = deepDefaults(optConfig, {
 			type: 'string',
 			widget: 'text',
@@ -595,12 +598,12 @@ AggregateControlField.prototype.getInfo = function () {
 	return {
 		fun: self.field.field,
 		name: null,
-		fields: _.map(self.fieldDropdowns, function (dropdown) {
+		fields: map(self.fieldDropdowns, function (dropdown) {
 			return dropdown.val();
 		}),
 		isHidden: self.ui.isHiddenCheckbox._isChecked(),
 		shouldGraph: self.shouldGraph,
-		opts: _.mapObject(self.aggFunOpts, function (input, optName) {
+		opts: mapObject(self.aggFunOpts, function (input, optName) {
 			return input.val();
 		})
 	};
@@ -908,9 +911,9 @@ GridControl.prototype.removeField = function (cf) {
 
 	// Remove it from the internal data structures.
 
-	self.controlFields = _.without(self.controlFields, cf);
+	self.controlFields = without(self.controlFields, cf);
 	self.controlFieldsById[cf.id] = undefined;
-	self.controlFieldsByField[fieldName] = _.without(self.controlFieldsByField[fieldName], cf);
+	self.controlFieldsByField[fieldName] = without(self.controlFieldsByField[fieldName], cf);
 
 	// Re-enable the option in the dropdown, if necessary.
 
@@ -942,7 +945,7 @@ GridControl.prototype.clear = function (opts) {
 	var self = this;
 
 	opts = opts || {};
-	_.defaults(opts, {
+	defaults(opts, {
 		updateView: true
 	});
 
@@ -1143,7 +1146,7 @@ var GroupControl = makeSubclass('GroupControl', GridControl, function () {
 	self.super.ctor.apply(self, arguments);
 
 	self.view.on(ComputedView.events.invalidGroupField, function (field) {
-		_.each(self.controlFieldsByField[field], function (cf) {
+		each(self.controlFieldsByField[field], function (cf) {
 			cf.showError('This field does not exist in the data.');
 		});
 	});
@@ -1214,7 +1217,7 @@ GroupControl.prototype.draw = function (parent) {
 		var fields = (!self.view.source.origin.isLimited && spec && spec.fieldNames) || [];
 		self.clear({ updateView: false });
 		console.debug('[DataVis // %s // Group Control] View set group fields to: %s', self.grid.toString(), JSON.stringify(fields));
-		_.each(fields, function (field) {
+		each(fields, function (field) {
 			self.addField(field, getProp(self.colConfig.get(field), 'displayText'), { updateView: false });
 		});
 	});
@@ -1226,7 +1229,7 @@ GroupControl.prototype.draw = function (parent) {
 
 GroupControl.prototype.updateView = function () {
 	var self = this;
-	var fieldNames = _.map(self.controlFields, function (cf) {
+	var fieldNames = map(self.controlFields, function (cf) {
 		return cf.getSpec();
 	});
 
@@ -1258,7 +1261,7 @@ GroupControl.prototype.sortableSync = function () {
 	}).get();
 
 	self.controlFields = [];
-	_.each(controlFieldIds, function (id) {
+	each(controlFieldIds, function (id) {
 		self.controlFields.push(self.controlFieldsById[id]);
 	});
 
@@ -1350,7 +1353,7 @@ var PivotControl = makeSubclass('PivotControl', GridControl, function () {
 	self.super.ctor.apply(self, arguments);
 
 	self.view.on(ComputedView.events.invalidPivotField, function (field) {
-		_.each(self.controlFieldsByField[field], function (cf) {
+		each(self.controlFieldsByField[field], function (cf) {
 			cf.showError('This field does not exist in the data.');
 		});
 	});
@@ -1422,7 +1425,7 @@ PivotControl.prototype.draw = function (parent) {
 		var fields = (!self.view.source.origin.isLimited && spec && spec.fieldNames) || [];
 		self.clear({ updateView: false });
 		console.debug('[DataVis // %s // Pivot Control] View set pivot fields to: %s', self.grid.toString(), JSON.stringify(fields));
-		_.each(fields, function (field) {
+		each(fields, function (field) {
 			self.addField(field, getProp(self.colConfig.get(field), 'displayText'), { updateView: false });
 		});
 	});
@@ -1440,7 +1443,7 @@ PivotControl.prototype.draw = function (parent) {
 
 PivotControl.prototype.updateView = function () {
 	var self = this;
-	var fieldNames = _.map(self.controlFields, function (cf) {
+	var fieldNames = map(self.controlFields, function (cf) {
 		return cf.getSpec();
 	});
 
@@ -1472,7 +1475,7 @@ PivotControl.prototype.sortableSync = function () {
 	}).get();
 
 	self.controlFields = [];
-	_.each(controlFieldIds, function (id) {
+	each(controlFieldIds, function (id) {
 		self.controlFields.push(self.controlFieldsById[id]);
 	});
 
@@ -1653,7 +1656,7 @@ AggregateControl.prototype.draw = function (parent) {
 			self.showHideFields(agg);
 		}
 		if (getProp(spec, 'cell', 0, 'fields')) {
-			_.each(spec.cell[0].fields, function (f, i) {
+			each(spec.cell[0].fields, function (f, i) {
 				self.ui.fields[i].dropdown.val(f);
 			});
 		}
@@ -1673,7 +1676,7 @@ AggregateControl.prototype.draw = function (parent) {
 		if (spec != null) {
 			console.debug('[DataVis // %s // Aggregate Control] View set aggregate to: %s', self.grid.toString(), JSON.stringify(spec.all));
 
-			_.each(spec.all, function (agg) {
+			each(spec.all, function (agg) {
 				self.addField(agg.fun, AGGREGATE_REGISTRY.get(agg.fun).prototype.name, { updateView: false }, {
 					fields: agg.fields,
 					isHidden: agg.isHidden
@@ -1688,7 +1691,7 @@ AggregateControl.prototype.draw = function (parent) {
 
 AggregateControl.prototype.updateView = function () {
 	var self = this;
-	var info = _.map(self.controlFields, function (cf) {
+	var info = map(self.controlFields, function (cf) {
 		return cf.getInfo();
 	});
 	self.ui.root.find('.wcdv_aggregate_control_error').hide();
@@ -1702,7 +1705,7 @@ AggregateControl.prototype.updateView = function () {
 AggregateControl.prototype.clearGraphFlag = function () {
 	var self = this;
 
-	_.each(self.controlFields, function (cf) {
+	each(self.controlFields, function (cf) {
 		cf.shouldGraph = false;
 	});
 };
@@ -1797,15 +1800,15 @@ AggregateControl.prototype.updateFieldDropdowns = function () {
 	// Clear out the fields that are already in the dropdown (in case anything was removed, and to
 	// prevent duplicates from being added).
 
-	_.each(self.ui.fields, function (f) {
+	each(self.ui.fields, function (f) {
 		f.dropdown.children().remove();
 	});
 
 	// Add <OPTION> elements for all the fields.
 
-	_.each(determineColumns(self.colConfig, null, self.typeInfo), function (fieldName) {
+	each(determineColumns(self.colConfig, null, self.typeInfo), function (fieldName) {
 		var text = getProp(self.colConfig.get(fieldName), 'displayText') || fieldName;
-		_.each(self.ui.fields, function (f) {
+		each(self.ui.fields, function (f) {
 			jQuery('<option>', { 'value': fieldName }).text(text).appendTo(f.dropdown);
 		});
 	});
@@ -1908,7 +1911,7 @@ FilterControl.prototype.draw = function (parent) {
 		var spec = self.view.getFilter();
 		console.debug('[DataVis // %s // Filter Control] View set filter to: %s', self.grid.toString(), JSON.stringify(spec));
 		self.clear({ updateView: false });
-		_.each(spec, function (fieldSpec, field) {
+		each(spec, function (fieldSpec, field) {
 			self.addField(field, getProp(self.colConfig.get(field), 'displayText'), { updateView: false });
 			self.gfs.set(field, fieldSpec, { updateView: false });
 		});

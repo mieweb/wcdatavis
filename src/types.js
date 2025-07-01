@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -147,7 +146,7 @@ types.universalCmp = function (a, b) {
 		// can have it format a number and then "parse" the result to figure out e.g. what the grouping
 		// and radix point characters are.
 
-		_.each(window.Intl.NumberFormat(window.DATAVIS_LANG).formatToParts('1234.5'), function (o) {
+		window.Intl.NumberFormat(window.DATAVIS_LANG).formatToParts('1234.5').forEach(function (o) {
 			switch (o.type) {
 			case 'group':
 				formatOpts.integerPart.groupSeparator = o.value;
@@ -1107,7 +1106,7 @@ types.universalCmp = function (a, b) {
 				return null;
 			}
 			o = { y: 0, d: 0, h: 0, m: 0, s: 0, t: 0, u: 0 };
-			_.each(parseRegexps[fmt].spec, function (spec, i) {
+			parseRegexps[fmt].spec.forEach(function (spec, i) {
 				if (m[i+1] != null) {
 					o[spec] = maybeToInt(m[i+1]) || 0;
 				}
@@ -1189,7 +1188,7 @@ types.universalCmp = function (a, b) {
 		}
 		formatFuns[fmt] = function (val) {
 			var args = [s];
-			_.each(fields, function (f) {
+			fields.forEach(function (f) {
 				args.push(val[f]);
 			});
 			var r = sprintf.sprintf.apply(null, args);

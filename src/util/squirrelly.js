@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import Handlebars from 'handlebars';
 import jQuery from 'jquery';
 
@@ -15,14 +14,14 @@ import {
 
 function addHelpers(env, data) {
 	var ai = objFromArray(['cell', 'group', 'pivot', 'all'], [[]]);
-	ai = _.mapObject(ai, function (val, key) {
-		return _.filter(
-			getPropDef([], data, 'agg', 'info', key),
-			function (aggInfo) {
-				return !aggInfo.isHidden;
-			}
-		);
+	// Map object properties to filter aggregates
+	const aiResult = {};
+	Object.keys(ai).forEach(function(key) {
+		aiResult[key] = getPropDef([], data, 'agg', 'info', key).filter(function (aggInfo) {
+			return !aggInfo.isHidden;
+		});
 	});
+	ai = aiResult;
 
 	// rowval {{{2
 

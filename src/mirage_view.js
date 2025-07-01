@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import {
 	deepCopy,
 	deepDefaults,

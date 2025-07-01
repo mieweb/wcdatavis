@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import BigNumber from 'bignumber.js';
@@ -19,6 +18,12 @@ import {
 	mixinEventHandling,
 	toFloat,
 	toInt,
+	isArray,
+	flatten,
+	each,
+	mapObject,
+	findIndex,
+	defaults,
 } from './util/misc.js';
 
 import GridFilter from './ui/grid_filter.js';
@@ -94,7 +99,7 @@ var StringDropdownGridFilterChosen = makeSubclass('StringDropdownGridFilterChose
 
 	self.afterAdd = function (target) {
 		self.gridFilterSet.view.getUniqueVals(function (uniqueVals) {
-			_.each(getPropDef([], uniqueVals, self.field, 'values'), function (val) {
+			each(getPropDef([], uniqueVals, self.field, 'values'), function (val) {
 				jQuery('<option>').attr({
 					'value': val
 				}).text(val).appendTo(self.input);
@@ -167,7 +172,7 @@ var StringDropdownGridFilterSumo = makeSubclass('StringDropdownGridFilterSumo', 
 
 	self.afterAdd = function (target) {
 		self.gridFilterSet.view.getUniqueVals(function (uniqueVals) {
-			_.each(getPropDef([], uniqueVals, self.field, 'values'), function (val) {
+			each(getPropDef([], uniqueVals, self.field, 'values'), function (val) {
 				var elt = jQuery('<option>').attr({
 					'value': val
 				});
@@ -224,14 +229,14 @@ StringDropdownGridFilterSumo.prototype.getValue = function () {
 StringDropdownGridFilterSumo.prototype.setValue = function (val) {
 	var self = this;
 
-	if (!_.isArray(val)) {
+	if (!isArray(val)) {
 		val = [val];
 	}
 	else {
-		val = _.flatten(val);
+		val = flatten(val);
 	}
 
-	_.each(val, function (v) {
+	each(val, function (v) {
 		if (typeof v === 'string') {
 			self.pleaseDontFireChangeEvent = true;
 			self.input.get(0).sumo.selectItem(v);
@@ -526,12 +531,12 @@ DateRangeGridFilter.prototype.getValue = function () {
 
 		if (self.typeInfo.internalType === 'string') {
 			if (self.typeInfo.type === 'date') {
-				result = _.mapObject(result, function (m) {
+				result = mapObject(result, function (m) {
 					return m.format('YYYY-MM-DD')
 				});
 			}
 			else if (self.typeInfo.type === 'datetime') {
-				result = _.mapObject(result, function (m) {
+				result = mapObject(result, function (m) {
 					return m.format('YYYY-MM-DD HH:mm:ss')
 				});
 			}
@@ -893,8 +898,8 @@ GridFilterSet.prototype.remove = function (id, filterBtn, noEvent) {
 	}
 
 	var sameId = function (elt) { return elt.getId() === id };
-	var allIndex = _.findIndex(self.filters.all, sameId);
-	var colIndex = _.findIndex(self.filters.byCol[filter.field], sameId);
+	var allIndex = findIndex(self.filters.all, sameId);
+	var colIndex = findIndex(self.filters.byCol[filter.field], sameId);
 
 	delete self.filters.byId[id];
 	self.filters.all.splice(allIndex, 1);
@@ -919,7 +924,7 @@ GridFilterSet.prototype.remove = function (id, filterBtn, noEvent) {
 GridFilterSet.prototype.removeField = function (fieldName, filterBtn) {
 	var self = this;
 
-	_.each(self.filters.byCol[fieldName], function (filter) {
+	each(self.filters.byCol[fieldName], function (filter) {
 		self.remove(filter.getId(), filterBtn, true);
 	});
 
@@ -936,7 +941,7 @@ GridFilterSet.prototype.reset = function (opts) {
 	var self = this;
 
 	opts = opts || {};
-	_.defaults(opts, {
+	defaults(opts, {
 		updateView: true
 	});
 
@@ -944,7 +949,7 @@ GridFilterSet.prototype.reset = function (opts) {
 
 	// Remove every filter from the user interface.
 
-	_.each(self.filters.all, function (filter) {
+	each(self.filters.all, function (filter) {
 		filter.remove();
 	});
 
@@ -985,8 +990,8 @@ GridFilterSet.prototype.update = function () {
 		return;
 	}
 
-	_.each(self.filters.byCol, function (filterList, field) {
-		_.each(filterList, function (filter) {
+	each(self.filters.byCol, function (filterList, field) {
+		each(filterList, function (filter) {
 			var operator = filter.getOperator();
 			var value = filter.getValue();
 
@@ -1011,7 +1016,7 @@ GridFilterSet.prototype.update = function () {
 			else if (spec[field][operator] === undefined) {
 				spec[field][operator] = value;
 			}
-			else if (_.isArray(spec[field][operator])) {
+			else if (isArray(spec[field][operator])) {
 				spec[field][operator].push(value);
 			}
 			else if (['$eq', '$ne', '$contains'].indexOf(operator) >= 0) {
@@ -1061,7 +1066,7 @@ GridFilterSet.prototype.set = function (field, fieldSpec, opts) {
 		widget.setValue(fieldSpec['$gte'], fieldSpec['$lte']);
 	}
 	else {
-		_.each(fieldSpec, function (val, op) {
+		each(fieldSpec, function (val, op) {
 			console.debug('[DataVis // Grid Filter Set] Setting filter: { field = %s ; operator = %s ; value = %s }',
 				field, op, typeof val === 'object' ? JSON.stringify(val) : val);
 

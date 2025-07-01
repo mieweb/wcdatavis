@@ -1,6 +1,4 @@
 // Imports {{{1
-
-import _ from 'underscore';
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -17,6 +15,7 @@ import {
 	deepCopy,
 	deepDefaults,
 	delegate,
+	each,
 	eachUntilObj,
 	gensym,
 	getComparisonFn,
@@ -27,6 +26,7 @@ import {
 	I,
 	interleaveWith,
 	isElement,
+	isEqual,
 	log,
 	logAsync,
 	makeSubclass,
@@ -382,13 +382,13 @@ ComputedView.prototype.getRowCount = function () {
 		return self.data.data.length;
 	}
 	else if (self.data.isGroup) {
-		return _.reduce(self.data.data, function (prev1, groupedData, rowValNum) {
+		return self.data.data.reduce(function (prev1, groupedData, rowValNum) {
 			return prev1 + groupedData.length;
 		}, 0);
 	}
 	else if (self.data.isPivot) {
-		return _.reduce(self.data.data, function (prev1, groupedData, rowValNum) {
-			return prev1 + _.reduce(groupedData, function (prev2, pivottedData, colValNum) {
+		return self.data.data.reduce(function (prev1, groupedData, rowValNum) {
+			return prev1 + groupedData.reduce(function (prev2, pivottedData, colValNum) {
 				return prev2 + pivottedData.length;
 			}, 0);
 		}, 0);
@@ -440,7 +440,7 @@ ComputedView.prototype.setSort = function (spec, opts) {
 
 	self.debug('SET SORT', 'spec = %O', spec);
 
-	isDifferent = !_.isEqual(self.sortSpec, spec);
+	isDifferent = !isEqual(self.sortSpec, spec);
 
 	self.super.setSort(spec, opts);
 
@@ -639,7 +639,7 @@ ComputedView.prototype.sort = function (cont) {
 
 				var rowValIdxMap = {};
 
-				_.each(sorted, function (s, newIndex) {
+				sorted.forEach(function (s, newIndex) {
 					// For plain output, fire the "sort" event so that the rows (if the grid table is showing
 					// all of them) can just be shuffled around, and the table doesn't have to be recreated.
 
@@ -669,12 +669,13 @@ ComputedView.prototype.sort = function (cont) {
 							self.data.groupMetadata.lookup.byRowValIndex[node.rowValIndex] = node;
 						}
 						else {
-							_.each(node.children, function (child) {
+							Object.keys(node.children).forEach(function (key) {
+								var child = node.children[key];
 								postorder(child, depth + 1);
 							});
 							if (depth > 0) {
 								// FIXME Assumes that node.children.length > 0.
-								node.rowValIndex = node.children[_.keys(node.children)[0]].rowValIndex;
+								node.rowValIndex = node.children[Object.keys(node.children)[0]].rowValIndex;
 							}
 						}
 					};
@@ -687,7 +688,7 @@ ComputedView.prototype.sort = function (cont) {
 				if (origCellAgg != null) {
 					for (ai = 0; ai < origCellAgg.length; ai += 1) {
 						self.data.agg.results.cell[ai] = [];
-						_.each(sorted, function (s, newIndex) {
+						sorted.forEach(function (s, newIndex) {
 							self.data.agg.results.cell[ai][newIndex] = origCellAgg[ai][s.oldIndex];
 						});
 					}
@@ -698,7 +699,7 @@ ComputedView.prototype.sort = function (cont) {
 				if (origGroupAgg != null) {
 					for (ai = 0; ai < origGroupAgg.length; ai += 1) {
 						self.data.agg.results.group[ai] = [];
-						_.each(sorted, function (s, newIndex) {
+						sorted.forEach(function (s, newIndex) {
 							self.data.agg.results.group[ai][newIndex] = origGroupAgg[ai][s.oldIndex];
 						});
 					}
@@ -722,7 +723,7 @@ ComputedView.prototype.sort = function (cont) {
 
 				// Reorder data and colvals.
 
-				_.each(sorted, function (s, newIndex) {
+				sorted.forEach(function (s, newIndex) {
 					self.data.colVals[newIndex] = origColVals[s.oldIndex];
 					if (origColVals != null) {
 						for (var rvi = 0; rvi < self.data.rowVals.length; rvi += 1) {
@@ -741,7 +742,7 @@ ComputedView.prototype.sort = function (cont) {
 						self.data.agg.results.cell[ai] = new Array(self.data.rowVals.length);
 						for (rvi = 0; rvi < self.data.rowVals.length; rvi += 1) {
 							self.data.agg.results.cell[ai][rvi] = new Array(self.data.colVals.length);
-							_.each(sorted, function (s, newIndex) {
+							sorted.forEach(function (s, newIndex) {
 								self.data.agg.results.cell[ai][rvi][newIndex] = origCellAgg[ai][rvi][s.oldIndex];
 							});
 						}
@@ -753,7 +754,7 @@ ComputedView.prototype.sort = function (cont) {
 				if (origPivotAgg != null) {
 					for (ai = 0; ai < origPivotAgg.length; ai += 1) {
 						self.data.agg.results.pivot[ai] = new Array(self.data.colVals.length);
-						_.each(sorted, function (s, newIndex) {
+						sorted.forEach(function (s, newIndex) {
 							self.data.agg.results.pivot[ai][newIndex] = origPivotAgg[ai][s.oldIndex];
 						});
 					}
@@ -986,7 +987,7 @@ ComputedView.prototype.sort = function (cont) {
 				if (spec.rowVal) {
 					spec.rowValIndex = -1;
 					for (rvi = 0; rvi < self.data.rowVals.length; rvi += 1) {
-						if (_.isEqual(self.data.rowVals[rvi], spec.rowVal)) {
+						if (isEqual(self.data.rowVals[rvi], spec.rowVal)) {
 							spec.rowValIndex = rvi;
 							break;
 						}
@@ -1058,7 +1059,7 @@ ComputedView.prototype.sort = function (cont) {
 				if (spec.colVal) {
 					spec.colValIndex = -1;
 					for (cvi = 0; cvi < self.data.colVals.length; cvi += 1) {
-						if (_.isEqual(self.data.colVals[cvi], spec.colVal)) {
+						if (isEqual(self.data.colVals[cvi], spec.colVal)) {
 							spec.colValIndex = cvi;
 							break;
 						}
@@ -1291,7 +1292,7 @@ ComputedView.prototype.setFilter = function (spec, progress, opts) {
 
 	self.debug('SET FILTER', 'spec = %O ; options = %O', spec, opts);
 
-	isDifferent = !_.isEqual(self.filterSpec, spec);
+	isDifferent = !isEqual(self.filterSpec, spec);
 
 	if (self.filterSpec != null && spec == null) {
 		self.wasPreviouslyFiltered = true;
@@ -1305,7 +1306,8 @@ ComputedView.prototype.setFilter = function (spec, progress, opts) {
 			});
 		}
 
-		_.each(spec, function (fieldSpec, field) {
+		Object.keys(spec).forEach(function (field) {
+			var fieldSpec = spec[field];
 			if (self.typeInfo.get(field) == null) {
 				log.error('Ignoring filter on field "' + field + '" because it doesn\'t exist in the data');
 				delete spec[field];
@@ -1397,7 +1399,8 @@ ComputedView.prototype.filter = function (cont) {
 
 	// Make sure that each column that we're filtering has been type decoded, if necessary.
 
-	_.each(self.filterSpec, function (fieldSpec, field) {
+	Object.keys(self.filterSpec).forEach(function (field) {
+		var fieldSpec = self.filterSpec[field];
 		var fti = self.typeInfo.get(field);
 
 		// Check to make sure we have enough information about the type of the field that the user wants
@@ -1421,7 +1424,8 @@ ComputedView.prototype.filter = function (cont) {
 		// as strings into moment objects before continuing.
 
 		if (['date', 'datetime'].indexOf(fti.type) >= 0 && fti.internalType === 'moment') {
-			_.each(fieldSpec, function (val, op) {
+			Object.keys(fieldSpec).forEach(function (op) {
+				var val = fieldSpec[op];
 				if (typeof val === 'string') {
 					fieldSpec[op] = moment(val);
 				}
@@ -1503,10 +1507,10 @@ ComputedView.prototype.filter = function (cont) {
 			return !pred['$exists'](operand);
 		};
 
-		if (_.isArray(fltr)) {
+		if (Array.isArray(fltr)) {
 			fltr = { '$in': fltr };
 		}
-		else if (!_.isObject(fltr)) {
+		else if (!(fltr != null && typeof fltr === 'object' && !Array.isArray(fltr))) {
 			fltr = { '$eq': fltr };
 		}
 
@@ -1519,8 +1523,8 @@ ComputedView.prototype.filter = function (cont) {
 			//self.debug('FILTER', 'field = ' + field + ' ; Datum = ' + datum + ' ; Operator = ' + operator + ' ; Operand = ' + operand);
 
 			if (pred[operator] !== undefined) {
-				if (_.isArray(operand)) {
-					if (_.every(operand, pred[operator]) === false) {
+				if (Array.isArray(operand)) {
+					if (operand.every(pred[operator]) === false) {
 						return false;
 					}
 				}
@@ -1531,21 +1535,21 @@ ComputedView.prototype.filter = function (cont) {
 			else {
 				switch (operator) {
 				case '$in':
-					if (!_.isArray(operand)) {
+					if (!Array.isArray(operand)) {
 						throw new Error('Invalid filter spec, operator "$in" for column "' + field + '" requires array value');
 					}
 
-					if (_.map(operand, function (elt) { return elt.toString().toLowerCase(); }).indexOf(datum.toString().toLowerCase()) < 0) {
+					if (operand.map(function (elt) { return elt.toString().toLowerCase(); }).indexOf(datum.toString().toLowerCase()) < 0) {
 						return false;
 					}
 					break;
 
 				case '$nin':
-					if (!_.isArray(operand)) {
+					if (!Array.isArray(operand)) {
 						throw new Error('Invalid filter spec, operator "$nin" for column "' + field + '" requires array value');
 					}
 
-					if (_.map(operand, function (elt) { return elt.toString().toLowerCase(); }).indexOf(datum.toString().toLowerCase()) >= 0) {
+					if (operand.map(function (elt) { return elt.toString().toLowerCase(); }).indexOf(datum.toString().toLowerCase()) >= 0) {
 						return false;
 					}
 					break;
@@ -1679,7 +1683,7 @@ ComputedView.prototype.filter = function (cont) {
 	}
 	else {
 		self.timing.start(timingEvt);
-		self.data = _.filter(self.data, passesAllFilters);
+		self.data = self.data.filter(passesAllFilters);
 		self.timing.stop(timingEvt);
 	}
 	*/
@@ -1791,7 +1795,7 @@ ComputedView.prototype.setGroup = function (spec, opts, cont) {
 	}
 
 	if (spec != null) {
-		if (!_.isArray(spec.fieldNames)) {
+		if (!Array.isArray(spec.fieldNames)) {
 			log.warn('VIEW (' + self.name + ') // SET GROUP', '`spec.fieldNames` is not an array');
 			spec.fieldNames = [];
 		}
@@ -1817,7 +1821,7 @@ ComputedView.prototype.setGroup = function (spec, opts, cont) {
 
 		// Remove any fields that don't exist in the data (according to typeInfo).
 
-		spec.fieldNames = _.filter(spec.fieldNames, function (field) {
+		spec.fieldNames = spec.fieldNames.filter(function (field) {
 			if (self.typeInfo.get(field) == null) {
 				log.error('Ignoring group on field "' + field + '" because it doesn\'t exist in the data');
 				return false;
@@ -1833,7 +1837,7 @@ ComputedView.prototype.setGroup = function (spec, opts, cont) {
 	}
 	*/
 
-	isDifferent = !_.isEqual(self.groupSpec, spec);
+	isDifferent = !isEqual(self.groupSpec, spec);
 
 	self.super.setGroup(spec, opts);
 
@@ -1918,7 +1922,7 @@ ComputedView.prototype.group = function () {
 	// Go through every group field and make sure it exists in the source.  If it doesn't, we use an
 	// event to notify the user interface about it so a warning can be shown.
 
-	_.each(self.groupSpec.fieldNames, function (fieldObj) {
+	self.groupSpec.fieldNames.forEach(function (fieldObj) {
 		var fti = self.typeInfo.get(fieldObj.field);
 		if (fti == null) {
 			log.error('Group field does not exist in the source: ' + fieldObj.field);
@@ -2003,7 +2007,7 @@ ComputedView.prototype.group = function () {
 				// Cache the natRep in the cell for improved performance in buildData().
 				setProp(natRep, cell, 'natRep', 'group', groupFieldIndex);
 			}
-			if (_.findIndex(rowVals, function (x) {
+			if (rowVals.findIndex(function (x) {
 				return arrayEqual(rowVal, x);
 			}) === -1) {
 				rowVals.push(rowVal);
@@ -2031,7 +2035,7 @@ ComputedView.prototype.group = function () {
 					rowVal[groupFieldIndex] = natRep;
 				}
 
-				if (_.findIndex(rowVals, function (x) {
+				if (rowVals.findIndex(function (x) {
 					return arrayEqual(rowVal, x);
 				}) === -1) {
 					rowVals.push(rowVal);
@@ -2130,13 +2134,14 @@ ComputedView.prototype.group = function () {
 				}
 			}
 			else {
-				node.numChildren = _.keys(node.children).length;
+				node.numChildren = Object.keys(node.children).length;
 				node.rows = [];
 
 				// Update the parent node in each child, continue the post-order traversal in each, and then
 				// after the metadata is fully constructed in each child, build this node's metadata.
 
-				_.each(node.children, function (child) {
+				Object.keys(node.children).forEach(function (key) {
+					var child = node.children[key];
 					child.parent = node;
 					postorder(child, depth + 1);
 					node.numRows += child.numRows;
@@ -2152,7 +2157,7 @@ ComputedView.prototype.group = function () {
 					// Copy the `rowValIndex` from the first child.  I actually can't remember why we do it
 					// this way, because this node within the tree has children from multiple rowVals.
 
-					node.rowValIndex = node.children[_.keys(node.children)[0]].rowValIndex;
+					node.rowValIndex = node.children[Object.keys(node.children)[0]].rowValIndex;
 
 					// We only have to set `rowValElt` here in non-leaves because it's already been set in the
 					// leaves when we created them.  We're just filling in the upper levels of the tree now.
@@ -2214,7 +2219,7 @@ ComputedView.prototype.group = function () {
 
 	self.data.isPlain = false;
 	self.data.isGroup = true;
-	self.data.groupFields = _.pluck(finalGroupSpec, 'field');
+	self.data.groupFields = finalGroupSpec.map(function(spec) { return spec.field; });
 	self.data.groupSpec = finalGroupSpec;
 	self.data.rowVals = rowVals;
 	self.data.data = newData.data;
@@ -2272,7 +2277,7 @@ ComputedView.prototype.setPivot = function (spec, opts) {
 	}
 
 	if (spec != null) {
-		if (!_.isArray(spec.fieldNames)) {
+		if (!Array.isArray(spec.fieldNames)) {
 			log.warn('VIEW (' + self.name + ') // SET PIVOT', '`spec.fieldNames` is not an array');
 			spec.fieldNames = [];
 		}
@@ -2298,7 +2303,7 @@ ComputedView.prototype.setPivot = function (spec, opts) {
 
 		// Remove any fields that don't exist in the data (according to typeInfo).
 
-		spec.fieldNames = _.filter(spec.fieldNames, function (field) {
+		spec.fieldNames = spec.fieldNames.filter(function (field) {
 			if (self.typeInfo.get(field) == null) {
 				log.error('Ignoring pivot on field "' + field + '" because it doesn\'t exist in the data');
 				return false;
@@ -2314,7 +2319,7 @@ ComputedView.prototype.setPivot = function (spec, opts) {
 	}
 	*/
 
-	isDifferent = !_.isEqual(self.pivotSpec, spec);
+	isDifferent = !isEqual(self.pivotSpec, spec);
 
 	self.super.setPivot(spec, opts);
 
@@ -2418,7 +2423,7 @@ ComputedView.prototype.pivot_orig = function () {
 
 	// Go through every pivot field and make sure it exists in the source.
 
-	_.each(self.pivotSpec.fieldNames, function (field, fieldIdx) {
+	self.pivotSpec.fieldNames.forEach(function (field, fieldIdx) {
 		if (!self.typeInfo.isSet(field)) {
 			log.error('Pivot field does not exist in the source: ' + field);
 			self.fire('invalidPivotField', null, field);
@@ -2438,12 +2443,12 @@ ComputedView.prototype.pivot_orig = function () {
 	var buildColValsTree = function (pivotFields) {
 		var colValsTree = {};
 
-		_.each(self.data.data, function (groupedRows) {
+		self.data.data.forEach(function (groupedRows) {
 			(function RECUR(fieldNames, data, tree) {
 				var field = car(fieldNames)
 					, tmp = {};
 
-				_.each(data, function (row) {
+				data.forEach(function (row) {
 					var value = row.rowData[field].orig || row.rowData[field].value;
 
 					if (tree[value] === undefined) {
@@ -2458,7 +2463,8 @@ ComputedView.prototype.pivot_orig = function () {
 				});
 
 				if (fieldNames.length > 1) {
-					_.each(tmp, function (pivottedRows, value) {
+					Object.keys(tmp).forEach(function (value) {
+						var pivottedRows = tmp[value];
 						RECUR(cdr(fieldNames), pivottedRows, tree[value]);
 					});
 				}
@@ -2473,12 +2479,13 @@ ComputedView.prototype.pivot_orig = function () {
 
 		(function RECUR(tree, level, path) {
 			if (level === self.pivotSpec.fieldNames.length) {
-				_.each(_.keys(tree).sort(), function (value) {
+				Object.keys(tree).sort().forEach(function (value) {
 					colVals.push(path.concat([value]));
 				});
 			}
 			else {
-				_.each(tree, function (subtree, value) {
+				Object.keys(tree).forEach(function (value) {
+					var subtree = tree[value];
 					RECUR(subtree, level + 1, path.concat([value]));
 				});
 			}
@@ -2490,12 +2497,12 @@ ComputedView.prototype.pivot_orig = function () {
 	var buildData = function (data) {
 		var result = [];
 
-		_.each(data, function (groupedRows, groupNum) {
+		data.forEach(function (groupedRows, groupNum) {
 			var newData = [];
-			_.each(colVals, function (colVal) {
+			colVals.forEach(function (colVal) {
 				var tmp = [];
-				_.each(groupedRows, function (row) {
-					if (_.every(colVal, function (colValElt, colValNum) {
+				groupedRows.forEach(function (row) {
+					if (colVal.every(function (colValElt, colValNum) {
 						var pivotField = pivotFields[colValNum];
 						var fti = self.typeInfo.get(pivotField);
 						var value = row.rowData[pivotField].value;
@@ -2566,7 +2573,7 @@ ComputedView.prototype.pivot = function () {
 	// Go through every group field and make sure it exists in the source.  If it doesn't, we use an
 	// event to notify the user interface about it so a warning can be shown.
 
-	_.each(self.pivotSpec.fieldNames, function (fieldObj) {
+	self.pivotSpec.fieldNames.forEach(function (fieldObj) {
 		var fti = self.typeInfo.get(fieldObj.field);
 		if (fti == null) {
 			log.error('Pivot field does not exist in the source: ' + fieldObj.field);
@@ -2630,7 +2637,7 @@ ComputedView.prototype.pivot = function () {
 					setProp(natRep, row.rowData[pivotSpecElt.field], 'natRep', 'pivot', pivotFieldIndex);
 					colVal[pivotFieldIndex] = natRep;
 				}
-				if (_.findIndex(colVals, function (x) {
+				if (colVals.findIndex(function (x) {
 					return arrayEqual(colVal, x);
 				}) === -1) {
 					colVals.push(colVal);
@@ -2659,7 +2666,7 @@ ComputedView.prototype.pivot = function () {
 					colVal[pivotFieldIndex] = natRep;
 				}
 
-				if (_.findIndex(colVals, function (x) {
+				if (colVals.findIndex(function (x) {
 					return arrayEqual(colVal, x);
 				}) === -1) {
 					colVals.push(colVal);
@@ -2680,12 +2687,12 @@ ComputedView.prototype.pivot = function () {
 	var buildData = function (data) {
 		var result = [];
 
-		_.each(data, function (groupedRows, groupNum) {
+		each(data, function (groupedRows, groupNum) {
 			var newData = [];
-			_.each(colVals, function (colVal) {
+			each(colVals, function (colVal) {
 				var tmp = [];
-				_.each(groupedRows, function (row) {
-					if (_.every(colVal, function (colValElt, colValIndex) {
+				each(groupedRows, function (row) {
+					if (colVal.every(function (colValElt, colValIndex) {
 						var pivotSpecElt = finalPivotSpec[colValIndex];
 						return colValElt === row.rowData[pivotSpecElt.field].natRep.pivot[colValIndex];
 					})) {
@@ -2734,7 +2741,7 @@ ComputedView.prototype.pivot = function () {
 	self.data.isPlain = false;
 	self.data.isGroup = false;
 	self.data.isPivot = true;
-	self.data.pivotFields = _.pluck(finalPivotSpec, 'field');
+	self.data.pivotFields = finalPivotSpec.map(function(spec) { return spec.field; });
 	self.data.pivotSpec = finalPivotSpec;
 	self.data.colVals = colVals;
 	self.data.data = newData;
@@ -2797,7 +2804,7 @@ ComputedView.prototype.setAggregate = function (spec, opts) {
 	}
 	*/
 
-	isDifferent = !_.isEqual(self.aggregateSpec, spec);
+	isDifferent = !isEqual(self.aggregateSpec, spec);
 
 	if (spec == null) {
 		self.super.setAggregate(null, opts);
@@ -2815,8 +2822,8 @@ ComputedView.prototype.setAggregate = function (spec, opts) {
 
 		// Remove any fields that don't exist in the data (according to typeInfo).
 
-		_.each(spec, function (aggSpec, aggType) {
-			aggSpec = _.filter(aggSpec, function(agg) {
+		each(spec, function (aggSpec, aggType) {
+			aggSpec = aggSpec.filter(function(agg) {
 				var a = AGGREGATE_REGISTRY.get(agg.fun);
 				if (a == null) {
 					log.error('Ignoring aggregate "' + agg.fun + '" because no such aggregate function exists');
@@ -2848,7 +2855,7 @@ ComputedView.prototype.setAggregate = function (spec, opts) {
 			// configuring their renderer to show the specified aggregates.
 
 			if (shouldGraph[aggType] != null) {
-				_.each(aggSpec, function (agg, i) {
+				each(aggSpec, function (agg, i) {
 					if (agg.shouldGraph) {
 						shouldGraph[aggType].push({
 							aggNum: i,
@@ -2914,9 +2921,9 @@ ComputedView.prototype.aggregate = function (cont) {
 		return cont(false);
 	}
 
-	_.each(['group', 'pivot', 'cell', 'all'], function (what) {
+	each(['group', 'pivot', 'cell', 'all'], function (what) {
 		self.debug('AGGREGATE', 'Computing %s aggregate functions: %s',
-			what, _.pluck(getProp(self, 'aggregateSpec', what), 'fun').join(', '));
+			what, getProp(self, 'aggregateSpec', what).map(function(spec) { return spec.fun; }).join(', '));
 	});
 
 	// Data structures for storing aggregate function results.
@@ -2935,8 +2942,8 @@ ComputedView.prototype.aggregate = function (cont) {
 
 	// Initialize the informational data structures.
 
-	_.each(['group', 'pivot', 'cell', 'all'], function (what) {
-		_.each(self.aggregateSpec[what], function (spec, aggNum) {
+	each(['group', 'pivot', 'cell', 'all'], function (what) {
+		each(self.aggregateSpec[what], function (spec, aggNum) {
 			try {
 				info[what][aggNum] = new AggregateInfo(what, spec, aggNum, self.colConfig, self.typeInfo, function (field) {
 					Source.decodeAll(self.data.dataByRowId, field, self.typeInfo);
@@ -2955,15 +2962,15 @@ ComputedView.prototype.aggregate = function (cont) {
 		});
 
 		// Strip out any aggregates which resulted in errors earlier.
-		info[what] = _.without(info[what], null);
+		info[what] = info[what].filter(function(item) { return item !== null; });
 	});
 
-	_.each(self.data.rowVals, function (rowVal, rowValIdx) {
-		_.each(info.group, function (aggInfo, aggNum) {
+	each(self.data.rowVals, function (rowVal, rowValIdx) {
+		each(info.group, function (aggInfo, aggNum) {
 			if (groupResults[aggNum] === undefined) {
 				groupResults[aggNum] = [];
 			}
-			var aggResult = aggInfo.instance.calculate(_.flatten(self.data.data[rowValIdx]));
+			var aggResult = aggInfo.instance.calculate(self.data.data[rowValIdx].flat());
 			groupResults[aggNum][rowValIdx] = aggResult;
 			if (aggInfo.debug) {
 				self.debug('AGGREGATE', 'Group aggregate [%d] (%s) : Group [%s] = %s',
@@ -2975,13 +2982,13 @@ ComputedView.prototype.aggregate = function (cont) {
 		});
 
 		if (self.data.isPivot) {
-			_.each(info.cell, function (aggInfo, aggNum) {
+			each(info.cell, function (aggInfo, aggNum) {
 				if (cellResults[aggNum] === undefined) {
 					cellResults[aggNum] = [];
 				}
 				cellResults[aggNum][rowValIdx] = [];
 
-				_.each(self.data.colVals, function (colVal, colValIdx) {
+				each(self.data.colVals, function (colVal, colValIdx) {
 					var aggResult = aggInfo.instance.calculate(self.data.data[rowValIdx][colValIdx]);
 					cellResults[aggNum][rowValIdx][colValIdx] = aggResult;
 					if (aggInfo.debug) {
@@ -2998,11 +3005,11 @@ ComputedView.prototype.aggregate = function (cont) {
 	});
 
 	if (self.data.isPivot && info.pivot) {
-		_.each(info.pivot, function (aggInfo, aggNum) {
+		each(info.pivot, function (aggInfo, aggNum) {
 			pivotResults[aggNum] = [];
 
-			_.each(self.data.colVals, function (colVal, colValIdx) {
-				var aggResult = aggInfo.instance.calculate(_.flatten(_.pluck(self.data.data, colValIdx)));
+			each(self.data.colVals, function (colVal, colValIdx) {
+				var aggResult = aggInfo.instance.calculate(self.data.data.map(function(item) { return item[colValIdx]; }).flat());
 				pivotResults[aggNum][colValIdx] = aggResult;
 				if (aggInfo.debug) {
 					self.debug('AGGREGATE', 'Pivot aggregate [%d] (%s) : Col Val [%s] = %s',
@@ -3016,8 +3023,8 @@ ComputedView.prototype.aggregate = function (cont) {
 	}
 
 	if (info.all && (self.data.isGroup || self.data.isPivot)) {
-		_.each(info.all, function (aggInfo, aggNum) {
-			var aggResult = aggInfo.instance.calculate(_.flatten(self.data.data));
+		each(info.all, function (aggInfo, aggNum) {
+			var aggResult = aggInfo.instance.calculate(self.data.data.flat());
 			allResults[aggNum] = aggResult;
 			if (aggInfo.debug) {
 				self.debug('AGGREGATE', 'All aggregate [%d] (%s) = %s',
@@ -3121,7 +3128,7 @@ ComputedView.prototype.getData = function (cont, reason) {
 				dataByRowId: []
 			};
 
-			_.each(data, function (rowData, rowNum) {
+			each(data, function (rowData, rowNum) {
 				self.data.data.push({
 					rowNum: rowNum,
 					rowData: rowData

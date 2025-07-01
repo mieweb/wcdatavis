@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 
 import jQuery from 'jquery';
@@ -99,10 +98,10 @@ import {GridTablePivot} from './renderers/grid/table/pivot.js';
 function makeJsonHaving(filters) {
 	var having = {};
 	var numClauses = 0;
-	_.each(filters, function (f) {
+	filters.forEach(function (f) {
 		var h = having[f.datafield] = {};
 		var numItems = 0;
-		_.each(f.filter.getfilters(), function (filter) {
+		f.filter.getfilters().forEach(function (filter) {
 			var isSupported = true;
 			switch (filter.condition) {
 				case 'EQUAL':
@@ -974,7 +973,7 @@ Grid.prototype._validateFeatures = function () {
 		setPropDef(true, self.defn, 'table', 'features', 'footer');
 	}
 
-	_.each(availableFeatures, function (feat) {
+	availableFeatures.forEach(function (feat) {
 		self.features[feat] = getPropDef(false, self.defn, 'table', 'features', feat);
 	});
 
@@ -988,7 +987,7 @@ Grid.prototype._validateId = function (id) {
 
 	// If the ID was specified as a jQuery object, extract the ID from the element.
 
-	if (_.isArray(id) && id[0] instanceof jQuery) {
+	if (Array.isArray(id) && id[0] instanceof jQuery) {
 		id = id[0];
 	}
 
@@ -1837,7 +1836,7 @@ Grid.prototype._normalizeColumns = function (defn) {
 	for (var i = 0; i < defn.table.columns.length; i += 1) {
 		var cc = defn.table.columns[i];
 
-		if (_.isString(cc)) {
+		if (typeof cc === 'string') {
 			cc = { field: cc };
 		}
 
@@ -1859,7 +1858,9 @@ Grid.prototype._normalizeColumns = function (defn) {
 
 	self.initColConfig = colConfig.clone();
 
-	_.each(getPropDef([], defn, 'table', 'columnConfig'), function (cc, colName) {
+	var columnConfig = getPropDef([], defn, 'table', 'columnConfig');
+	Object.keys(columnConfig).forEach(function (colName) {
+		var cc = columnConfig[colName];
 
 		// When you want to show a checkbox to represent the value, it only makes sense to have a
 		// checkbox for the filter widget.
@@ -2021,7 +2022,7 @@ Grid.prototype.setColConfig = function (colConfig, opts) {
 		if (absent.length > 0) {
 			self.debug('COLCONFIG', 'Removing %d fields from %s which are absent from %s: %O',
 				absent.length, dstMsg, srcMsg, absent);
-			_.each(absent, function (fieldName) {
+			absent.forEach(function (fieldName) {
 				dst.unset(fieldName);
 			});
 			return true;
@@ -2044,7 +2045,13 @@ Grid.prototype.setColConfig = function (colConfig, opts) {
 		if (self.colConfigRestricted) {
 			self.colConfig.each(function (v, k) {
 				if (colConfig.isSet(k)) {
-					_.defaults(colConfig.get(k), v);
+					// Apply defaults: existing values take precedence over defaults
+					var existing = colConfig.get(k);
+					Object.keys(v).forEach(function(key) {
+						if (existing[key] === undefined) {
+							existing[key] = v[key];
+						}
+					});
 				}
 			});
 

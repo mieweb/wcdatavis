@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -9,6 +8,8 @@ import {
 	debug,
 	deepCopy,
 	determineColumns,
+	each,
+	every,
 	fontAwesome,
 	format,
 	gensym,
@@ -20,6 +21,7 @@ import {
 	log,
 	makeOperationButton,
 	makeSubclass,
+	map,
 	mergeSort2,
 	mixinEventHandling,
 	objFromArray,
@@ -98,7 +100,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 	//  ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
 	var displayRowVals = function (tr) {
-		_.each(data.groupFields, function (field, fieldIdx) {
+		each(data.groupFields, function (field, fieldIdx) {
 			var fcc = self.colConfig.get(field) || {};
 			span = jQuery('<span>').addClass('wcdv_heading_title').text(fcc.displayText || field);
 			self.csv.addCol(fcc.displayText || field);
@@ -398,7 +400,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 		self.csv.addRow();
 		tr = jQuery('<tr>')
 			.dvAttr('pfi', pivotFieldIdx);
-		_.each(self.opts.displayOrder, function (what, displayOrderIndex) {
+		each(self.opts.displayOrder, function (what, displayOrderIndex) {
 			if (typeof what === 'string') {
 				switch (what) {
 				case 'rowVals':
@@ -426,7 +428,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 
 	self.csv.addRow();
 	tr = jQuery('<tr>');
-	_.each(self.opts.displayOrder, function (what, displayOrderIndex) {
+	each(self.opts.displayOrder, function (what, displayOrderIndex) {
 		if (typeof what === 'string') {
 			switch (what) {
 			case 'rowVals':
@@ -479,8 +481,8 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 
 	var templates = {};
 
-	_.each(df, function (tmplStrs, type) {
-		templates[type] = _.map(tmplStrs, function (str) {
+	each(df, function (tmplStrs, type) {
+		templates[type] = map(tmplStrs, function (str) {
 			var t;
 			try {
 				t = handlebarsEnv.compile(str);
@@ -499,13 +501,13 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 	// ===========================================================================
 
 
-	_.each(data.data, function (rowGroup, groupNum) {
+	each(data.data, function (rowGroup, groupNum) {
 		self.csv.addRow();
 
 		var tr = document.createElement('tr');
 		tr.setAttribute('data-wcdv-rvi', groupNum);
 
-		_.each(self.opts.displayOrder, function (what, displayOrderIndex) {
+		each(self.opts.displayOrder, function (what, displayOrderIndex) {
 			if (typeof what === 'string') {
 				switch (what) {
 				case 'rowVals':
@@ -528,9 +530,9 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 					// Column #3: agg(rowGroup[2]) - rows in the group w/ State = "MI"
 					// Column #4: agg(rowGroup[3]) - rows in the group w/ State = "OH"
 
-					_.each(rowGroup, function (colGroup, pivotNum) {
+					each(rowGroup, function (colGroup, pivotNum) {
 						if (df.cell.length > 0) {
-							_.each(df.cell, function (dispFmt, dfCellIndex) {
+							each(df.cell, function (dispFmt, dfCellIndex) {
 								var td = document.createElement('td');
 								td.classList.add('wcdv_pivot_cell');
 								td.setAttribute('data-wcdv-rvi', groupNum);
@@ -541,8 +543,8 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 									colValIdx: pivotNum
 								});
 
-								if (_.every(data.groupSpec, function (gs) { return gs.fun == null; })
-										&& _.every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
+								if (every(data.groupSpec, function (gs) { return gs.fun == null; })
+										&& every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
 									self._addDrillDownClass(td);
 								}
 
@@ -555,7 +557,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 						}
 						else if (ai.cell.length > 0) {
 							// Every cell aggregate function is going to make a separate cell.
-							_.each(ai.cell, function (aggInfo, aiCellIndex) {
+							each(ai.cell, function (aggInfo, aiCellIndex) {
 								var aggNum = aggInfo.aggNum;
 								var aggType = aggInfo.instance.getType();
 								var agg = data.agg.results.cell[aggNum];
@@ -605,8 +607,8 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 									self.csv.addCol(td.innerText);
 								}
 
-								if (_.every(data.groupSpec, function (gs) { return gs.fun == null; })
-										&& _.every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
+								if (every(data.groupSpec, function (gs) { return gs.fun == null; })
+										&& every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
 									self._addDrillDownClass(td);
 								}
 
@@ -645,7 +647,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 					// If the `value` function adds up the sums, yielding a grand total of them all, then we format
 					// that using Numeral exactly as specified for the "Amount" field.
 
-					_.each(self.opts.addCols, function (addCol) {
+					each(self.opts.addCols, function (addCol) {
 						var addColResult = addCol.value(data.data, groupNum, rowAgg, aggType);
 						var td = document.createElement('td');
 						var addColText;
@@ -692,7 +694,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 	//  PIVOT AGGREGATES
 	// ===========================================================================
 
-	_.each(ai.pivot, function (aggInfo, aiPivotIndex) {
+	each(ai.pivot, function (aggInfo, aiPivotIndex) {
 		var span,
 			text,
 			aggNum = aggInfo.aggNum,
@@ -713,7 +715,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 			tr.addClass('wcdv_btd'); // border-top: double
 		}
 
-		_.each(self.opts.displayOrder, function (what) {
+		each(self.opts.displayOrder, function (what) {
 			if (typeof what === 'string') {
 				switch (what) {
 				case 'rowVals':
@@ -747,7 +749,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 
 					break;
 				case 'cells':
-					_.each(data.colVals, function (colVal, colValIdx) {
+					each(data.colVals, function (colVal, colValIdx) {
 						// Add padding cells in the CSV output so that the pivot aggregates appear staggered.  Since
 						// we can't do rowspan in CSV like we can in HTML.
 
@@ -787,7 +789,7 @@ GridTablePivot.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 							self.csv.addCol(td.text());
 						}
 
-						if (_.every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
+						if (every(data.pivotSpec, function (ps) { return ps.fun == null; })) {
 							self._addDrillDownClass(td.get(0));
 						}
 

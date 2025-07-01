@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -9,6 +8,7 @@ import {
 	debug,
 	deepCopy,
 	determineColumns,
+	each,
 	fontAwesome,
 	format,
 	gensym,
@@ -88,10 +88,10 @@ GridTableGroupSummary.prototype.drawHeader = function (columns, data, typeInfo, 
 
 	self.csv.addRow();
 
-	_.each(self.opts.displayOrder, function (what, displayOrderIndex) {
+	each(self.opts.displayOrder, function (what, displayOrderIndex) {
 		if (typeof what === 'string') {
 			if (what === 'rowVals') {
-				_.each(data.groupFields, function (field, fieldIdx) {
+				each(data.groupFields, function (field, fieldIdx) {
 					var fcc = self.colConfig.get(field) || {};
 					var headingText = fcc.displayText || field;
 
@@ -149,13 +149,13 @@ GridTableGroupSummary.prototype.drawBody = function (data, typeInfo, columns, co
 
 	self._setupFullValueWin(data);
 
-	_.each(data.data, function (rowGroup, groupNum) {
+	each(data.data, function (rowGroup, groupNum) {
 		var tr = document.createElement('tr');
 		tr.setAttribute('data-wcdv-rvi', groupNum);
 
 		self.csv.addRow();
 
-		_.each(self.opts.displayOrder, function (what, displayOrderIndex) {
+		each(self.opts.displayOrder, function (what, displayOrderIndex) {
 			if (typeof what === 'string') {
 				if (what === 'rowVals') {
 					self.drawBody_rowVals(data, tr, groupNum);
@@ -181,7 +181,7 @@ GridTableGroupSummary.prototype.drawBody = function (data, typeInfo, columns, co
 						return;
 					}
 
-					_.each(self.opts.addCols, function (addCol) {
+					each(self.opts.addCols, function (addCol) {
 						var td = document.createElement('td');
 						var addColResult = addCol.value(data.data, groupNum, rowAgg, aggType);
 						var addColText;
@@ -229,7 +229,7 @@ GridTableGroupSummary.prototype.drawBody = function (data, typeInfo, columns, co
 		tr = jQuery('<tr>', {'class': 'wcdv_btd'});
 		self.csv.addRow();
 
-		_.each(self.opts.displayOrder, function (what) {
+		each(self.opts.displayOrder, function (what) {
 			switch (what) {
 			case 'rowVals':
 				for (var i = 0; i < data.groupFields.length - 1; i += 1) {
@@ -250,7 +250,7 @@ GridTableGroupSummary.prototype.drawBody = function (data, typeInfo, columns, co
 
 				break;
 			case 'groupAggregates':
-				_.each(ai.all, function (aggInfo, aiAllIndex) {
+				each(ai.all, function (aggInfo, aiAllIndex) {
 					var aggResult = data.agg.results.all[aggInfo.aggNum];
 
 					var td = document.createElement('td');
@@ -301,7 +301,7 @@ GridTableGroupSummary.prototype.drawBody = function (data, typeInfo, columns, co
 				if (self.opts.addCols == null || self.opts.addCols.length === 0) {
 					break;
 				}
-				_.each(self.opts.addCols, function (addCol) {
+				each(self.opts.addCols, function (addCol) {
 					self.csv.addCol('');
 					tr.append(document.createElement('td'));
 				});

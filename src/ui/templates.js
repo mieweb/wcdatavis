@@ -1,7 +1,7 @@
-import _ from 'underscore';
 import jQuery from 'jquery';
 
 import {
+	each,
 	fontAwesome,
 	getProp,
 	getPropDef,
@@ -43,7 +43,7 @@ var TemplatesEditor = makeSubclass('TemplatesEditor', Object, function (grid, on
 				// Update the configuration of the grid.
 
 				self.tabData.each(function (v, k) {
-					_.each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (t) {
+					each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (t) {
 						if (v.inputs[t] != null) {
 							setProp(v.inputs[t].val(), self.grid.defn, 'rendererOpts', k, t);
 						}
@@ -78,7 +78,7 @@ var TemplatesEditor = makeSubclass('TemplatesEditor', Object, function (grid, on
 		var li = jQuery('<li>').append(jQuery('<a>', {href: '#wcdv_hbe_' + name}).text(displayName));
 		var div = jQuery('<div>', {id: 'wcdv_hbe_' + name});
 
-		_.each([
+		each([
 			{id: 'empty', label: trans('GRID.TEMPLATE_EDITOR.CONFIG.EMPTY'), rows: 2},
 			{id: 'before', label: trans('GRID.TEMPLATE_EDITOR.CONFIG.BEFORE'), rows: 2},
 			{id: 'beforeGroup', label: trans('GRID.TEMPLATE_EDITOR.CONFIG.BEFORE_GROUP'), rows: 2, modes: ['whenPivot']},
@@ -131,7 +131,7 @@ TemplatesEditor.prototype.show = function () {
 	self.tabData.each(function (v, k) {
 		var config = getProp(self.grid.defn, 'rendererOpts', k);
 		if (config != null) {
-			_.each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (t) {
+			each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (t) {
 				if (v.inputs[t] && config[t]) {
 					v.inputs[t].val(config[t]);
 				}

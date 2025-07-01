@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import Papa from 'papaparse';
 
 import jQuery from 'jquery';
@@ -9,6 +8,7 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	each,
 	getComparisonFn,
 	getParamsFromUrl,
 	getProp,
@@ -45,7 +45,7 @@ var LocalSource = makeSubclass('LocalSource', Object, function (spec) {
 		throw new InvalidSourceError('Local variable "' + self.varName + '" does not exist.');
 	}
 
-	if (!_.isArray(self.cache.data)) {
+	if (!Array.isArray(self.cache.data)) {
 		throw new InvalidSourceError(self.varName + '.data is not an array.');
 	}
 
@@ -67,13 +67,13 @@ LocalSource.prototype._copyData = function () {
 		typeInfo: new OrdMap()
 	};
 
-	if (_.isArray(window[self.varName].typeInfo)) {
-		_.each(window[self.varName].typeInfo, function (fti) {
+	if (Array.isArray(window[self.varName].typeInfo)) {
+		each(window[self.varName].typeInfo, function (fti) {
 			self.cache.typeInfo.set(fti.field, fti);
 		});
 	}
 	else {
-		_.each(window[self.varName].typeInfo, function (fti, field) {
+		each(window[self.varName].typeInfo, function (fti, field) {
 			fti.field = field;
 			self.cache.typeInfo.set(field, fti);
 		});
@@ -213,15 +213,15 @@ HttpSource.prototype.parseData = function (data) {
 		var decoded = Papa.parse(data, { skipEmptyLines: true })
 			, fields = decoded.data[0];
 
-		_.each(decoded.data.slice(1), function (row) {
+		each(decoded.data.slice(1), function (row) {
 			var newRow = {};
-			_.each(row, function (colVal, colIdx) {
+			each(row, function (colVal, colIdx) {
 				newRow[fields[colIdx]] = colVal;
 			});
 			result.data.push(newRow);
 		});
 
-		_.each(fields, function (f) {
+		each(fields, function (f) {
 			result.typeInfo.set(f, {
 				type: 'string'
 			});
@@ -231,7 +231,7 @@ HttpSource.prototype.parseData = function (data) {
 		if (data.data === undefined) {
 			throw new SourceError('HTTP Data Source / JSON Parser / Missing (data) property');
 		}
-		else if (!_.isArray(data.data)) {
+		else if (!Array.isArray(data.data)) {
 			throw new SourceError('HTTP Data Source / JSON Parser / (data) property must be an array');
 		}
 
@@ -239,14 +239,14 @@ HttpSource.prototype.parseData = function (data) {
 			throw new SourceError('HTTP Data Source / JSON Parser / Missing (typeInfo) property');
 		}
 
-		_.each(data.typeInfo, function (fti) {
+		each(data.typeInfo, function (fti) {
 			var field = fti.field;
 			delete fti.field;
 			result.typeInfo.set(field, fti);
 		});
 
 		for (var rowNum = 0; rowNum < data.data.length; rowNum += 1) {
-			if (_.isArray(data.data[rowNum])) {
+			if (Array.isArray(data.data[rowNum])) {
 				var newRow = {};
 				result.typeInfo.each(function (fti, field, i) {
 					newRow[field] = data.data[rowNum][i];
@@ -375,7 +375,7 @@ FileSource.prototype.setToolbar = function (toolbar) {
 					self.cache.data = results.data;
 					self.cache.typeInfo = new OrdMap();
 
-					_.each(results.meta.fields, function (field) {
+					each(results.meta.fields, function (field) {
 						self.cache.typeInfo.set(field, {
 							'type': 'string'
 						});
@@ -406,7 +406,7 @@ FileSource.prototype.setFiles = function (files) {
 			self.cache.data = results.data;
 			self.cache.typeInfo = new OrdMap();
 
-			_.each(results.meta.fields, function (field) {
+			each(results.meta.fields, function (field) {
 				self.cache.typeInfo.set(field, {
 					'type': 'string'
 				});
@@ -507,7 +507,7 @@ TableSource.prototype.getTypeInfo = function (cont) {
 		, columns = getText(columnSelector)
 		, newTypeInfo = new OrdMap();
 
-	_.each(columns, function (field) {
+	each(columns, function (field) {
 		newTypeInfo.set(field, {
 			'type': 'string'
 		});
@@ -684,14 +684,17 @@ var Source = makeSubclass('Source', Object, function (spec, params, userTypeInfo
 	self.opts = opts;
 
 	self.eventHandlers = {};
-	_.each(_.keys(Source.events), function (evt) {
+	each(Object.keys(Source.events), function (evt) {
 		self.eventHandlers[evt] = [];
 	});
 
 	self.guessColumnTypes = true;
 
-	if (_.isArray(userTypeInfo)) {
-		self.userTypeInfo = _.indexBy(userTypeInfo, 'field');
+	if (Array.isArray(userTypeInfo)) {
+		self.userTypeInfo = userTypeInfo.reduce(function(obj, item) {
+			obj[item.field] = item;
+			return obj;
+		}, {});
 	}
 	else {
 		self.userTypeInfo = userTypeInfo;
@@ -713,7 +716,7 @@ var Source = makeSubclass('Source', Object, function (spec, params, userTypeInfo
 		//
 		//   * Otherwise it needs to be a function.
 
-		_.each(convs, function (c, i) {
+		each(convs, function (c, i) {
 			if (typeof c === 'string') {
 				if (Source.converters[c] === undefined) {
 					throw new SourceError('Conversion' + (field ? ' for field "' + field + '", ' : '') + ' #' + i + ': Named converter "' + c + '" not registered');
@@ -729,11 +732,11 @@ var Source = makeSubclass('Source', Object, function (spec, params, userTypeInfo
 		});
 	};
 
-	if (_.isArray(spec.conversion)) {
+	if (Array.isArray(spec.conversion)) {
 		checkConversionArray(spec.conversion);
 	}
 	else {
-		_.each(spec.conversion, function (convs, field) {
+		each(spec.conversion, function (convs, field) {
 			checkConversionArray(convs, field);
 		});
 	}
@@ -836,7 +839,7 @@ Source.decodeAll = function (data, field, typeInfo) {
 
 	console.debug('[DataVis // Source // Decoding] Decoding all values: field = "%s" ; type = %s ; internalType = %s ; valueTypeOf = %s', field, fti.type, fti.internalType, typeof(getProp(data, 0, field, 'value')));
 
-	_.each(data, function (row) {
+	each(data, function (row) {
 		Source.decode(row[field], typeInfo.get(field));
 	});
 
@@ -939,8 +942,8 @@ Source.prototype.getUniqueVals = function (cont) {
 			return cont({});
 		}
 
-		_.each(data, function (row) {
-			_.each(row, function (cell, field) {
+		each(data, function (row) {
+			each(row, function (cell, field) {
 				if (uniqElts[field] === undefined) {
 					uniqElts[field] = {
 						count: 0,
@@ -957,7 +960,7 @@ Source.prototype.getUniqueVals = function (cont) {
 			});
 		});
 
-		_.each(uniqElts, function (obj) {
+		each(uniqElts, function (obj) {
 			obj.values.sort();
 		});
 
@@ -1001,7 +1004,7 @@ Source.prototype.getTypeInfo = function (cont) {
 		// Merge user-specified type information with whatever we got from the source.
 
 		if (self.userTypeInfo != null) {
-			_.each(self.userTypeInfo, function (userFti, field) {
+			each(self.userTypeInfo, function (userFti, field) {
 				if (!typeInfo.isSet(field)) {
 					log.warn('Overriding type information on field "' + field + '" which is not present in the source.');
 					typeInfo.set(field, {});
@@ -1022,7 +1025,7 @@ Source.prototype.getTypeInfo = function (cont) {
 					fti.overridden = true;
 				}
 
-				_.extend(fti, userFti);
+				Object.assign(fti, userFti);
 
 				self.debug('GET TYPE INFO', 'Overriding origin type information { field = "' + field + '", typeInfo = %O }', userFti);
 			});
@@ -1065,7 +1068,7 @@ Source.prototype.postProcess = function (data, cont) {
 	if (data == null) {
 		throw new SourceError('Data Source / Post Process / Received nothing');
 	}
-	else if (!_.isArray(data)) {
+	else if (!Array.isArray(data)) {
 		throw new SourceError('Data Source / Post Process / Data is not an array');
 	}
 
@@ -1105,8 +1108,8 @@ Source.prototype.postProcess = function (data, cont) {
 
 		// Step #1 - Perform all user conversion functions.
 
-		_.each(data, function (row, rowNum) {
-			_.each(row, function (val, field) {
+		each(data, function (row, rowNum) {
+			each(row, function (val, field) {
 				var fti = typeInfo.get(field);
 				var cell = {
 					value: val
@@ -1143,8 +1146,8 @@ Source.prototype.postProcess = function (data, cont) {
 		// Step #3 - Unless conversion has been deferred on this field, decode it into the appropriate
 		// internal representation (numeral or moment).
 
-		_.each(data, function (row, rowNum) {
-			_.each(row, function (val, field) {
+		each(data, function (row, rowNum) {
+			each(row, function (val, field) {
 				var fti = typeInfo.get(field);
 
 				// We also must decode now if this column is used as the discriminator.  Mostly this is
@@ -1168,7 +1171,7 @@ Source.prototype.postProcess = function (data, cont) {
 
 			self.debug('POST-PROCESSING', 'Checking discriminator ranges for "%s" field (type = %s)', self.discriminatorField, dfti.type);
 
-			_.each(data, function (row, rowNum) {
+			each(data, function (row, rowNum) {
 				var val = row[self.discriminatorField].value;
 				var inRange = false;
 				for (var i = 0; i < self.discriminatorRanges.length && !inRange; i += 1) {
@@ -1196,7 +1199,7 @@ Source.prototype.postProcess = function (data, cont) {
 			self.addDiscriminatorRange([newMin, newMax]);
 
 			// Get rid of the rows we marked earlier as being within an existing range.
-			data = _.without(data, null);
+			data = data.filter(function(item) { return item !== null; });
 		}
 
 		self.debug('POST-PROCESSING', 'Post-processing finished');
@@ -1212,7 +1215,7 @@ Source.prototype.getConversionFuncs = function (fieldName) {
 		, conversionFuncs = [];
 
 	var addConversionFuncs = function (convs) {
-		_.each(convs, function (c, i) {
+		each(convs, function (c, i) {
 			if (typeof c === 'function') {
 				conversionFuncs.push(c);
 			}
@@ -1223,7 +1226,7 @@ Source.prototype.getConversionFuncs = function (fieldName) {
 	};
 
 	if (self.conversion !== undefined) {
-		if (_.isArray(self.conversion)) {
+		if (Array.isArray(self.conversion)) {
 			addConversionFuncs(self.conversion);
 		}
 		else if (self.conversion[fieldName] !== undefined) {
@@ -1393,7 +1396,7 @@ Source.prototype.createParams = function () {
 		obj = getParamsFromUrl();
 	}
 
-	_.each(self.params, function (p) {
+	each(self.params, function (p) {
 		self.debug('CREATE PARAMS', 'Parameter =', p);
 		p.toParams(obj);
 	});
@@ -1530,7 +1533,7 @@ Source.prototype.condenseDiscriminatorRanges = function () {
 	var newMin = null;
 	var newMax = null;
 
-	_.each(self.discriminatorRanges, function (range) {
+	each(self.discriminatorRanges, function (range) {
 		if (newMin == null || cmp(range[0], newMin) < 0) {
 			newMin = range[0];
 		}

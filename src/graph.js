@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import jQuery from 'jquery';
 
 import {
@@ -7,6 +5,7 @@ import {
 	deepCopy,
 	deepDefaults,
 	determineColumns,
+	each,
 	fontAwesome,
 	gensym,
 	getProp,
@@ -15,7 +14,11 @@ import {
 	makeToggleCheckbox,
 	presentDownload,
 	setProp,
+	sortBy,
 	toInt,
+	extend,
+	isString,
+	isArray,
 } from './util/misc.js';
 import OrdMap from './util/ordmap.js';
 
@@ -527,18 +530,18 @@ Graph.prototype._updateAggDropdown = function () {
 		self.ui.aggDropdown.children().remove();
 
 		if (data.isGroup) {
-			_.each(getPropDef([], data, 'agg', 'info', 'group'), function (ai) {
+			each(getPropDef([], data, 'agg', 'info', 'group'), function (ai) {
 				addOption(ai);
 			});
 		}
 		else if (data.isPivot) {
-			_.each(getPropDef([], data, 'agg', 'info', 'group'), function (ai) {
+			each(getPropDef([], data, 'agg', 'info', 'group'), function (ai) {
 				addOption(ai, ' by ' + data.groupFields.join(', '));
 			});
-			_.each(getPropDef([], data, 'agg', 'info', 'pivot'), function (ai) {
+			each(getPropDef([], data, 'agg', 'info', 'pivot'), function (ai) {
 				addOption(ai, ' by ' + data.pivotFields.join(', '));
 			});
-			_.each(getPropDef([], data, 'agg', 'info', 'cell'), function (ai) {
+			each(getPropDef([], data, 'agg', 'info', 'cell'), function (ai) {
 				addOption(ai);
 			});
 		}
@@ -548,7 +551,7 @@ Graph.prototype._updateAggDropdown = function () {
 		// happens that this is also alphabetical order, so we just sort by the aggType first before
 		// sorting by the aggNum so the dropdown will be in the right order.
 
-		_.each(_.sortBy(_.sortBy(options, 'type'), 'num'), function (opt) {
+		each(sortBy(sortBy(options, 'type'), 'num'), function (opt) {
 			var option = jQuery('<option>', {
 				'value': opt.name,
 				'data-wcdv-agg-type': opt.type,
@@ -708,7 +711,7 @@ Graph.prototype.drawInteractive = function () {
 	config.pivot.graphs[graphType].options.isStacked = self.ui.stackCheckbox.prop('checked');
 
 	// Store this configuration in the userConfig so that it can be saved with prefs.
-	_.extend(self.userConfig, config);
+	extend(self.userConfig, config);
 
 	if (self.prefs != null) {
 		self.prefs.save();
@@ -727,7 +730,7 @@ Graph.prototype.checkGraphConfig = function () {
 		return;
 	}
 
-	_.each(['whenPlain', 'whenGroup', 'whenPivot'], function (dataFormat) {
+	each(['whenPlain', 'whenGroup', 'whenPivot'], function (dataFormat) {
 		if (self.devConfig[dataFormat] === undefined) {
 			return;
 		}
@@ -737,7 +740,7 @@ Graph.prototype.checkGraphConfig = function () {
 		// Check the "graphType" property.
 
 		if (config.graphType != null) {
-			if (!_.isString(config.graphType)) {
+			if (!isString(config.graphType)) {
 				throw new Error('Graph config error: data format "' + dataFormat + '": `graphType` must be a string');
 			}
 
@@ -759,7 +762,7 @@ Graph.prototype.checkGraphConfig = function () {
 			// Turn the singular "valueField" into the plural "valueFields."
 
 			if (config.valueField != null) {
-				if (!_.isString(config.valueField)) {
+				if (!isString(config.valueField)) {
 					throw new Error('Graph config error: data format "' + dataFormat + '": `valueField` must be a string');
 				}
 				config.valueFields = [config.valueField];
@@ -769,12 +772,12 @@ Graph.prototype.checkGraphConfig = function () {
 			// Check the "valueFields" property, if it exists.
 
 			if (config.valueFields != null) {
-				if (!_.isArray(config.valueFields)) {
+				if (!isArray(config.valueFields)) {
 					throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields` must be an array');
 				}
 
-				_.each(config.valueFields, function (f, i) {
-					if (!_.isString(f)) {
+				each(config.valueFields, function (f, i) {
+					if (!isString(f)) {
 						throw new Error('Graph config error: data format "' + dataFormat + '": `valueFields[' + i + ']` must be a string');
 					}
 				});
@@ -986,7 +989,7 @@ GraphControl.prototype.draw = function () {
 	self.view.on('getTypeInfo', function (typeInfo) {
 		var fields = [];
 
-		_.each(determineColumns(null, null, typeInfo), function (fieldName) {
+		each(determineColumns(null, null, typeInfo), function (fieldName) {
 			var text = getProp(self.colConfig, fieldName, 'displayText') || fieldName;
 			fields.push({ fieldName: fieldName, displayText: text });
 		});
@@ -1030,7 +1033,7 @@ GraphControl.prototype.draw = function () {
 				self.defn.whenPlain.valueField = self.ui.plainValueField.val();
 			});
 
-		_.each(fields, function (f) {
+		each(fields, function (f) {
 			self.ui.plainCategoryField.append(
 				jQuery('<option>', { 'value': f.fieldName }).text(f.displayText)
 			);

@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import {
 	arrayEqual,
 	copyProps,
@@ -11,6 +10,12 @@ import {
 	makeSubclass,
 	mixinLogging,
 	setProp,
+	pluck,
+	each,
+	findIndex,
+	keys,
+	extend,
+	isString,
 } from './util/misc';
 import {AggregateInfo} from './aggregates.js';
 import {View} from './view.js';
@@ -265,12 +270,12 @@ MirageSource.prototype.load = function (ok, fail) {
 		copyProps(metadata, viewConfig, ['filterSpec', 'groupSpec', 'pivotSpec', 'aggregateSpec']);
 
 		data.groupSpec = metadata.groupSpec.fieldNames;
-		data.groupFields = _.pluck(data.groupSpec, 'field');
+		data.groupFields = pluck(data.groupSpec, 'field');
 
 		data.pivotSpec = metadata.pivotSpec.fieldNames;
-		data.pivotFields = _.pluck(data.pivotSpec, 'field');
+		data.pivotFields = pluck(data.pivotSpec, 'field');
 
-		_.each(aggRes, function (ar) {
+		each(aggRes, function (ar) {
 			var rv = null
 				, cv = null
 				, rvi = null
@@ -292,10 +297,10 @@ MirageSource.prototype.load = function (ok, fail) {
 			}
 
 			if (rv != null) {
-				rvi = _.findIndex(data.rowVals, function (x) { return arrayEqual(x, rv); });
+				rvi = findIndex(data.rowVals, function (x) { return arrayEqual(x, rv); });
 			}
 			if (cv != null) {
-				cvi = _.findIndex(data.colVals, function (x) { return arrayEqual(x, cv); });
+				cvi = findIndex(data.colVals, function (x) { return arrayEqual(x, cv); });
 			}
 
 			// Create rowval entry and group metadata data for the new rowval, if this is an aggregate
@@ -410,14 +415,14 @@ MirageSource.prototype.load = function (ok, fail) {
 			if (node.children != null) {
 				//node.numChildren = _.keys(node.children).length;
 				//node.rows = [];
-				_.each(node.children, function (child) {
+				each(node.children, function (child) {
 					child.parent = node;
 					postorder(child, depth + 1);
 					//node.numRows += child.numRows;
 					//node.rows = node.rows.concat(child.rows);
 				});
 				if (depth > 0) {
-					node.rowValIndex = node.children[_.keys(node.children)[0]].rowValIndex;
+					node.rowValIndex = node.children[keys(node.children)[0]].rowValIndex;
 					node.rowValElt = data.rowVals[node.rowValIndex][depth - 1];
 				}
 			}
@@ -437,13 +442,13 @@ MirageSource.prototype.load = function (ok, fail) {
 		// Set the `is(Plain|Group|Pivot)` properties correctly.
 
 		if (data.colVals.length > 0) {
-			_.extend(data, { isPlain: false, isGroup: false, isPivot: true });
+			extend(data, { isPlain: false, isGroup: false, isPivot: true });
 		}
 		else if (data.rowVals.length > 0) {
-			_.extend(data, { isPlain: false, isGroup: true, isPivot: false });
+			extend(data, { isPlain: false, isGroup: true, isPivot: false });
 		}
 		else {
-			_.extend(data, { isPlain: true, isGroup: false, isPivot: false });
+			extend(data, { isPlain: true, isGroup: false, isPivot: false });
 		}
 
 		return ok(OrdMap.deserialize(metadata.typeInfo), data, viewConfig, sourceConfig);
@@ -494,7 +499,7 @@ MirageBackend.prototype.load = function (cont) {
 var MirageBackend_IndexedDB = makeSubclass('MirageBackend_IndexedDB', MirageBackend, function (opts) {
 	var self = this;
 
-	if (!_.isString(opts.dbName)) {
+	if (!isString(opts.dbName)) {
 		throw new Error('Call Error: `opts.dbName` must be a string');
 	}
 
@@ -621,7 +626,7 @@ MirageBackend_IndexedDB.prototype.save = function (metadata, aggResult, ok, fail
 
 		req = mdStore.add(metadata);
 		req.onsuccess = function (evt) {
-			_.each(aggResult, function (ar) {
+			each(aggResult, function (ar) {
 				ar.metadataId = evt.target.result;
 				var req = arStore.add(ar);
 

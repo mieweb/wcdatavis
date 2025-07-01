@@ -1,14 +1,15 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
 import { trans } from '../../../trans.js';
 import {
+	bind,
 	debug,
 	deepCopy,
 	determineColumns,
+	each,
 	fontAwesome,
 	format,
 	gensym,
@@ -20,6 +21,7 @@ import {
 	log,
 	makeOperationButton,
 	makeSubclass,
+	map,
 	mergeSort2,
 	mixinEventHandling,
 	objFromArray,
@@ -176,7 +178,7 @@ GridTablePlain.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 	 * the editing "options" column).
 	 */
 
-	_.each(columns, function (field, colIndex) {
+	each(columns, function (field, colIndex) {
 		var fcc = self.colConfig.get(field) || {};
 
 		if (self.features.rowSelect) {
@@ -381,7 +383,7 @@ GridTablePlain.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 			td.classList.add('wcdv_nowrap');
 			td.classList.add('wcdv_row_operations');
 
-			_.each(self.defn.operations.row, function (op, index) {
+			each(self.defn.operations.row, function (op, index) {
 				var opBtn = makeOperationButton('row', op, index);
 				if (op.disableWhen && op.disableWhen(row)) {
 					opBtn.disabled = true;
@@ -397,7 +399,7 @@ GridTablePlain.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 
 		// Create the data cells.
 
-		_.each(columns, function (field, colIndex) {
+		each(columns, function (field, colIndex) {
 			var fcc = self.colConfig.get(field) || {};
 			var cell = row.rowData[field];
 
@@ -436,7 +438,7 @@ GridTablePlain.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 		});
 
 		if (self.opts.addCols) {
-			_.each(self.opts.addCols, function (addColSpec) {
+			each(self.opts.addCols, function (addColSpec) {
 				var value = addColSpec.value(row.rowData, row.rowNum);
 				var td = document.createElement('td');
 
@@ -706,7 +708,7 @@ GridTablePlain.prototype.drawFooter = function (columns, data, typeInfo) {
 
 		var didFooterCell = false;
 
-		tr.append(_.map(columns, function (field, colIndex) {
+		tr.append(map(columns, function (field, colIndex) {
 			var fcc = self.colConfig.get(field) || {};
 			var colTypeInfo = typeInfo.get(field);
 			var td = jQuery('<td>');
@@ -893,7 +895,7 @@ GridTablePlain.prototype.makeRowReorderBtn = function () {
 GridTablePlain.prototype.updateFeatures = function (f) {
 	var self = this;
 
-	_.each(f, function (v, k) {
+	each(f, function (v, k) {
 		self.features[k] = v;
 	});
 
@@ -995,7 +997,7 @@ GridTablePlain.prototype.addDataToCsv = function (data) {
 
 	self.csv.start();
 	self.csv.addRow();
-	_.each(columns, function (field, colIndex) {
+	each(columns, function (field, colIndex) {
 		var fcc = self.colConfig.get(field) || {};
 		self.csv.addCol(fcc.displayText || field);
 	});
@@ -1008,7 +1010,7 @@ GridTablePlain.prototype.addDataToCsv = function (data) {
 			var row = data.data[i];
 
 			self.csv.addRow();
-			_.each(columns, function (field, colIndex) {
+			each(columns, function (field, colIndex) {
 				var fcc = self.colConfig.get(field) || {};
 				var cell = row.rowData[field];
 				var value = format(fcc, self.typeInfo.get(field), cell);
@@ -1131,7 +1133,7 @@ GridTablePlain.prototype.checkAll = function (evt) {
 GridTablePlain.prototype._addRowReorderHandler = function () {
 	var self = this;
 
-	// configureRowReordering(self.ui.tbody, _.bind(self.view.source.swapRows, self.view.source));
+	// configureRowReordering(self.ui.tbody, bind(self.view.source.swapRows, self.view.source));
 };
 
 // #_addRowSelectHandler {{{2

@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -9,6 +8,8 @@ import {
 	debug,
 	deepCopy,
 	determineColumns,
+	difference,
+	each,
 	fontAwesome,
 	format,
 	gensym,
@@ -17,13 +18,16 @@ import {
 	getPropDef,
 	isElement,
 	isVisible,
+	keys,
 	log,
 	makeOperationButton,
 	makeSubclass,
+	map,
 	mergeSort2,
 	mixinEventHandling,
 	objFromArray,
 	onVisibilityChange,
+	pluck,
 	setPropDef,
 	setTableCell,
 	setElement,
@@ -90,7 +94,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 			'vertical-align': 'top'
 		};
 
-	_.each(data.groupFields, function (field, fieldIdx) {
+	each(data.groupFields, function (field, fieldIdx) {
 		var fcc = self.colConfig.get(field) || {};
 
 		headingTr = jQuery('<tr>');
@@ -184,7 +188,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 
 	// Make headers for all the normal (non-grouped) columns.
 
-	_.each(columns, function (field, colIndex) {
+	each(columns, function (field, colIndex) {
 		var fcc = self.colConfig.get(field) || {};
 
 		if (data.groupFields.indexOf(field) >= 0) {
@@ -271,7 +275,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 		if (node.metadata.children != null) {
 			node.numSelected = 0;
-			_.each(node.metadata.children, function (child) {
+			each(node.metadata.children, function (child) {
 				node.numSelected += self.groupInfo[child.id].numSelected;
 			});
 		}
@@ -315,7 +319,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				.find('tr[data-wcdv-in-group=' + node.metadata.id + ']')
 				.find('input[type="checkbox"].wcdv_select_row')
 				.prop('checked', isChecked);
-			_.each(data.data[node.metadata.rowValIndex], function (row) {
+			each(data.data[node.metadata.rowValIndex], function (row) {
 				if (isChecked) {
 					self.select(row.rowNum);
 				}
@@ -325,7 +329,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 			});
 		}
 		else {
-			_.each(node.metadata.children, function (child) {
+			each(node.metadata.children, function (child) {
 				percolateDown(self.groupInfo[child.id], isChecked);
 			});
 		}
@@ -382,7 +386,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				numSelected: 0
 			};
 			if (node.children != null) {
-				_.each(node.children, recur);
+				each(node.children, recur);
 			}
 		}
 
@@ -543,7 +547,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				'row:plural': 'rows'
 			};
 
-			var childRowValElts = mergeSort2(_.pluck(metadataNode.children, 'rowValElt'));
+			var childRowValElts = mergeSort2(pluck(metadataNode.children, 'rowValElt'));
 			var childRowValEltsLen = childRowValElts.length;
 
 			var howMany = !self.features.limit || showAll ? childRowValEltsLen
@@ -768,7 +772,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 				// Create the data cells.
 
-				_.each(columns, function (field, colIndex) {
+				each(columns, function (field, colIndex) {
 					if (data.groupFields.indexOf(field) >= 0) {
 						return;
 					}
@@ -971,7 +975,7 @@ GridTableGroupDetail.prototype.drawFooter = function (columns, data, typeInfo) {
 
 		var didFooterCell = false;
 
-		tr.append(_.map(columns, function (field, colIndex) {
+		tr.append(map(columns, function (field, colIndex) {
 			if (data.groupFields.indexOf(field) >= 0) {
 				return;
 			}
@@ -1164,10 +1168,10 @@ GridTableGroupDetail.prototype._addRowSelectHandler = function () {
 
 		function recur(node) {
 			if (node.children == null) {
-				rowNums = rowNums.concat(_.pluck(self.data.data[node.rowValIndex], 'rowNum'));
+				rowNums = rowNums.concat(pluck(self.data.data[node.rowValIndex], 'rowNum'));
 			}
 			else {
-				_.each(node.children, recur);
+				each(node.children, recur);
 			}
 		}
 
@@ -1218,7 +1222,7 @@ GridTableGroupDetail.prototype._updateSelectionGui = function () {
 
 	var numSelected = {};
 
-	_.each(_.keys(self.data.groupMetadata.lookup.byId), function (id) {
+	each(keys(self.data.groupMetadata.lookup.byId), function (id) {
 		numSelected[id] = 0;
 	});
 
@@ -1248,7 +1252,7 @@ GridTableGroupDetail.prototype._updateSelectionGui = function () {
 		function postorder(node) {
 			if (node.children != null) {
 				numSelected[node.id] = 0;
-				_.each(node.children, function (c) {
+				each(node.children, function (c) {
 					postorder(c);
 					numSelected[node.id] += numSelected[c.id];
 				});
@@ -1258,7 +1262,7 @@ GridTableGroupDetail.prototype._updateSelectionGui = function () {
 		postorder(self.data.groupMetadata);
 	})();
 
-	_.each(numSelected, function (count, id) {
+	each(numSelected, function (count, id) {
 		var numRows = self.data.groupMetadata.lookup.byId[id].numRows;
 		var checkbox = self.root.find('input[type="checkbox"][data-group-id="' + id + '"].wcdv_select_group');
 
@@ -1343,18 +1347,18 @@ GridTableGroupDetail.prototype.addDataToCsv = function (data) {
 	self.csv.start();
 	self.csv.addRow();
 
-	_.each(data.groupFields, function (fieldName) {
+	each(data.groupFields, function (fieldName) {
 		var fcc = self.colConfig.get(fieldName) || {};
 		self.csv.addCol(fcc.displayText || fieldName);
 	});
-	_.each(_.difference(columns, data.groupFields), function (fieldName) {
+	each(difference(columns, data.groupFields), function (fieldName) {
 		var fcc = self.colConfig.get(fieldName) || {};
 		self.csv.addCol(fcc.displayText || fieldName);
 	});
 
 	function recur(depth, metadataNode) {
 		if (metadataNode.children != null) {
-			_.each(_.keys(metadataNode.children).sort(), function (childName) {
+			each(keys(metadataNode.children).sort(), function (childName) {
 				self.csv.addRow();
 				for (var j = 0; j < depth; j += 1) {
 					self.csv.addCol();
@@ -1367,12 +1371,12 @@ GridTableGroupDetail.prototype.addDataToCsv = function (data) {
 			});
 		}
 		else {
-			_.each(metadataNode.rows, function (row) {
+			each(metadataNode.rows, function (row) {
 				self.csv.addRow();
 				for (var j = 0; j < depth; j += 1) {
 					self.csv.addCol();
 				}
-				_.each(_.difference(columns, data.groupFields), function (field, colIndex) {
+				each(difference(columns, data.groupFields), function (field, colIndex) {
 					var fcc = self.colConfig.get(field) || {};
 					var cell = row.rowData[field];
 					var value = format(fcc, self.typeInfo.get(field), cell);

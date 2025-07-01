@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import jQuery from 'jquery';
@@ -9,11 +8,14 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	each,
+	flatten,
 	gensym,
 	getProp,
 	loadScript,
 	log,
 	makeSubclass,
+	map,
 	setProp,
 } from '../../util/misc.js';
 import {AggregateInfo} from '../../aggregates';
@@ -97,15 +99,15 @@ GraphRendererChartJs.prototype.draw_plain = function (data, typeInfo, dt, config
 			{ name: 'dependencies', default: null }
 		];
 
-		_.each(configOpts, function (opt) {
+		each(configOpts, function (opt) {
 			if (config[opt.name + 'Field'] != null) {
 				Source.decodeAll(data.dataByRowId, config[opt.name + 'Field']);
 			}
 		});
 
-		_.each(data.data, function (row) {
+		each(data.data, function (row) {
 			var newRow = [];
-			_.each(configOpts, function (opt) {
+			each(configOpts, function (opt) {
 				if (config[opt.name + 'Field'] != null) {
 					newRow.push(getRealValue(config[opt.name + 'Field'], row.rowData[config[opt.name + 'Field']]));
 				}
@@ -126,18 +128,18 @@ GraphRendererChartJs.prototype.draw_plain = function (data, typeInfo, dt, config
 	default:
 		dt.addColumn(convertType(typeInfo.get(config.categoryField).type), config.categoryField);
 
-		_.each(config.valueFields, function (field) {
+		each(config.valueFields, function (field) {
 			dt.addColumn(convertType(typeInfo.get(field).type), field);
 		});
 
-		_.each(config.valueFields, function (field) {
+		each(config.valueFields, function (field) {
 			Source.decodeAll(data.dataByRowId, field);
 		});
 
-		_.each(data.data, function (row) {
+		each(data.data, function (row) {
 			var newRow;
 
-			newRow = _.map([config.categoryField].concat(config.valueFields), function (f) {
+			newRow = map([config.categoryField].concat(config.valueFields), function (f) {
 				return getRealValue(f, row.rowData[f]);
 			});
 
@@ -199,7 +201,7 @@ GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, confi
 
 		obj.data.datasets[0].data = [];
 
-		_.each(data.rowVals, function (rowVal, rowValIdx) {
+		each(data.rowVals, function (rowVal, rowValIdx) {
 			obj.data.labels.push(rowVal.join(', '));
 			var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx];
 			if (aggResultType === 'number') {
@@ -214,7 +216,7 @@ GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, confi
 		// For each value field, create the AggregateInfo instance that will manage it.  Also create a
 		// column for the result in the data table.
 
-		_.each(config.valueFields, function (v) {
+		each(config.valueFields, function (v) {
 			var aggInfo = new AggregateInfo('group', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
 			ai.push(aggInfo);
 			obj.data.datasets.push({
@@ -226,11 +228,11 @@ GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, confi
 		// Go through each rowval and create a row for it in the data table.  Every value field gets its
 		// own column, which is the result of the corresponding aggregate function specified above.
 
-		_.each(data.rowVals, function (rowVal, rowValIdx) {
+		each(data.rowVals, function (rowVal, rowValIdx) {
 			obj.data.labels.push(rowVal.join(', '));
 
-			_.each(ai, function (aggInfo, i) {
-				var aggResult = aggInfo.instance.calculate(_.flatten(data.data[rowValIdx]));
+			each(ai, function (aggInfo, i) {
+				var aggResult = aggInfo.instance.calculate(flatten(data.data[rowValIdx]));
 				obj.data.datasets[i].data.push(aggResult);
 				if (aggInfo.debug) {
 					console.debug('[DataVis Graph // Group // Aggregate] Group aggregate (%s) : Group [%s] = %s',
@@ -289,16 +291,16 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 
 		switch (config.aggType) {
 		case 'cell':
-			_.each(data.colVals, function (colVal) {
+			each(data.colVals, function (colVal) {
 				dt.addColumn(aggResultType, colVal.join(', '));
 			});
 
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.rowVals, function (rowVal, rowValIdx) {
+			each(data.rowVals, function (rowVal, rowValIdx) {
 				var newRow = [rowVal.join(', ')];
 
-				_.each(data.colVals, function (colVal, colValIdx) {
+				each(data.colVals, function (colVal, colValIdx) {
 					var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx][colValIdx];
 					if (aggResultType === 'number') {
 						aggResult = +aggResult;
@@ -313,7 +315,7 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 			dt.addColumn(aggResultType, name);
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.rowVals, function (rowVal, rowValIdx) {
+			each(data.rowVals, function (rowVal, rowValIdx) {
 				var newRow = [rowVal.join(', ')];
 
 				var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx];
@@ -328,7 +330,7 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 			dt.addColumn(aggResultType, name);
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.colVals, function (colVal, colValIdx) {
+			each(data.colVals, function (colVal, colValIdx) {
 				var newRow = [colVal.join(', ')];
 
 				var aggResult = data.agg.results[config.aggType][config.aggNum][colValIdx];
@@ -347,21 +349,21 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 		// For each value field, create the AggregateInfo instance that will manage it.  Also create
 		// columns for the results (one for each colval) in the data table.
 
-		_.each(config.valueFields, function (v) {
+		each(config.valueFields, function (v) {
 			var aggInfo = new AggregateInfo('cell', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
 
-			_.each(data.colVals, function (colVal) {
+			each(data.colVals, function (colVal) {
 				dt.addColumn(aggInfo.instance.getType(), colVal.join(', '));
 			});
 
 			ai.push(aggInfo);
 		});
 
-		_.each(data.rowVals, function (rowVal, rowValIndex) {
+		each(data.rowVals, function (rowVal, rowValIndex) {
 			var newRow = [rowVal.join(', ')];
 
-			_.each(data.colVals, function (colVal, colValIndex) {
-				_.each(ai, function (aggInfo) {
+			each(data.colVals, function (colVal, colValIndex) {
+				each(ai, function (aggInfo) {
 					var aggResult = aggInfo.instance.calculate(data.data[rowValIndex][colValIndex]);
 					newRow.push(aggResult);
 					if (aggInfo.debug) {

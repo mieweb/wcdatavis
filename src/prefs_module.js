@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import numeral from 'numeral';
 

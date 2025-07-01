@@ -1,9 +1,14 @@
-import _ from 'underscore';
 import JSONFormatter from 'json-formatter-js';
 
 import jQuery from 'jquery';
 
 import { deepCopy } from './misc.js';
+
+// Import isObject replacement function from misc.js
+function isObject(value) {
+	const type = typeof value;
+	return value != null && (type === 'object' || type === 'function') && !Array.isArray(value);
+}
 
 // OrdMap {{{1
 
@@ -47,10 +52,10 @@ OrdMap.prototype.constructor = OrdMap;
 OrdMap.fromArray = function (values, keyField) {
 	var o = new OrdMap();
 
-	if (!_.isArray(values)) {
+	if (!Array.isArray(values)) {
 		throw new Error('Call Error: `values` must be an array');
 	}
-	if (!_.isString(keyField) && !_.isNumber(keyField)) {
+	if (typeof keyField !== 'string' && typeof keyField !== 'number') {
 		throw new Error('Call Error: `keyField` must be a string or number');
 	}
 
@@ -310,7 +315,7 @@ OrdMap.prototype.asHtmlDefnList = function () {
 		if (v instanceof jQuery || v instanceof Element) {
 			dd.append(v);
 		}
-		else if (_.isObject(v)) {
+		else if (isObject(v)) {
 			dd.append(new JSONFormatter(v, 0).render());
 		}
 		else {

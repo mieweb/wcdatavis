@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import Handlebars from 'handlebars';
 
 import jQuery from 'jquery';
@@ -6,6 +5,7 @@ import jQuery from 'jquery';
 import {
 	debug,
 	deepCopy,
+	each,
 	format,
 	makeSubclass,
 	outerHtml,
@@ -56,9 +56,9 @@ GridRendererHandlebars.prototype._draw_plain = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (row) {
+			each(data.data, function (row) {
 				var context = {};
-				_.each(row.rowData, function (cell, field) {
+				each(row.rowData, function (cell, field) {
 					var fcc = self.colConfig.get(field) || {};
 					var value = format(fcc, typeInfo.get(field), cell);
 					if (value instanceof Element || value instanceof jQuery) {
@@ -95,7 +95,7 @@ GridRendererHandlebars.prototype._draw_group = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (group, rowValIdx) {
+			each(data.data, function (group, rowValIdx) {
 				var context = {
 					rowValIdx: rowValIdx
 				};
@@ -128,8 +128,8 @@ GridRendererHandlebars.prototype._draw_pivot = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (group, rowValIdx) {
-				_.each(group, function (pivot, colValIdx) {
+			each(data.data, function (group, rowValIdx) {
+				each(group, function (pivot, colValIdx) {
 					var div = jQuery('<div>').appendTo(root);
 					var context = {
 						rowValIdx: rowValIdx,

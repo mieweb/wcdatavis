@@ -1,5 +1,4 @@
 const {assert} = require('chai');
-const _ = require('lodash');
 const Grid = require('../lib/grid.js');
 const {setupServer, asyncEach, selectByValue, radioByValue, checkboxByValue, sleep, clearTextInput} = require('../lib/util.js');
 
@@ -44,7 +43,7 @@ describe('Source Parameters', function () {
 				await input.clear();
 				await grid.refresh();
 				await grid.waitForIdle();
-				let actual = _.map(await grid.getPlainData_asArrays(), '0');
+				let actual = (await grid.getPlainData_asArrays()).map(item => item[0]);
 				// assert.notInclude(actual, 'text');
 			});
 
@@ -65,7 +64,7 @@ describe('Source Parameters', function () {
 				await grid.refresh();
 				await grid.waitForIdle();
 				// The parameter should not be sent, so it should not show up in response.
-				let actual = _.map(await grid.getPlainData_asArrays(), '0');
+				let actual = (await grid.getPlainData_asArrays()).map(item => item[0]);
 				assert.notInclude(actual, 'checkbox');
 			});
 
@@ -76,9 +75,9 @@ describe('Source Parameters', function () {
 				await grid.waitForIdle();
 				// The parameter should be sent, so it should be in the response.
 				let data = await grid.getPlainData_asArrays();
-				assert.include(_.map(data, '0'), 'checkbox');
+				assert.include(data.map(item => item[0]), 'checkbox');
 				// The parameter should have a single value.
-				let checkboxData = _.find(data, {'0': 'checkbox'})[1].split(',');
+				let checkboxData = data.find(item => item[0] === 'checkbox')[1].split(',');
 				assert.deepEqual(checkboxData, ['ham']);
 			});
 
@@ -89,9 +88,9 @@ describe('Source Parameters', function () {
 				await grid.waitForIdle();
 				// The parameter should be sent, so it should be in the response.
 				let data = await grid.getPlainData_asArrays();
-				assert.include(_.map(data, '0'), 'checkbox');
+				assert.include(data.map(item => item[0]), 'checkbox');
 				// The parameter should have multiple values.
-				let checkboxData = _.find(data, {'0': 'checkbox'})[1].split(',');
+				let checkboxData = data.find(item => item[0] === 'checkbox')[1].split(',');
 				assert.include(checkboxData, 'ham');
 				assert.include(checkboxData, 'pineapple');
 			});
@@ -123,7 +122,7 @@ describe('Source Parameters', function () {
 				await input.clear();
 				await grid.refresh();
 				await grid.waitForIdle();
-				let actual = _.map(await grid.getPlainData_asArrays(), '0');
+				let actual = (await grid.getPlainData_asArrays()).map(item => item[0]);
 				assert.notInclude(actual, 'textarea');
 			});
 

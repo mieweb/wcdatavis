@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import numeral from 'numeral';
 
@@ -184,14 +183,14 @@ Perspective.prototype.load = function (moduleNames, cont) {
 	cont = cont || I;
 
 	if (moduleNames == null) {
-		moduleNames = _.keys(self.modules);
+		moduleNames = Object.keys(self.modules);
 	}
 
 	self.debug(null, 'Loading perspective using these modules: %s', JSON.stringify(moduleNames));
 
 	// Go through every module that we have preferences for and load them into the bound components.
 
-	_.each(moduleNames, function (moduleName) {
+	moduleNames.forEach(function (moduleName) {
 		var m = self.modules[moduleName];
 		var c = self.config[moduleName];
 		if (c == null && m.defaultConfig != null) {
@@ -226,7 +225,8 @@ Perspective.prototype.save = function (cont) {
 
 	// Go through every module that we have preferences for and save them from the bound components.
 
-	_.each(self.modules, function (module, moduleName) {
+	Object.keys(self.modules).forEach(function (moduleName) {
+		var module = self.modules[moduleName];
 		self.config[moduleName] = module.save();
 		self.debug(null, 'Saving module: moduleName = %s ; config = %O', moduleName, self.config[moduleName]);
 	});

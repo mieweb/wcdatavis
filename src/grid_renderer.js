@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import jQuery from 'jquery';
 import Handlebars from 'handlebars';
 
@@ -243,14 +242,14 @@ GridRenderer.prototype.clearRenderCache = function (cols) {
 
 	if (self.data != null) {
 		if (self.data.isPlain) {
-			_.each(self.data.data, function (row) {
+			self.data.data.forEach(function (row) {
 				if (cols != null) {
-					_.each(cols, function (c) {
+					cols.forEach(function (c) {
 						row.rowData[c].cachedRender = null;
 					});
 				}
 				else {
-					_.each(row.rowData, function (c) {
+					Object.values(row.rowData).forEach(function (c) {
 						c.cachedRender = null;
 					});
 				}

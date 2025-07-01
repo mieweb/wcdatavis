@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import jQuery from 'jquery';
@@ -8,10 +7,13 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	each,
+	flatten,
 	getProp,
 	loadScript,
 	log,
 	makeSubclass,
+	map,
 	setProp,
 } from '../../util/misc.js';
 import {AggregateInfo} from '../../aggregates';
@@ -130,7 +132,7 @@ GraphRendererGoogle.prototype.draw_plain = function (data, typeInfo, dt, config)
 		// Make sure that all the fields that we need are in the data.
 
 		var missingRequired = false;
-		_.each(cols, function (c) {
+		each(cols, function (c) {
 			if (c.required && !typeInfo.isSet(c.field)) {
 				console.error('[DataVis // Graph(Google) // Gantt] Missing required data field: %s', c.field);
 				missingRequired = true;
@@ -140,7 +142,7 @@ GraphRendererGoogle.prototype.draw_plain = function (data, typeInfo, dt, config)
 			return null;
 		}
 
-		_.each(cols, function (c) {
+		each(cols, function (c) {
 			// Add columns to the Google Charts data table.
 			dt.addColumn(c.type, c.field);
 
@@ -150,9 +152,9 @@ GraphRendererGoogle.prototype.draw_plain = function (data, typeInfo, dt, config)
 			}
 		});
 
-		_.each(data.data, function (row) {
+		each(data.data, function (row) {
 			var newRow = [];
-			_.each(cols, function (c) {
+			each(cols, function (c) {
 				if (typeInfo.isSet(c.field)) {
 					var v = row.rowData[c.field].value;
 					newRow.push(c.transform != null ? c.transform(v) : v);
@@ -168,18 +170,18 @@ GraphRendererGoogle.prototype.draw_plain = function (data, typeInfo, dt, config)
 	default:
 		dt.addColumn(convertType(typeInfo.get(config.categoryField).type), config.categoryField);
 
-		_.each(config.valueFields, function (field) {
+		each(config.valueFields, function (field) {
 			dt.addColumn(convertType(typeInfo.get(field).type), field);
 		});
 
-		_.each(config.valueFields, function (field) {
+		each(config.valueFields, function (field) {
 			Source.decodeAll(data.dataByRowId, field, typeInfo);
 		});
 
-		_.each(data.data, function (row) {
+		each(data.data, function (row) {
 			var newRow;
 
-			newRow = _.map([config.categoryField].concat(config.valueFields), function (f) {
+			newRow = map([config.categoryField].concat(config.valueFields), function (f) {
 				return getRealValue(f, row.rowData[f]);
 			});
 
@@ -234,7 +236,7 @@ GraphRendererGoogle.prototype.draw_group = function (data, typeInfo, dt, config)
 		dt.addColumn(aggResultType, name);
 		setProp(name, config, 'options', valueAxis, 'title');
 
-		_.each(data.rowVals, function (rowVal, rowValIdx) {
+		each(data.rowVals, function (rowVal, rowValIdx) {
 			var newRow = [rowVal.join(', ')];
 
 			var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx];
@@ -251,7 +253,7 @@ GraphRendererGoogle.prototype.draw_group = function (data, typeInfo, dt, config)
 		// For each value field, create the AggregateInfo instance that will manage it.  Also create a
 		// column for the result in the data table.
 
-		_.each(config.valueFields, function (v) {
+		each(config.valueFields, function (v) {
 			var aggInfo = new AggregateInfo('group', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
 			dt.addColumn(aggInfo.instance.getType(), v.name || aggInfo.instance.getFullName());
 			ai.push(aggInfo);
@@ -260,11 +262,11 @@ GraphRendererGoogle.prototype.draw_group = function (data, typeInfo, dt, config)
 		// Go through each rowval and create a row for it in the data table.  Every value field gets its
 		// own column, which is the result of the corresponding aggregate function specified above.
 
-		_.each(data.rowVals, function (rowVal, rowValIdx) {
+		each(data.rowVals, function (rowVal, rowValIdx) {
 			var newRow = [rowVal.join(', ')];
 
-			_.each(ai, function (aggInfo) {
-				var aggResult = aggInfo.instance.calculate(_.flatten(data.data[rowValIdx]));
+			each(ai, function (aggInfo) {
+				var aggResult = aggInfo.instance.calculate(flatten(data.data[rowValIdx]));
 				newRow.push(aggResult);
 				if (aggInfo.debug) {
 					debug.info('GRAPH // GROUP // AGGREGATE', 'Group aggregate (%s) : Group [%s] = %s',
@@ -325,16 +327,16 @@ GraphRendererGoogle.prototype.draw_pivot = function (data, typeInfo, dt, config)
 
 		switch (config.aggType) {
 		case 'cell':
-			_.each(data.colVals, function (colVal) {
+			each(data.colVals, function (colVal) {
 				dt.addColumn(aggResultType, colVal.join(', '));
 			});
 
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.rowVals, function (rowVal, rowValIdx) {
+			each(data.rowVals, function (rowVal, rowValIdx) {
 				var newRow = [rowVal.join(', ')];
 
-				_.each(data.colVals, function (colVal, colValIdx) {
+				each(data.colVals, function (colVal, colValIdx) {
 					var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx][colValIdx];
 					if (aggResultType === 'number') {
 						aggResult = +aggResult;
@@ -349,7 +351,7 @@ GraphRendererGoogle.prototype.draw_pivot = function (data, typeInfo, dt, config)
 			dt.addColumn(aggResultType, name);
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.rowVals, function (rowVal, rowValIdx) {
+			each(data.rowVals, function (rowVal, rowValIdx) {
 				var newRow = [rowVal.join(', ')];
 
 				var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx];
@@ -364,7 +366,7 @@ GraphRendererGoogle.prototype.draw_pivot = function (data, typeInfo, dt, config)
 			dt.addColumn(aggResultType, name);
 			setProp(name, config, 'options', valueAxis, 'title');
 
-			_.each(data.colVals, function (colVal, colValIdx) {
+			each(data.colVals, function (colVal, colValIdx) {
 				var newRow = [colVal.join(', ')];
 
 				var aggResult = data.agg.results[config.aggType][config.aggNum][colValIdx];
@@ -383,21 +385,21 @@ GraphRendererGoogle.prototype.draw_pivot = function (data, typeInfo, dt, config)
 		// For each value field, create the AggregateInfo instance that will manage it.  Also create
 		// columns for the results (one for each colval) in the data table.
 
-		_.each(config.valueFields, function (v) {
+		each(config.valueFields, function (v) {
 			var aggInfo = new AggregateInfo('cell', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
 
-			_.each(data.colVals, function (colVal) {
+			each(data.colVals, function (colVal) {
 				dt.addColumn(aggInfo.instance.getType(), colVal.join(', '));
 			});
 
 			ai.push(aggInfo);
 		});
 
-		_.each(data.rowVals, function (rowVal, rowValIndex) {
+		each(data.rowVals, function (rowVal, rowValIndex) {
 			var newRow = [rowVal.join(', ')];
 
-			_.each(data.colVals, function (colVal, colValIndex) {
-				_.each(ai, function (aggInfo) {
+			each(data.colVals, function (colVal, colValIndex) {
+				each(ai, function (aggInfo) {
 					var aggResult = aggInfo.instance.calculate(data.data[rowValIndex][colValIndex]);
 					newRow.push(aggResult);
 					if (aggInfo.debug) {
@@ -537,12 +539,12 @@ GraphRendererGoogle.prototype.draw = function (devConfig, userConfig) {
 
 				google.visualization.events.addListener(chart, 'select', function () {
 					var sel = chart.getSelection();
-					_.each(sel, function (o) {
+					each(sel, function (o) {
 						debug.info('GRAPH // DRILL DOWN', 'User selected element in graph: row = %s, column = %s, value = %s, formattedValue = %s', o.row, o.column, dt.getValue(o.row, o.column), dt.getFormattedValue(o.row, o.column));
 
 						var filter = deepCopy(self.view.getFilter());
 
-						_.each(data.rowVals[o.row], function (x, i) {
+						each(data.rowVals[o.row], function (x, i) {
 							var gs = data.groupSpec[i];
 							filter[data.groupFields[i]] = gs.fun != null
 								? GROUP_FUNCTION_REGISTRY.get(gs.fun).valueToFilter(x)
@@ -553,7 +555,7 @@ GraphRendererGoogle.prototype.draw = function (devConfig, userConfig) {
 							// Offset column by one because the category is stored in the first column of the Google
 							// DataTable, but that obviously doesn't exist in the View.
 
-							_.each(data.colVals[o.column - 1], function (x, i) {
+							each(data.colVals[o.column - 1], function (x, i) {
 								var ps = data.pivotSpec[i];
 								filter[data.pivotFields[i]] = ps.fun != null
 									? GROUP_FUNCTION_REGISTRY.get(ps.fun).valueToFilter(x)

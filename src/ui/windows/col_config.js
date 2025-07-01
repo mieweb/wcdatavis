@@ -1,13 +1,13 @@
-import _ from 'underscore';
-
 import jQuery from 'jquery';
 
 import { trans } from '../../trans.js';
 import {
+	each,
 	fontAwesome,
 	getPropDef,
 	makeSubclass,
 	moveArrayElement,
+	without,
 } from '../../util/misc.js';
 
 // ColConfigWin {{{1
@@ -219,7 +219,7 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 			.prop('checked', getPropDef(false, colConfig, 'allowFormatting'))
 			.on('change', function () {
 				if (clearRenderCache.indexOf(field) >= 0) {
-					clearRenderCache = _.without(clearRenderCache, field);
+					clearRenderCache = without(clearRenderCache, field);
 				}
 				else {
 					clearRenderCache.push(field);
@@ -315,7 +315,7 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 			.append(trans('GRID.COLCONFIG_WIN.RESET_COL_ORDER'))
 			.on('click', function (evt) {
 				keys = self.initColConfig.keys();
-				_.each(keys, function (k) {
+				each(keys, function (k) {
 					if (trsByField[k] !== null) {
 						colTableBody.append(trsByField[k]);
 						trsByField[k].effect('highlight', 750);
@@ -338,7 +338,7 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 			// order of the keys saved by the reordering the table rows.
 
 			self.colConfig.clear();
-			_.each(keys, function (k) {
+			each(keys, function (k) {
 				self.colConfig.set(k, current.get(k));
 			});
 

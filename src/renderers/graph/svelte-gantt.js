@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import jQuery from 'jquery';
@@ -17,6 +16,7 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	each,
 	getProp,
 	loadScript,
 	log,
@@ -78,7 +78,7 @@ GraphRendererSvelteGantt.prototype.draw = function () {
 			// Make sure that all the fields that we need are in the data.
 
 			var missingRequired = false;
-			_.each(cols, function (c) {
+			each(cols, function (c) {
 				if (c.required && !typeInfo.isSet(c.field)) {
 					console.error('[DataVis // Graph(SvelteGantt) // Gantt] Missing required data field: %s', c.field);
 					missingRequired = true;
@@ -88,14 +88,14 @@ GraphRendererSvelteGantt.prototype.draw = function () {
 				return null;
 			}
 
-			_.each(cols, function (c) {
+			each(cols, function (c) {
 				// Make sure data is decoded.
 				if (typeInfo.isSet(c.field)) {
 					Source.decodeAll(data.dataByRowId, c.field, typeInfo);
 				}
 			});
 
-			_.each(data.data, function (row) {
+			each(data.data, function (row) {
 				if (rowMap[row.rowData['Resource'].value] == null) {
 					rows.push({
 						id: rowId,
@@ -119,7 +119,7 @@ GraphRendererSvelteGantt.prototype.draw = function () {
 				taskId += 1;
 
 				if (row.rowData['Dependencies'] != null && row.rowData['Dependencies'].value.length > 0) {
-					_.each(row.rowData['Dependencies'].value.split(','), function (dep) {
+					each(row.rowData['Dependencies'].value.split(','), function (dep) {
 						deps.push({
 							id: depId,
 							fromId: dep - 1,

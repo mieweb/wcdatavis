@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 
@@ -44,7 +43,7 @@ GraphRenderer.prototype.toString = function () {
 
 GraphRenderer.prototype._validateConfig = function () {
 
-	_.each(['Plain', 'Group', 'Pivot'], function (kind) {
+	['Plain', 'Group', 'Pivot'].forEach(function (kind) {
 		var propName = 'when' + kind;
 
 		if (config[propName] == null) {

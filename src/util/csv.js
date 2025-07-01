@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -100,9 +99,10 @@ var Csv = makeSubclass('Csv', TableExport, function (opts) {
 	self.lastRowId = -2;
 	self.opts = opts || {};
 
-	_.defaults(self.opts, {
+	// Set default options
+	Object.assign(self.opts, {
 		separator: ','
-	});
+	}, self.opts);
 
 	self.start();
 });
@@ -159,9 +159,9 @@ Csv.prototype.addCol = function (x, opts) {
 	var self = this;
 
 	opts = opts || {};
-	opts = _.defaults(opts, {
+	opts = Object.assign({
 		prepend: false
-	});
+	}, opts);
 
 	if (x == null) {
 		x = '';
@@ -220,7 +220,7 @@ Csv.prototype.getRowById = function (rowId) {
 
 	return self.data[rowId].rowId === rowId
 		? self.data[rowId]
-		: _.findWhere(self.data, {rowId: rowId});
+		: self.data.find(function(item) { return item.rowId === rowId; });
 };
 
 // #updateVisibility {{{2

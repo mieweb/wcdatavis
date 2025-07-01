@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import numeral from 'numeral';
 
@@ -20,6 +19,15 @@ import {
 	setProp,
 	uuid,
 	walkObj,
+	each,
+	union,
+	values,
+	findWhere,
+	without,
+	reject,
+	isString,
+	keys,
+	isObject,
 } from './util/misc.js';
 
 import OrdMap from './util/ordmap.js';
@@ -187,7 +195,7 @@ var Prefs = makeSubclass('Prefs', Object, function (name, moduleBindings, opts) 
 	//}
 
 	if (moduleBindings != null) {
-		_.each(moduleBindings, function (target, moduleName) {
+		each(moduleBindings, function (target, moduleName) {
 			self.bind(moduleName, target);
 		});
 	}
@@ -394,9 +402,9 @@ Prefs.prototype.prime = function (cont) {
 	self.debug('PRIMING', 'Begin');
 
 	return self.backend.getPerspectives(function (ids) {
-		self.availablePerspectives = _.union(self.availablePerspectives, ids);
+		self.availablePerspectives = union(self.availablePerspectives, ids);
 		self.backend.loadAll(function (perspectives) {
-			asyncEach(_.values(perspectives), function (x, i, next) {
+			asyncEach(values(perspectives), function (x, i, next) {
 				self.addPerspective(x.id, x.name, x.config, null, next, {
 					switch: false
 				});
@@ -609,7 +617,7 @@ Prefs.prototype.getPerspectives = function (cont) {
 Prefs.prototype.getPerspective = function (qry) {
 	var self = this;
 
-	if (!_.isObject(qry)) {
+	if (!isObject(qry)) {
 		throw new Error('Call Error: `qry` must be an object');
 	}
 
@@ -617,7 +625,7 @@ Prefs.prototype.getPerspective = function (qry) {
 		return self.perspectives[qry.id];
 	}
 	else if (qry.name != null) {
-		return _.findWhere(self.perspectives, { name: qry.name });
+		return findWhere(Object.values(self.perspectives), { name: qry.name });
 	}
 	else {
 		return null;
@@ -832,7 +840,7 @@ Prefs.prototype.deletePerspective = function (id, cont, opts) {
 		// Delete it from our internal data structures.
 
 		delete self.perspectives[id];
-		self.availablePerspectives = _.without(self.availablePerspectives, id);
+		self.availablePerspectives = without(self.availablePerspectives, id);
 
 		// Let everybody else know that it's been deleted.
 
@@ -868,7 +876,7 @@ Prefs.prototype.deletePerspective = function (id, cont, opts) {
 			//       ^ (history index - deleted perspective)
 
 			// Now delete all references to the deleted perspective from the history stack.
-			self.history = _.reject(self.history, function (p) {
+			self.history = reject(self.history, function (p) {
 				return p.id === id;
 			});
 
@@ -892,7 +900,7 @@ Prefs.prototype.deletePerspective = function (id, cont, opts) {
 				for (var i = self.historyIndex + 1; i < self.history.length && self.history[i].id !== newCurId; i += 1) {
 					self.history[i] = null;
 				}
-				self.history = _.without(self.history, null);
+				self.history = without(self.history, null);
 
 				// CURRENT STATE ---------------------
 				//   [ A B A ]
@@ -1027,7 +1035,7 @@ Prefs.prototype.renamePerspective = function (id, newName, cont, opts) {
 
 	// Check to see if there are any other perspectives with the same name.
 
-	_.each(self.perspectives, function (p) {
+	each(self.perspectives, function (p) {
 		if (p.name === newName) {
 			log.warn(sprintf.sprintf('Renaming perspective (id = "%s") now shares the name "%s" with a different perspective (id = "%s")',
 				id, newName, p.id));
@@ -1064,7 +1072,7 @@ Prefs.prototype.renamePerspective = function (id, newName, cont, opts) {
 		delete self.perspectives[oldName];
 
 		// Remove the old name from the list of available perspectives.
-		self.availablePerspectives = _.without(self.availablePerspectives, oldName);
+		self.availablePerspectives = without(self.availablePerspectives, oldName);
 
 		if (opts.sendEvent) {
 			self.fire('perspectiveRenamed', {
@@ -1175,7 +1183,7 @@ Prefs.prototype.setCurrentPerspective = function (id, cont, opts) {
 
 Prefs.prototype.setCurrentPerspectiveByName = function (name, cont, opts) {
 	var self = this;
-	var p = _.findWhere(self.perspectives, {name: name});
+	var p = findWhere(Object.values(self.perspectives), {name: name});
 
 	if (p != null) {
 		return self.setCurrentPerspective(p.id, cont, opts);
@@ -1222,7 +1230,7 @@ Prefs.prototype.clonePerspective = function (qry, name, configMutator, ok, fail,
 	var self = this;
 	var src;
 
-	if (name != null && !_.isString(name)) {
+	if (name != null && !isString(name)) {
 		throw new Error('Call Error: `name` must be null or a string');
 	}
 
@@ -1364,7 +1372,7 @@ Prefs.prototype.reset = function (cont) {
 	// them after everything else has been cleared.  The main use case for this is for pre-configured
 	// perspectives to survive when destroying stuff the user created.
 
-	_.each(self.perspectives, function (p) {
+	each(self.perspectives, function (p) {
 		if (p.opts.isTemporary && p.opts.isEssential) {
 			self.debug(null, 'Saving temporary essential perspective: %s', p.id);
 			self.bardo[p.id] = {
@@ -1384,16 +1392,16 @@ Prefs.prototype.reset = function (cont) {
 
 		self.fire('prefsReset');
 
-		_.each(self.modules, function (module, moduleName) {
+		each(self.modules, function (module, moduleName) {
 			if (typeof module.reset === 'function') {
 				self.debug(null, 'Resetting module: moduleName = %s', moduleName);
 				module.reset();
 			}
 		});
 
-		self.debug(null, 'Restoring temporary essential perspectives: %s', JSON.stringify(_.keys(self.bardo)));
+		self.debug(null, 'Restoring temporary essential perspectives: %s', JSON.stringify(keys(self.bardo)));
 
-		_.each(self.bardo, function (p) {
+		each(self.bardo, function (p) {
 			self.addPerspective(p.id, p.name, p.config, p.opts, null, { switch: false });
 		});
 
@@ -1417,9 +1425,9 @@ Prefs.prototype.inspect = function () {
 
 	console.group('INSPECT RESULTS');
 
-	_.each(self.perspectives, function (perspective, uuid) {
+	each(self.perspectives, function (perspective, uuid) {
 		var s = '', x = [];
-		_.each(paths, function (path) {
+		each(paths, function (path) {
 			var m = path.match(fmtRe);
 			var f = m && m[2].length > 0 ? m[2] : 'string';
 			path = m ? m[1].split('.') : path.split('.');

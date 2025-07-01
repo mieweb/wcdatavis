@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 
 import jQuery from 'jquery';
@@ -624,9 +623,14 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 	setTimeout(function () {
 		grid.prefs.prime(function () {
 			grid.prefs.getPerspectives(function (ids) {
-				_.each(_.sortBy(_.map(ids, function (id) {
+				// Convert ids to perspective objects, sort by name, then iterate
+				const perspectives = ids.map(function (id) {
 					return grid.prefs.getPerspective({ id: id });
-				}), 'name'), function (o) {
+				}).sort(function(a, b) {
+					return a.name.localeCompare(b.name);
+				});
+				
+				perspectives.forEach(function (o) {
 					if (options[o.id] == null) {
 						options[o.id] = jQuery('<option>', { 'value': o.id })
 							.text(o.name)
@@ -685,7 +689,7 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 			});
 
 			grid.prefs.on('prefsReset', function () {
-				_.each(options, function (elt) {
+				Object.values(options).forEach(function (elt) {
 					elt.remove();
 				});
 				options = {};

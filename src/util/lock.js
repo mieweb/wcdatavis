@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 // Lock {{{1
 // Constructor {{{2
 
@@ -142,7 +140,9 @@ Lock.prototype.flushUnlockQueue = function () {
 	var self = this;
 	var count = self._onUnlock.length;
 	if (count > 0) {
-		var info = _.map(_.pluck(self._onUnlock, 'info'), function (i) {
+		var info = self._onUnlock.map(function(item) {
+			return item.info;
+		}).map(function (i) {
 			return i || '[NO INFO]';
 		});
 		console.debug('[DataVis // Lock(%s)] Flushing %d onUnlock functions: %O',

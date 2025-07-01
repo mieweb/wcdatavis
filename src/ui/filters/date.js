@@ -1,8 +1,7 @@
-import _ from 'underscore';
 import moment from 'moment';
 import jQuery from 'jquery';
 
-import { makeSubclass } from '../../util/misc.js';
+import { each, makeSubclass } from '../../util/misc.js';
 import { trans } from '../../trans.js';
 
 import GridFilter from '../grid_filter.js';
@@ -79,10 +78,10 @@ var DateFilter = makeSubclass('DateFilter', GridFilter, function () {
 	self.inputs.everyMonth = jQuery('<select>').on('change', function () {
 		self.gridFilterSet.update(false);
 	});
-	_.each(everyOpts.day, function (v) {
+	each(everyOpts.day, function (v) {
 		self.inputs.everyDay.append(jQuery('<option>', {value: v}).text(trans('CALENDAR.DAY.' + v)));
 	});
-	_.each(everyOpts.month, function (v) {
+	each(everyOpts.month, function (v) {
 		self.inputs.everyMonth.append(jQuery('<option>', {value: v}).text(trans('CALENDAR.MONTH.' + v)));
 	});
 	self.inputs.everyDropdown = jQuery('<select>')
@@ -110,7 +109,7 @@ var DateFilter = makeSubclass('DateFilter', GridFilter, function () {
 	self.inputs.last = jQuery('<select>').on('change', function () {
 		self.gridFilterSet.update(false);
 	});
-	_.each(lastOpts, function (v) {
+	each(lastOpts, function (v) {
 		self.inputs.last.append(jQuery('<option>', {value: v}).text(trans('CALENDAR.' + v)));
 	});
 
@@ -143,7 +142,7 @@ DateFilter.prototype.makeOperatorDrop = function () {
 
 	operatorDrop.css({'margin-right': '0.5em'});
 
-	_.each(operators, function (op) {
+	each(operators, function (op) {
 		var value = op[0]
 			, name = op[1];
 		operatorDrop.append(jQuery('<option>', { value: value }).text(trans('FILTER.DATE.OPERATOR.' + name)));

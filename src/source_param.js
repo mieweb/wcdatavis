@@ -1,10 +1,9 @@
-import _ from 'underscore';
-
 import jQuery from 'jquery';
 
 import {
 	arrayCopy,
 	debug,
+	defaults,
 	delegate,
 	getProp,
 	getPropDef,
@@ -138,14 +137,14 @@ var Filter = function (config) {
 		config.inputName = config.paramName;
 	}
 
-	_.defaults(config, {
+	defaults(config, {
 		required: false,
 		defaultValue: null,
 		sendEmpty: false,
 		emptyValue: ''
 	});
 
-	_.extend(self, config);
+	Object.assign(self, config);
 
 	// Make sure that if we're sending multiple values using JSON, that the operator we're using is
 	// one that accepts multiple values (either "$in" or "$nin").  If we don't do this check, the
@@ -187,7 +186,7 @@ Filter.prototype.store = function (id) {
 			break;
 		case 'date':
 			self.internalValue = {};
-			var x = _.map(['YEAR', 'MONTH', 'DAY'], function (elt) {
+			var x = ['YEAR', 'MONTH', 'DAY'].map(function (elt) {
 				var value = findInput('[name="' + self.inputName + elt + '"]')[0].value;
 				self.internalValue[elt] = value;
 				return value;
@@ -195,7 +194,7 @@ Filter.prototype.store = function (id) {
 			self.value = (x === '--' ? '' : x);
 			break;
 		case 'checkbox':
-			self.value = _.map(findInput('input[name="' + self.inputName + '"]:checkbox:checked'), function (x) {
+			self.value = findInput('input[name="' + self.inputName + '"]:checkbox:checked').map(function (x) {
 				return findInput(x).val();
 			});
 			break;
@@ -213,7 +212,7 @@ Filter.prototype.store = function (id) {
 		case 'multi-autocomplete':
 			self.value = [];
 			self.internalValue = [];
-			_.each(findInput('input[name="' + self.inputName + '"]'), function (elt, i) {
+			findInput('input[name="' + self.inputName + '"]').forEach(function (elt, i) {
 				self.value[i] = jQuery(elt).val();
 				self.internalValue[i] = jQuery(elt).parent().text();
 			});
@@ -305,11 +304,11 @@ Filter.prototype.load = function (id, opts) {
 		return jQuery(form).find(s);
 	} : jQuery;
 
-	_.defaults(opts, {
+	defaults(opts, {
 		fade: false
 	});
 
-	if (opts.fade && !(_.isString(opts.bgAccentIn) && _.isString(opts.bgAccentOut))) {
+	if (opts.fade && !(typeof opts.bgAccentIn === 'string' && typeof opts.bgAccentOut === 'string')) {
 		throw 'Cannot load filter with fading without specifying bgAccent[In|Out] properties';
 	}
 
@@ -348,9 +347,9 @@ Filter.prototype.load = function (id, opts) {
 		})();
 		break;
 	case 'date':
-		_.each(['YEAR', 'MONTH', 'DAY'], function (elt) {
+		['YEAR', 'MONTH', 'DAY'].forEach(function (elt) {
 			var nodes = findInput('input[name="' + self.inputName + elt + '"]');
-			nodes.val(_.isObject(self.internalValue) && _.isString(self.internalValue[elt]) && self.internalValue[elt] !== '' ? self.internalValue[elt] : (self.defaultValue ? self.defaultValue : ''));
+			nodes.val(typeof self.internalValue === 'object' && self.internalValue !== null && typeof self.internalValue[elt] === 'string' && self.internalValue[elt] !== '' ? self.internalValue[elt] : (self.defaultValue ? self.defaultValue : ''));
 			if (opts.fade) {
 				nodes.animate(fade, 500, unfade);
 			}
@@ -360,11 +359,11 @@ Filter.prototype.load = function (id, opts) {
 		(function () {
 			var curNodes = findInput('input[name="' + self.inputName + '"]:checkbox:checked');
 			var curValues = {};
-			_.each(curNodes, function (node) {
+			curNodes.forEach(function (node) {
 				curValues[jQuery(node).val()] = node;
 			});
 			curNodes.prop('checked', false);
-			_.each(self.value, function (x) {
+			self.value.forEach(function (x) {
 				var nodes = findInput('input[name="' + self.inputName + '"]:checkbox[value="' + x + '"]');
 				nodes.prop('checked', true);
 				delete curValues[x];
@@ -373,7 +372,8 @@ Filter.prototype.load = function (id, opts) {
 				}
 			});
 			if (opts.fade) {
-				_.each(curValues, function (node) {
+				Object.keys(curValues).forEach(function (key) {
+					var node = curValues[key];
 					var label = jQuery(node).parent('label');
 					// _.each(['Top', 'Bottom', 'Left', 'Right'], function (side) {
 					//	 label.css('border' + side + 'Width', '2px');
@@ -418,13 +418,13 @@ Filter.prototype.load = function (id, opts) {
 		return new Error();
 	case 'multi-autocomplete':
 		(function () {
-			if (!_.isObject(window[self.inputName + '_ac'])) {
+			if (typeof window[self.inputName + '_ac'] !== 'object' || window[self.inputName + '_ac'] === null) {
 				throw 'Autocomplete object "' + self.inputName + '" does not exist';
 			}
 			// window[self.inputName + '_ac'].multiClear(); // Doesn't work!
 			window[self.inputName + '_ac'].storedvalues = [];
 			jQuery(document.getElementById(self.inputName + '_ac_div')).children().remove();
-			_.each(self.value, function (v, i) {
+			self.value.forEach(function (v, i) {
 				window[self.inputName + '_ac'].multiAddValue(v, self.internalValue[i]);
 			});
 			if (opts.fade) {
@@ -449,8 +449,8 @@ Filter.prototype.load = function (id, opts) {
 
 Filter.prototype.buildInput = function (form) {
 	var self = this;
-	var val = _.isArray(this.value) ? this.value : [this.value];
-	_.each(val, function (v) {
+	var val = Array.isArray(this.value) ? this.value : [this.value];
+	val.forEach(function (v) {
 		jQuery('<input>').attr({
 			type: 'hidden',
 			name: self.paramName,
@@ -512,10 +512,10 @@ Filter.prototype.addJsonParam = function (obj) {
 	// with the value of the parameter.  A good example of this is how we modify a date to make it a
 	// time for the end of the day: ['concat', [], ' 23:59:59'].
 
-	if (_.isArray(self.json.operand)) {
+	if (Array.isArray(self.json.operand)) {
 		operand = arrayCopy(self.json.operand);
-		_.each(operand, function (elt, i) {
-			if (_.isArray(elt) && elt.length === 0) {
+		operand.forEach(function (elt, i) {
+			if (Array.isArray(elt) && elt.length === 0) {
 				operand[i] = self.value;
 			}
 		});
@@ -556,7 +556,8 @@ Filter.prototype.toParams = function (params) {
 		break;
 	case 'cgi':
 		if (self.type === 'form') {
-			_.each(self.value, function (v, k) {
+			Object.keys(self.value).forEach(function (k) {
+				var v = self.value[k];
 				if (v != self.emptyValue || self.sendEmpty) {
 					params[k] = v;
 				}
@@ -593,7 +594,7 @@ var FilterSet = function (name, template) {
 	this.filters = [];
 	this.filterMap = {};
 	var self = this;
-	_.each(template, function (t) {
+	template.forEach(function (t) {
 		self.add(new Filter(t));
 	});
 };
@@ -608,19 +609,20 @@ var FilterSet = function (name, template) {
  */
 
 FilterSet.prototype.copyTo = function (target) {
-	_.each(this.filterMap, function (src, paramName) {
+	Object.keys(this.filterMap).forEach(function (paramName) {
+		var src = this.filterMap[paramName];
 		var dst = target.get(paramName);
 		if (dst.value === undefined) {
 			dst.value = src.value;
 			dst.internalValue = src.internalValue;
-			if (_.isObject(dst.value)) {
+			if (typeof dst.value === 'object' && dst.value !== null) {
 				dst.value = JSON.parse(JSON.stringify(dst.value));
 			}
-			if (_.isObject(dst.internalValue)) {
+			if (typeof dst.internalValue === 'object' && dst.internalValue !== null) {
 				dst.internalValue = JSON.parse(JSON.stringify(dst.internalValue));
 			}
 		}
-	});
+	}.bind(this));
 };
 
 // #add {{{2
@@ -649,8 +651,8 @@ FilterSet.prototype.add = function (config) {
  */
 
 FilterSet.prototype.remove = function (paramName) {
-	this.filters = _.reject(this.filters, function (fltr) {
-		return fltr.paramName === paramName;
+	this.filters = this.filters.filter(function (fltr) {
+		return fltr.paramName !== paramName;
 	});
 };
 
@@ -680,7 +682,7 @@ FilterSet.prototype.get = function (name) {
  */
 
 FilterSet.prototype.load = function (id, opts) {
-	_.each(this.filters, function (fltr) {
+	this.filters.forEach(function (fltr) {
 		fltr.load(id, opts);
 	});
 };
@@ -695,7 +697,7 @@ FilterSet.prototype.load = function (id, opts) {
  */
 
 FilterSet.prototype.store = function (id) {
-	_.each(this.filters, function (fltr) {
+	this.filters.forEach(function (fltr) {
 		fltr.store(id);
 	});
 };
@@ -714,7 +716,7 @@ FilterSet.prototype.buildForm = function () {
 		action: 'webchart.cgi',
 		method: 'POST'
 	});
-	_.each(this.filters, function (e) {
+	this.filters.forEach(function (e) {
 		e.buildInput(form);
 	});
 	return form;
@@ -728,7 +730,7 @@ FilterSet.prototype.buildForm = function () {
 FilterSet.prototype.toParams = function () {
 	var params = {};
 
-	_.each(this.filters, function (fltr) {
+	this.filters.forEach(function (fltr) {
 		fltr.toParams(params);
 	});
 
@@ -818,8 +820,8 @@ FilterInput.prototype.load = function (opts) {
  */
 
 FilterInput.prototype.change = function (name, opts) {
-	opts = _.isObject(opts) ? opts : {};
-	_.defaults(opts, {
+	opts = typeof opts === 'object' && opts !== null ? opts : {};
+	defaults(opts, {
 		copy: false
 	});
 	if (this.availableFilterSets[name] === undefined) {

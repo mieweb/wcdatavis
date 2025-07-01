@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import JSONFormatter from 'json-formatter-js';
 
 import OrdMap from '../../util/ordmap.js';
@@ -6,6 +5,7 @@ import OrdMap from '../../util/ordmap.js';
 import jQuery from 'jquery';
 
 import {
+	each,
 	fontAwesome,
 	getPropDef,
 	makeSubclass,
@@ -116,7 +116,7 @@ DebugWin.prototype.show = function (grid, view, source) {
 			name: 'Perspectives',
 			elt: (function () {
 				var info = new OrdMap();
-				_.each(grid.prefs.perspectives, function (p) {
+				each(grid.prefs.perspectives, function (p) {
 					info.set(p.id, {
 						'Name': p.name,
 						'Config': p.config,
@@ -134,7 +134,7 @@ DebugWin.prototype.show = function (grid, view, source) {
 		'flex-shrink': '0',
 		'flex-basis': 'auto'
 	});
-	_.each(tabs, function (t) {
+	each(tabs, function (t) {
 		var tabAnchor = jQuery('<a>', { href: '#' + t.id }).text(t.name);
 		tabsList.append(jQuery('<li>').append(tabAnchor));
 	});
@@ -146,14 +146,14 @@ DebugWin.prototype.show = function (grid, view, source) {
 		'flex-direction': 'column'
 	})
 		.append(tabsList);
-	_.each(tabs, function (t) {
+	each(tabs, function (t) {
 		var container = jQuery('<div>', {id: t.id}).css({
 			'flex-grow': '1',
 			'flex-shrink': '1',
 			'flex-basis': 'auto',
 			'overflow': 'scroll'
 		});
-		_.each(t.items, function (ti) {
+		each(t.items, function (ti) {
 			container.append(jQuery('<h3>').text(ti.name));
 			container.append(ti.elt);
 		});

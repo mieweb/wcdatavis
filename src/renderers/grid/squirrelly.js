@@ -1,10 +1,10 @@
-import _ from 'underscore';
 import jQuery from 'jquery';
 import * as Sqrl from 'squirrelly/dist/browser/squirrelly.min.js';
 
 import {
 	debug,
 	deepCopy,
+	each,
 	format,
 	makeSubclass,
 	outerHtml,
@@ -56,9 +56,9 @@ GridRendererSquirrelly.prototype._draw_plain = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (row) {
+			each(data.data, function (row) {
 				var context = {};
-				_.each(row.rowData, function (cell, field) {
+				each(row.rowData, function (cell, field) {
 					var fcc = self.colConfig.get(field) || {};
 					var value = format(fcc, typeInfo.get(field), cell);
 					if (value instanceof Element || value instanceof jQuery) {
@@ -95,7 +95,7 @@ GridRendererSquirrelly.prototype._draw_group = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (group, rowValIdx) {
+			each(data.data, function (group, rowValIdx) {
 				var context = {
 					rowValIdx: rowValIdx
 				};
@@ -128,11 +128,11 @@ GridRendererSquirrelly.prototype._draw_pivot = function (root, data, typeInfo, o
 		}
 
 		if (self.item != null) {
-			_.each(data.data, function (group, rowValIdx) {
+			each(data.data, function (group, rowValIdx) {
 				if (self.beforeGroup != null) {
 					html += self.beforeGroup();
 				}
-				_.each(group, function (pivot, colValIdx) {
+				each(group, function (pivot, colValIdx) {
 					var div = jQuery('<div>').appendTo(root);
 					var context = {
 						rowValIdx: rowValIdx,
@@ -182,7 +182,7 @@ GridRendererSquirrelly.prototype.draw = function (root, cont, opts) {
 
 		var config = self.opts[configKey] || {};
 
-		_.each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (x) {
+		each(['empty', 'before', 'beforeGroup', 'item', 'afterGroup', 'after'], function (x) {
 			if (config[x] != null) {
 				self[x] = Sqrl.compile(config[x], self.config);
 			}

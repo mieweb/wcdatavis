@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import jQuery from 'jquery';
@@ -8,10 +7,12 @@ import {
 	debug,
 	deepCopy,
 	deepDefaults,
+	each,
 	getProp,
 	loadScript,
 	log,
 	makeSubclass,
+	map,
 	setProp,
 } from '../../util/misc.js';
 import {AggregateInfo} from '../../aggregates';
@@ -43,14 +44,14 @@ GraphRendererJit.prototype.draw = function () {
 				values: []
 			};
 
-			_.each(self.opts.valueFields, function (f) {
+			each(self.opts.valueFields, function (f) {
 				json.label.push(f);
 			});
 
-			_.each(data.data, function (row) {
+			each(data.data, function (row) {
 				var newRow = {};
 				newRow.label = row.rowData[self.opts.categoryField].value;
-				newRow.values = _.map(self.opts.valueFields, function (f) {
+				newRow.values = map(self.opts.valueFields, function (f) {
 					return row.rowData[f].value;
 				});
 				json.values.push(newRow);

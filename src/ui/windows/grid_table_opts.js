@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 import jQuery from 'jquery';
 
 import {
@@ -122,7 +120,7 @@ GridTableOptsWin.prototype.show = function (onSave) {
 		label: 'Customize total display',
 	}*/];
 
-	_.each(inputs, function (input) {
+	inputs.forEach(function (input) {
 		if (input.available) {
 			var curVal = getPropDef('', curOpts, 'displayFormat', input.field);
 

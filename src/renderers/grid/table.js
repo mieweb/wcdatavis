@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -8,6 +7,7 @@ import { trans } from '../../trans.js';
 import {
 	debug,
 	deepCopy,
+	defaults,
 	determineColumns,
 	fontAwesome,
 	format,
@@ -16,10 +16,12 @@ import {
 	getProp,
 	getPropDef,
 	isElement,
+	isEqual,
 	isVisible,
 	log,
 	makeOperationButton,
 	makeSubclass,
+	mapObject,
 	mergeSort2,
 	mixinEventHandling,
 	objFromArray,
@@ -205,7 +207,7 @@ var GridTable = makeSubclass('GridTable', GridRenderer, function () {
 		cvi: []
 	};
 
-	_.defaults(self.opts, {
+	defaults(self.opts, {
 		drawInternalBorders: true,
 		zebraStriping: true,
 		generateCsv: true,
@@ -542,7 +544,7 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 			throw new Error('Call Error: `span` must be an Element');
 		}
 		if (dir != null) {
-			if (!_.isString(dir)) {
+			if (typeof dir !== 'string') {
 				throw new Error('Call Error: `dir` must be null or a string');
 			}
 			else if (dir.toUpperCase() !== 'ASC' && dir.toUpperCase() !== 'DESC') {
@@ -590,14 +592,14 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 	 */
 
 	var setSort = function (dir, aggNum) {
-		if (!_.isString(dir)) {
+		if (typeof dir !== 'string') {
 			throw new Error('Call Error: `dir` must be a string');
 		}
 		else if (dir.toUpperCase() !== 'ASC' && dir.toUpperCase() !== 'DESC') {
 			throw new Error('Call Error: `dir` must be either "ASC" or "DESC"');
 		}
 
-		if (aggNum != null && !_.isNumber(aggNum)) {
+		if (aggNum != null && typeof aggNum !== 'number') {
 			throw new Error('Call Error: `aggNum` must be a number');
 		}
 
@@ -722,7 +724,7 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 
 		// We're sorting by the result of an aggregate function.
 
-		_.each(agg, function (aggInfo, aggNum) {
+		agg.forEach(function (aggInfo, aggNum) {
 			if (spec.aggType != null && spec.aggNum !== aggNum) {
 				return;
 			}
@@ -816,7 +818,7 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 		console.debug('[DataVis // %s // Add Sorting] orientation = %s ; spec = %O ; current = %O ; dir = %s',
 			self.toString(), orientation, spec_copy, sortSpec_copy[orientation], currentDir);
 
-		if (_.isEqual(sortSpec_copy[orientation], spec_copy)) {
+		if (isEqual(sortSpec_copy[orientation], spec_copy)) {
 			replaceSortIndicator(sortIcon_span, currentDir);
 		}
 	}
@@ -875,7 +877,7 @@ GridTable.prototype._addDrillDownHandler = function (tbl, data) {
 		var colValIndex = elt.dvAttr('cvi');
 
 		if (rowValIndex != null) {
-			_.each(data.rowVals[rowValIndex], function (x, i) {
+			data.rowVals[rowValIndex].forEach(function (x, i) {
 				var gs = data.groupSpec[i];
 				filter[data.groupFields[i]] = gs.fun != null
 					? GROUP_FUNCTION_REGISTRY.get(gs.fun).valueToFilter(x)
@@ -884,7 +886,7 @@ GridTable.prototype._addDrillDownHandler = function (tbl, data) {
 		}
 
 		if (colValIndex != null) {
-			_.each(data.colVals[colValIndex], function (x, i) {
+			data.colVals[colValIndex].forEach(function (x, i) {
 				var ps = data.pivotSpec[i];
 				filter[data.pivotFields[i]] = ps.fun != null
 					? GROUP_FUNCTION_REGISTRY.get(ps.fun).valueToFilter(x)
@@ -911,11 +913,11 @@ GridTable.prototype._updateFocus = function (tbl) {
 
 	tbl.find('td').removeClass('wcdv_focus');
 
-	_.each(self.focus.rvi, function (rvi) {
+	self.focus.rvi.forEach(function (rvi) {
 		tbl.find('td[data-wcdv-rvi=' + rvi + ']').addClass('wcdv_focus');
 	});
 
-	_.each(self.focus.cvi, function (cvi) {
+	self.focus.cvi.forEach(function (cvi) {
 		tbl.find('td[data-wcdv-cvi=' + cvi + ']').addClass('wcdv_focus');
 	});
 }
@@ -1064,7 +1066,7 @@ GridTable.prototype.addFilterHandler = function () {
 GridTable.prototype._addRowReorderHandler = function () {
 	var self = this;
 
-	self.ui.tbody._makeSortableTable(_.bind(self.view.source.swapRows, self.view.source));
+	self.ui.tbody._makeSortableTable(self.view.source.swapRows.bind(self.view.source));
 };
 
 // #_addRowSelectHandler {{{2
@@ -1093,9 +1095,8 @@ GridTable.prototype._addRowSelectHandler = function () {
 
 GridTable.prototype._getAggInfo = function (data) {
 	var ai = objFromArray(['cell', 'group', 'pivot', 'all'], [[]]);
-	ai = _.mapObject(ai, function (val, key) {
-		return _.filter(
-			getPropDef([], data, 'agg', 'info', key),
+	ai = mapObject(ai, function (val, key) {
+		return getPropDef([], data, 'agg', 'info', key).filter(
 			function (aggInfo) {
 				return !aggInfo.isHidden;
 			}
@@ -1109,7 +1110,7 @@ GridTable.prototype._getAggInfo = function (data) {
 GridTable.prototype._getDisplayFormat = function () {
 	var self = this;
 	var df = objFromArray(['cell', 'group', 'pivot', 'all'], [[]]);
-	df = _.mapObject(df, function (val, key) {
+	df = mapObject(df, function (val, key) {
 		return getPropDef([], self.opts, 'displayFormat', key)
 	});
 	return df;
@@ -1507,7 +1508,7 @@ GridTable.prototype.draw = function (root, opts, cont) {
 					}
 					if (data.isPlain) {
 						var pinnedColumns = 0;
-						_.each(columns, function (field) {
+						columns.forEach(function (field) {
 							var fcc = self.colConfig.get(field);
 							if (fcc != null && fcc.isPinned) {
 								pinnedColumns += 1;
@@ -1575,7 +1576,7 @@ GridTable.prototype.drawHeader_aggregates = function (data, tr, displayOrderInde
 	var self = this;
 	var ai = self._getAggInfo(data);
 
-	_.each(ai.group, function (aggInfo, aggIndex) {
+	ai.group.forEach(function (aggInfo, aggIndex) {
 		var aggNum = aggInfo.aggNum,
 			text = aggInfo.instance.getFullName(),
 			span = jQuery('<span>')
@@ -1617,7 +1618,7 @@ GridTable.prototype.drawHeader_addCols = function (tr, typeInfo, opts) {
 	var span, th;
 
 	if (self.opts.addCols) {
-		_.each(self.opts.addCols, function (addCol) {
+		self.opts.addCols.forEach(function (addCol) {
 			span = jQuery('<span>')
 				.text(addCol.name);
 
@@ -1795,7 +1796,7 @@ GridTable.prototype.drawBody_groupAggregates = function (data, tr, groupNum, dis
 
 	// Go through all the group aggregates and create columns for each one in the specified row.
 
-	_.each(ai.group, function (aggInfo, aggGroupIndex) {
+	ai.group.forEach(function (aggInfo, aggGroupIndex) {
 		var aggNum = aggInfo.aggNum;
 		var aggType = aggInfo.instance.getType();
 		var aggResult = data.agg.results.group[aggNum][groupNum];
@@ -1840,7 +1841,7 @@ GridTable.prototype.drawBody_groupAggregates = function (data, tr, groupNum, dis
 		// in place because we lack the ability to set filters that match all group functions' results.
 		// For example, day of week, because we can't filter to show "only Mondays."
 
-		if (_.every(data.groupSpec, function (gs) {
+		if (data.groupSpec.every(function (gs) {
 			return gs.fun == null || GROUP_FUNCTION_REGISTRY.get(gs.fun).canFilter
 		})) {
 			self._addDrillDownClass(td);
@@ -1880,7 +1881,7 @@ GridTable.prototype.clear = function () {
 
 	console.debug('[DataVis // %s // Clear] Removing %d context menus', self.toString(), self.contextMenuSelectors.length);
 
-	_.each(self.contextMenuSelectors, function (sel) {
+	self.contextMenuSelectors.forEach(function (sel) {
 		jQuery.contextMenu('destroy', sel);
 	});
 
@@ -1996,7 +1997,7 @@ GridTable.prototype.getSelection = function () {
 
 	return {
 		rowIds: self.selection,
-		rows: _.map(self.selection, function (rowId) {
+		rows: self.selection.map(function (rowId) {
 			return self.data.dataByRowId[rowId];
 		})
 	};
@@ -2018,7 +2019,7 @@ GridTable.prototype.setSelection = function (what) {
 	var data = self.data.data;
 
 	if (self.data.isGroup) {
-		data = _.flatten(data);
+		data = data.flat();
 	}
 	else if (self.data.isPivot) {
 		log.error('Selection is not supported for pivotted data, because there is no way to see or change the selection in the user interface');
@@ -2028,7 +2029,7 @@ GridTable.prototype.setSelection = function (what) {
 	if (what == null) {
 		self.selection = [];
 	}
-	else if (_.isArray(what)) {
+	else if (Array.isArray(what)) {
 		self.selection = what;
 	}
 	else {
@@ -2069,7 +2070,7 @@ GridTable.prototype.select = function (what) {
 	var data = self.data.data;
 
 	if (self.data.isGroup) {
-		data = _.flatten(data);
+		data = data.flat();
 	}
 	else if (self.data.isPivot) {
 		log.error('Selection is not supported for pivotted data, because there is no way to see or change the selection in the user interface');
@@ -2078,20 +2079,21 @@ GridTable.prototype.select = function (what) {
 
 	if (what == null) {
 		// Select all.
-		self.selection = _.pluck(data, 'rowNum');
+		self.selection = data.map(function(d) { return d.rowNum; });
 	}
-	else if (_.isArray(what)) {
+	else if (Array.isArray(what)) {
 		// Add elements to the selection.
-		self.selection = _.union(self.selection, what);
+		self.selection = [...new Set([...self.selection, ...what])];
 	}
 	else if (typeof what === 'function') {
 		// Add passing rows to the selection.
-		var passing = _.filter(data, function (d) {
+		var passing = data.filter(function (d) {
 			return what(d.rowData);
 		});
-		self.selection = _.union(self.selection, _.pluck(passing, 'rowNum'));
+		var passingRowNums = passing.map(function(d) { return d.rowNum; });
+		self.selection = [...new Set([...self.selection, ...passingRowNums])];
 	}
-	else if (!_.contains(self.selection, what)) {
+	else if (!self.selection.includes(what)) {
 		// Add item to ths selection.
 		self.selection.push(what);
 	}
@@ -2129,7 +2131,7 @@ GridTable.prototype.unselect = function (what) {
 	var data = self.data.data;
 
 	if (self.data.isGroup) {
-		data = _.flatten(data);
+		data = data.flat();
 	}
 	else if (self.data.isPivot) {
 		log.error('Selection is not supported for pivotted data, because there is no way to see or change the selection in the user interface');
@@ -2140,19 +2142,19 @@ GridTable.prototype.unselect = function (what) {
 		// Unselect all.
 		self.selection = [];
 	}
-	else if (_.isArray(what)) {
+	else if (Array.isArray(what)) {
 		// Remove elements from the selection.
-		self.selection = _.difference(self.selection, what);
+		self.selection = self.selection.filter(function(item) { return !what.includes(item); });
 	}
 	else if (typeof what === 'function') {
 		// Remove passing elements from the selection.
-		self.selection = _.reject(self.selection, function (x) {
-			return what(self.data.dataByRowId[x]);
+		self.selection = self.selection.filter(function (x) {
+			return !what(self.data.dataByRowId[x]);
 		});
 	}
 	else {
 		// Remove item from the selection.
-		self.selection = _.without(self.selection, what);
+		self.selection = self.selection.filter(function(item) { return item !== what; });
 	}
 
 	// Try to reflect these changes in the user interface.

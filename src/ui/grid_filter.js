@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import moment from 'moment';
 import numeral from 'numeral';
 import jQuery from 'jquery';
@@ -7,6 +6,8 @@ import BigNumber from 'bignumber.js';
 import {
 	debug,
 	deepDefaults,
+	defaults,
+	each,
 	fontAwesome,
 	gensym,
 	getPropDef,
@@ -16,6 +17,7 @@ import {
 	makeSubclass,
 	makeSuper,
 	mixinEventHandling,
+	reject,
 	toFloat,
 	toInt,
 } from '../util/misc.js';
@@ -263,8 +265,8 @@ GridFilter.prototype.makeOperatorDrop = function (include) {
 
 	// Remove anything that user didn't ask for.
 
-	if (include !== undefined && _.isArray(include)) {
-		operators = _.reject(operators, function (elt) {
+	if (include !== undefined && Array.isArray(include)) {
+		operators = reject(operators, function (elt) {
 			return include.indexOf(elt[0]) < 0;
 		});
 	}
@@ -275,7 +277,7 @@ GridFilter.prototype.makeOperatorDrop = function (include) {
 
 	// Add all the operators as options within the <SELECT>.
 
-	_.each(operators, function (op) {
+	each(operators, function (op) {
 		var value = op[0]
 			, name = op[1];
 		operatorDrop.append(jQuery('<option>', { value: value }).text(name));
@@ -355,7 +357,7 @@ GridFilter.prototype.adjustInputWidth = function (opts) {
 	// what features it has (e.g. TableTool).  It would be better to pass in what the size of the
 	// column currently is with the event handler.
 
-	_.defaults(opts, {
+	defaults(opts, {
 		useSizingElement: false,
 		input: self.input
 	});

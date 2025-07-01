@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import BigNumber from 'bignumber.js';
 import numeral from 'numeral';
 import moment from 'moment';
@@ -95,7 +94,7 @@ var GroupFunction = makeSubclass('GroupFunction', Object, function (spec) {
 		throw new Error('Call Error: `displayName` must be a string');
 	}
 
-	if (spec.allowedTypes != null && !_.isArray(spec.allowedTypes)) {
+	if (spec.allowedTypes != null && !Array.isArray(spec.allowedTypes)) {
 		throw new Error('Call Error: `allowedTypes` must be null or an array');
 	}
 

@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import numeral from 'numeral';
 
@@ -8,11 +7,15 @@ import {
 	asyncEach,
 	deepCopy,
 	deepDefaults,
+	each,
 	getProp,
 	getPropDef,
 	I,
+	isEmpty,
+	keys,
 	log,
 	makeSubclass,
+	mapObject,
 	mixinDebugging,
 	mixinEventHandling,
 	mixinLogging,
@@ -378,7 +381,7 @@ PrefsBackendLocalStorage.prototype.migrate = function (version, cont) {
 			newPrefs[self.id] = {
 				version: i + 1,
 				current: oldCurrent[self.id],
-				perspectives: _.mapObject(oldPrefs[self.id], function (config, id) {
+				perspectives: mapObject(oldPrefs[self.id], function (config, id) {
 					return {
 						view: config
 					};
@@ -389,7 +392,7 @@ PrefsBackendLocalStorage.prototype.migrate = function (version, cont) {
 
 			delete oldCurrent[self.id];
 
-			if (_.isEmpty(oldCurrent)) {
+			if (isEmpty(oldCurrent)) {
 				localStorage.removeItem('WC_DataVis_Prefs_Current');
 			}
 			else {
@@ -403,7 +406,7 @@ PrefsBackendLocalStorage.prototype.migrate = function (version, cont) {
 			delete oldPrefs[self.id];
 
 			if (self.localStorageKey !== 'WC_DataVis_Prefs') {
-				if (_.isEmpty(oldPrefs)) {
+				if (isEmpty(oldPrefs)) {
 					localStorage.removeItem('WC_DataVis_Prefs');
 				}
 				else {
@@ -419,9 +422,9 @@ PrefsBackendLocalStorage.prototype.migrate = function (version, cont) {
 			// Perspectives now store module configuration in a property called `config` with some new
 			// information added at the toplevel.
 
-			_.each(localStorageObj[self.id].perspectives, function (p, id) {
+			each(localStorageObj[self.id].perspectives, function (p, id) {
 				var config = {};
-				_.each(p, function (v, k) {
+				each(p, function (v, k) {
 					config[k] = v;
 					p[k] = null;
 				});
@@ -438,7 +441,7 @@ PrefsBackendLocalStorage.prototype.migrate = function (version, cont) {
 			// The configuration for `view` is now known as `computedView` since we now have multiple
 			// types of view which are configured separately.
 
-			_.each(localStorageObj[self.id].perspectives, function (p) {
+			each(localStorageObj[self.id].perspectives, function (p) {
 				if (getProp(p, 'config', 'view') != null) {
 					p.config.computedView = p.config.view;
 					delete p.config.view;
@@ -492,7 +495,7 @@ PrefsBackendLocalStorage.prototype.getPerspectives = function (cont) {
 	}
 
 	var storedPrefData = JSON.parse(localStorage.getItem(self.localStorageKey) || '{}');
-	var perspectives = _.keys(getPropDef({}, storedPrefData, self.id, 'perspectives'));
+	var perspectives = keys(getPropDef({}, storedPrefData, self.id, 'perspectives'));
 
 	self.debug(null, 'Found %d perspectives: %s', perspectives.length, JSON.stringify(perspectives));
 
@@ -709,7 +712,7 @@ PrefsBackendTemporary.prototype.getPerspectives = function (cont) {
 		throw new Error('Call Error: `cont` must be a function');
 	}
 
-	var perspectives = _.keys(self.storage.perspectives);
+	var perspectives = keys(self.storage.perspectives);
 
 	self.debug(null, 'Found %d perspectives: %s', perspectives.length, JSON.stringify(perspectives));
 

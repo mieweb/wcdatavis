@@ -1,6 +1,5 @@
 // Imports {{{1
 
-import _ from 'underscore';
 import sprintf from 'sprintf-js';
 import jQuery from 'jquery';
 
@@ -85,7 +84,17 @@ OperationsPalette.prototype.drawPalette = function () {
 	// Remove the contents of the existing palette.
 	self.ui.palette.children().remove();
 
-	_.each(_.groupBy(self.operations, 'category'), function (ops, c) {
+	var groupedOps = self.operations.reduce(function(groups, op) {
+		var category = op.category;
+		if (!groups[category]) {
+			groups[category] = [];
+		}
+		groups[category].push(op);
+		return groups;
+	}, {});
+	
+	Object.keys(groupedOps).forEach(function(c) {
+		var ops = groupedOps[c];
 		var catDiv = jQuery('<div>', {
 			'class': 'wcdv_operations_category'
 		}).appendTo(self.ui.palette);
@@ -93,7 +102,7 @@ OperationsPalette.prototype.drawPalette = function () {
 		if (c !== 'undefined') {
 			var catLabel = jQuery('<span>').text(c).appendTo(catDiv);
 		}
-		_.each(ops, function (op) {
+		ops.forEach(function (op) {
 			var btn = jQuery('<button>', {
 				'type': 'button',
 				'class': 'wcdv_operation',
@@ -156,7 +165,7 @@ OperationsPalette.prototype.setOperations = function (ops) {
 	// was actually invoked.
 
 	var i = 0;
-	_.each(ops.all, function (o) {
+	ops.all.forEach(function (o) {
 		o.idx = i;
 		i += 1;
 	});
