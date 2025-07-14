@@ -10,10 +10,25 @@ export default [
     //   // rollup.  The code should only be ES3 to support IE10.
     //   "es6": true
     // },
+		files: ["src/**/*.js"],
     languageOptions: {
       sourceType: "module",
       globals: {
         ...globals.browser
+      }
+    },
+    rules: {
+      // 'no-console': 'off',
+      'no-unused-vars': 'off'
+    }
+  },
+  {
+    files: ["tests/lib/*.js"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: {
+        ...globals.browser,
+        ...globals.node
       }
     },
     rules: {
