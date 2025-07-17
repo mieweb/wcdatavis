@@ -27,7 +27,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "lint": "eslint src",
+    "lint": "eslint src tests/lib tests/selenium",
     "test": "mocha -t 10000 tests/selenium/*.js",
     "rollup": "rollup --bundleConfigAsCjs -c rollup.config.js",
     "uglify": "uglifyjs -c -o dist/wcdatavis.min.js dist/wcdatavis.js"
