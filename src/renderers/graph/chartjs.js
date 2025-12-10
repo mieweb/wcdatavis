@@ -21,6 +21,7 @@ import {GROUP_FUNCTION_REGISTRY} from '../../group_fun.js';
 
 import OrdMap from '../../util/ordmap.js';
 import { GraphRenderer } from '../../graph_renderer.js';
+import { Source } from '../../source.js';
 
 // GraphRendererChartJs {{{1
 
@@ -32,6 +33,14 @@ var GraphRendererChartJs = makeSubclass('GraphRendererChartJs', GraphRenderer, n
 	}, {
 		value: 'column',
 		name: 'Column Chart',
+		modes: ['plain', 'group', 'pivot'],
+	}, {
+		value: 'line',
+		name: 'Line Chart',
+		modes: ['plain', 'group', 'pivot'],
+	}, {
+		value: 'pie',
+		name: 'Pie Chart',
 		modes: ['plain', 'group', 'pivot'],
 	}], 'value')
 });
@@ -45,112 +54,59 @@ GraphRendererChartJs.prototype.draw_plain = function (data, typeInfo, dt, config
 		return null;
 	}
 
-	var convertType = function (t) {
-		switch (t) {
-		case 'currency':
-			return 'number';
-		default:
-			return t;
+	var obj = {
+		data: {
+			datasets: [],
+			labels: []
 		}
 	};
 
 	var getRealValue = function (f, x) {
 		if (typeInfo.get(f).type === 'date' && moment.isMoment(x.value)) {
-			return {v: x.value.toDate(), f: x.orig};
+			return x.value.format('YYYY-MM-DD');
 		}
 		else if (['number', 'currency'].indexOf(typeInfo.get(f).type) >= 0 && numeral.isNumeral(x.value)) {
-			return {v: x.value._value, f: x.orig};
+			return x.value._value;
 		}
 		else {
 			return x.value;
 		}
 	};
 
-	switch (config.graphType) {
-	case 'gantt':
-		if (config.nameField == null) {
-			throw new Error('Configuration option `nameField` must exist');
-		}
+	// Decode fields first
+	_.each(config.valueFields, function (field) {
+		Source.decodeAll(data.dataByRowId, field, typeInfo);
+	});
+	Source.decodeAll(data.dataByRowId, config.categoryField, typeInfo);
 
-		var timeConfigStr = '' + (+config.startField) + (+config.endField) + (+config.durationField);
-		if (timeConfigStr === '100' || timeConfigStr === '010' || timeConfigStr === '000') {
-			throw new Error('Time configuration is insufficient to determine offsets');
-		}
-
-		dt.addColumn('string', 'ID');
-		dt.addColumn('string', 'Name');
-		dt.addColumn('string', 'Resource');
-		dt.addColumn('date', 'Start');
-		dt.addColumn('date', 'End');
-		dt.addColumn('number', 'Duration');
-		dt.addColumn('number', 'Completion');
-		dt.addColumn('string', 'Dependencies');
-
-		var configOpts = [
-			{ name: 'id', default: (function () { var x = 0; return function () { return x++; }; }) },
-			{ name: 'name' },
-			{ name: 'resource', default: null },
-			{ name: 'start', default: null },
-			{ name: 'end', default: null },
-			{ name: 'duration', default: null },
-			{ name: 'completion', default: 0 },
-			{ name: 'dependencies', default: null }
-		];
-
-		_.each(configOpts, function (opt) {
-			if (config[opt.name + 'Field'] != null) {
-				Source.decodeAll(data.dataByRowId, config[opt.name + 'Field']);
-			}
+	// Create datasets for each value field
+	_.each(config.valueFields, function (field, index) {
+		obj.data.datasets.push({
+			label: field,
+			data: [],
+			backgroundColor: 'rgba(54, 162, 235, 0.5)',
+			borderColor: 'rgba(54, 162, 235, 1)',
+			borderWidth: 1
 		});
+	});
 
-		_.each(data.data, function (row) {
-			var newRow = [];
-			_.each(configOpts, function (opt) {
-				if (config[opt.name + 'Field'] != null) {
-					newRow.push(getRealValue(config[opt.name + 'Field'], row.rowData[config[opt.name + 'Field']]));
-				}
-				else if (opt.default === undefined) {
-					throw new Error();
-				}
-				else if (typeof opt.default === 'function') {
-					newRow.push(opt.default());
-				}
-				else {
-					newRow.push(opt.default);
-				}
-			});
-			dt.addRow(newRow);
+	// Populate data
+	_.each(data.data, function (row) {
+		var categoryValue = getRealValue(config.categoryField, row.rowData[config.categoryField]);
+		obj.data.labels.push(categoryValue);
+
+		_.each(config.valueFields, function (field, index) {
+			var value = getRealValue(field, row.rowData[field]);
+			obj.data.datasets[index].data.push(value);
 		});
+	});
 
-		break;
-	default:
-		dt.addColumn(convertType(typeInfo.get(config.categoryField).type), config.categoryField);
-
-		_.each(config.valueFields, function (field) {
-			dt.addColumn(convertType(typeInfo.get(field).type), field);
-		});
-
-		_.each(config.valueFields, function (field) {
-			Source.decodeAll(data.dataByRowId, field);
-		});
-
-		_.each(data.data, function (row) {
-			var newRow;
-
-			newRow = _.map([config.categoryField].concat(config.valueFields), function (f) {
-				return getRealValue(f, row.rowData[f]);
-			});
-
-			dt.addRow(newRow);
-		});
-	}
-
-	return config;
+	return obj;
 };
 
 // #draw_group {{{2
 
-GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, config) {
+GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, dt, config) {
 	var self = this;
 	var obj = {
 		data: {
@@ -218,7 +174,7 @@ GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, confi
 			var aggInfo = new AggregateInfo('group', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
 			ai.push(aggInfo);
 			obj.data.datasets.push({
-				label: (aggInfo.instance.getType(), v.name || aggInfo.instance.getFullName()),
+				label: v.name || aggInfo.instance.getFullName(),
 				data: []
 			});
 		});
@@ -248,7 +204,13 @@ GraphRendererChartJs.prototype.draw_group = function (data, typeInfo, obj, confi
 // #draw_pivot {{{2
 
 GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config) {
-	var self = this
+	var self = this;
+	var obj = {
+		data: {
+			datasets: [],
+			labels: []
+		}
+	};
 
 	if (typeof config === 'function') {
 		config = config(data.groupFields, data.pivotFields);
@@ -265,10 +227,6 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 		}
 	});
 
-	var valueAxis = config.graphType === 'bar' ? 'hAxis' : 'vAxis';
-
-	dt.addColumn('string', config.categoryField);
-
 	if (config.aggType != null && config.aggNum != null) {
 		var aggInfo = getProp(data, 'agg', 'info', config.aggType, config.aggNum);
 		if (aggInfo == null) {
@@ -282,103 +240,99 @@ GraphRendererChartJs.prototype.draw_pivot = function (data, typeInfo, dt, config
 		var name = aggInfo.name || aggInfo.instance.getFullName();
 		var aggResultType = aggInfo.instance.getType();
 
-		if (aggResultType === 'currency') {
-			aggResultType = 'number';
-			setProp('currency', config, 'options', valueAxis, 'format');
-		}
-
 		switch (config.aggType) {
 		case 'cell':
-			_.each(data.colVals, function (colVal) {
-				dt.addColumn(aggResultType, colVal.join(', '));
+			// Create datasets for each pivot column
+			_.each(data.colVals, function (colVal, colValIdx) {
+				obj.data.datasets.push({
+					label: colVal.join(', '),
+					data: []
+				});
 			});
 
-			setProp(name, config, 'options', valueAxis, 'title');
-
+			// Populate data for each row and column combination
 			_.each(data.rowVals, function (rowVal, rowValIdx) {
-				var newRow = [rowVal.join(', ')];
+				obj.data.labels.push(rowVal.join(', '));
 
 				_.each(data.colVals, function (colVal, colValIdx) {
 					var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx][colValIdx];
 					if (aggResultType === 'number') {
 						aggResult = +aggResult;
 					}
-					newRow.push(aggResult);
+					obj.data.datasets[colValIdx].data.push(aggResult);
 				});
-
-				dt.addRow(newRow);
 			});
 			break;
 		case 'group':
-			dt.addColumn(aggResultType, name);
-			setProp(name, config, 'options', valueAxis, 'title');
+			obj.data.datasets.push({
+				label: name,
+				data: []
+			});
 
 			_.each(data.rowVals, function (rowVal, rowValIdx) {
-				var newRow = [rowVal.join(', ')];
-
+				obj.data.labels.push(rowVal.join(', '));
 				var aggResult = data.agg.results[config.aggType][config.aggNum][rowValIdx];
 				if (aggResultType === 'number') {
 					aggResult = +aggResult;
 				}
-				newRow.push(aggResult);
-				dt.addRow(newRow);
+				obj.data.datasets[0].data.push(aggResult);
 			});
 			break;
 		case 'pivot':
-			dt.addColumn(aggResultType, name);
-			setProp(name, config, 'options', valueAxis, 'title');
+			obj.data.datasets.push({
+				label: name,
+				data: []
+			});
 
 			_.each(data.colVals, function (colVal, colValIdx) {
-				var newRow = [colVal.join(', ')];
-
+				obj.data.labels.push(colVal.join(', '));
 				var aggResult = data.agg.results[config.aggType][config.aggNum][colValIdx];
 				if (aggResultType === 'number') {
 					aggResult = +aggResult;
 				}
-				newRow.push(aggResult);
-				dt.addRow(newRow);
+				obj.data.datasets[0].data.push(aggResult);
 			});
 			break;
 		}
 	}
 	else {
+		// Create datasets for each pivot column value
+		_.each(data.colVals, function (colVal) {
+			obj.data.datasets.push({
+				label: colVal.join(', '),
+				data: []
+			});
+		});
+
+		// Create aggregate info instances
 		var ai = [];
-
-		// For each value field, create the AggregateInfo instance that will manage it.  Also create
-		// columns for the results (one for each colval) in the data table.
-
 		_.each(config.valueFields, function (v) {
 			var aggInfo = new AggregateInfo('cell', v, 0, null /* colConfig */, self.typeInfo, null /* convert */);
-
-			_.each(data.colVals, function (colVal) {
-				dt.addColumn(aggInfo.instance.getType(), colVal.join(', '));
-			});
-
 			ai.push(aggInfo);
 		});
 
+		// Populate data for each row and column combination
 		_.each(data.rowVals, function (rowVal, rowValIndex) {
-			var newRow = [rowVal.join(', ')];
+			obj.data.labels.push(rowVal.join(', '));
 
 			_.each(data.colVals, function (colVal, colValIndex) {
+				var aggResult = 0;
 				_.each(ai, function (aggInfo) {
-					var aggResult = aggInfo.instance.calculate(data.data[rowValIndex][colValIndex]);
-					newRow.push(aggResult);
+					aggResult += aggInfo.instance.calculate(data.data[rowValIndex][colValIndex]);
 					if (aggInfo.debug) {
-						console.debug('[DataVis // Graph // Group // Aggregate] Group aggregate (%s) : RowVal [%s] x ColVal [%s] = %s',
+						console.debug('[DataVis // Graph // Pivot // Aggregate] Pivot aggregate (%s) : RowVal [%s] x ColVal [%s] = %s',
 							aggInfo.instance.name + (aggInfo.name ? ' -> ' + aggInfo.name : ''),
 							rowVal.join(', '),
 							colVal.join(', '),
 							JSON.stringify(aggResult));
 					}
 				});
+				obj.data.datasets[colValIndex].data.push(aggResult);
 			});
-
-			dt.addRow(newRow);
 		});
 	}
 
-	return config;
+	return obj;
 };
 
 // #draw {{{2
@@ -418,18 +372,19 @@ GraphRendererChartJs.prototype.draw = function (devConfig, userConfig) {
 			}
 
 			var config = null;
+			var chartjsConfig = null;
 
 			if (data.isPlain) {
-				config = self.draw_plain(data, typeInfo, getProp(userConfig, 'plain', 'graphs', getProp(userConfig, 'plain', 'current')) || devConfig.whenPlain);
+				chartjsConfig = self.draw_plain(data, typeInfo, null, getProp(userConfig, 'plain', 'graphs', getProp(userConfig, 'plain', 'current')) || devConfig.whenPlain);
 			}
 			else if (data.isGroup) {
-				config = self.draw_group(data, typeInfo, getProp(userConfig, 'group', 'graphs', getProp(userConfig, 'group', 'current')) || devConfig.whenGroup);
+				chartjsConfig = self.draw_group(data, typeInfo, null, getProp(userConfig, 'group', 'graphs', getProp(userConfig, 'group', 'current')) || devConfig.whenGroup);
 			}
 			else if (data.isPivot) {
-				config = self.draw_pivot(data, typeInfo, getProp(userConfig, 'pivot', 'graphs', getProp(userConfig, 'pivot', 'current')) || devConfig.whenPivot);
+				chartjsConfig = self.draw_pivot(data, typeInfo, null, getProp(userConfig, 'pivot', 'graphs', getProp(userConfig, 'pivot', 'current')) || devConfig.whenPivot);
 			}
 
-			if (config == null) {
+			if (chartjsConfig == null) {
 				makeMessage('Nothing to Graph');
 				return;
 			}
@@ -443,15 +398,41 @@ GraphRendererChartJs.prototype.draw = function (devConfig, userConfig) {
 				},
 				column: {
 					type: 'bar'
+				},
+				line: {
+					type: 'line'
+				},
+				pie: {
+					type: 'pie'
 				}
 			};
 
-			var obj = deepDefaults({}, graphTypeMap.bar, config);
+			// Get the config that was passed to the draw method
+			var inputConfig = getProp(userConfig, data.isPlain ? 'plain' : data.isGroup ? 'group' : 'pivot', 'graphs', 
+				getProp(userConfig, data.isPlain ? 'plain' : data.isGroup ? 'group' : 'pivot', 'current')) || 
+				(data.isPlain ? devConfig.whenPlain : data.isGroup ? devConfig.whenGroup : devConfig.whenPivot);
 
-			console.debug('[DataVis // Graph // Chartjs // Draw] Starting draw: [%O]', obj);
+			// Apply graph type specific settings
+			var graphType = inputConfig && inputConfig.graphType ? inputConfig.graphType : 'column';
+			var typeConfig = graphTypeMap[graphType] || graphTypeMap.column;
+			
+			var finalConfig = deepDefaults({}, typeConfig, {
+				data: chartjsConfig.data,
+				options: {
+					responsive: true,
+					plugins: {
+						title: {
+							display: !!self.opts.title,
+							text: self.opts.title
+						}
+					}
+				}
+			});
 
-			var chart = new Chart(document.getElementById(id), obj);
-			self.fire('draw', null, config);
+			console.debug('[DataVis // Graph // Chartjs // Draw] Starting draw: [%O]', finalConfig);
+
+			var chart = new Chart(document.getElementById(id), finalConfig);
+			self.fire('draw', null, inputConfig);
 		});
 	}, 'Drawing Chart.js graph');
 };

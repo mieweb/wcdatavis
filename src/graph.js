@@ -423,6 +423,24 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 Graph.prototype._addAggregateButtons = function (toolbar) {
 	var self = this;
 
+	// Add renderer selection dropdown
+	var rendererDropdownId = gensym();
+	jQuery('<label>', { 'for': rendererDropdownId }).text('Renderer: ').appendTo(toolbar);
+	self.ui.rendererDropdown = jQuery('<select>', { 'id': rendererDropdownId })
+		.on('change', function () {
+			self.opts.renderer = this.value;
+			self.redraw();
+		})
+		.appendTo(toolbar);
+
+	// Populate renderer options
+	GRAPH_RENDERER_REGISTRY.each(function (renderer, key) {
+		self.ui.rendererDropdown.append(jQuery('<option>', { 
+			'value': key,
+			'selected': key === (self.opts.renderer || 'google')
+		}).text(key.charAt(0).toUpperCase() + key.slice(1)));
+	});
+
 	var graphTypeDropdownId = gensym();
 	jQuery('<label>', { 'for': graphTypeDropdownId }).text('Graph Type: ').appendTo(toolbar);
 	self.ui.graphTypeDropdown = jQuery('<select>', { 'id': graphTypeDropdownId })
