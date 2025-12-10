@@ -33,14 +33,17 @@ The number one convention is to avoid making unnecessary diffs.  Follow the styl
 
 ### Formatting Standards
 
+
 * Code is indented with tabs. Each tab is 2 visual spaces.
 * Don't [cuddle your else keywords](http://wiki.c2.com/?CuddledElseBlocks).
-* Combine declarations for variables without initializers; use separate declarations for variables with initializers.
+* Group related variable declarations together.
 
 ### General Guidelines
 
-* Maintain compatibility with IE10.  I know, this sucks.
-* If you're going to potentially call another function with the same arguments, use `var args = Array.prototype.slice.call(arguments)` and apply the function call to `args`.
+* **Modern JavaScript (ES6+)**: Arrow functions, template literals, destructuring, `const`/`let` are all encouraged. Babel transpiles ES6+ to ES5 for IE11 compatibility during the build.
+* Prefer `const` by default, use `let` when reassignment is needed, avoid `var`.
+* Use rest parameters (`...args`) instead of `Array.prototype.slice.call(arguments)`.
+* Use default parameters where appropriate.
 * Check arguments at the start of a function.  For example, does an argument need to be a function?  Make sure that it is.  The point is to throw an exception as early as possible for any developer mistakes.
 * After checking argument validity, set any default values for variables, or defaults for keys in an object.
 * Don't use `console` methods directly.  Use `log` for normal console messages, `debug` for debugging messages, and `logAsync()` for logging asynchronous stuff (i.e. JS thread yields).
@@ -48,12 +51,11 @@ The number one convention is to avoid making unnecessary diffs.  Follow the styl
 * For recoverable errors (i.e. "you asked for that but I know that's wrong so I'm going to do this instead so things are still usable") log an error to the console with `log.error()`.
 * For things that are wrong but not going to break anything, use `log.warn()`.
 
-!!! important
-    Again, it's really important that we maintain compatibility with IE10.  That means no arrow functions, no template strings, no destructuring, no classes or modules.
+!!! note "Legacy Code"
+    The existing codebase was written for IE10 compatibility and uses patterns like `var self = this` and `makeSubclass`. When modifying existing files, maintain consistency with the surrounding code style. New files should use modern ES6+ syntax.
 
 ### Object Orientation
 
-* The first line of any method should be `var self = this`.
-* Never use `this` unless within an event handler or something like that.  Always use `self` to refer to the instance that the method is being invoked on.
-* Use `makeSubclass` to create class hierarchies.  Toplevel classes should have `Object` as their superclass.
-* Use `self.super` to access methods in superclasses.
+* **New code**: Use ES6 `class` syntax with `super` for superclass access.
+* **Existing code**: Uses `var self = this` pattern and `makeSubclass` — maintain consistency when modifying.
+* Use `self.super` to access methods in superclasses in legacy code.

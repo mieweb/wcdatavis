@@ -50,26 +50,30 @@ DataVis is a library for data visualization with presentation via charts and tab
 
 ## JavaScript Code Standards
 
-### ⚠️ CRITICAL: Browser Compatibility
-- **Maintain compatibility with IE10**: No arrow functions, no template strings, no destructuring, no ES6 classes or modules
-- Use `var` instead of `let`/`const` in source files
-- Use function declarations instead of arrow functions
+### 🎯 Modern JavaScript (ES6+)
+
+> **Note**: Write modern ES6+ code freely — Babel transpiles it to ES5 for IE11 compatibility during the build process.
+
+- **Use modern syntax**: Arrow functions, template literals, destructuring, `const`/`let` are all encouraged
+- **Prefer `const`**: Use `const` by default, `let` when reassignment is needed, avoid `var`
+- **Arrow functions**: Use arrow functions for callbacks and short functions
+- **Template literals**: Use template strings for string interpolation
+- **Destructuring**: Use destructuring for cleaner object/array access
 
 ### Formatting Standards
 - **Tabs for indentation**: Each tab represents 2 visual spaces
 - **Don't cuddle else**: Put `else` on its own line, not after `}`
-- **Variable declarations**: Combine declarations without initializers; separate declarations with initializers
+- **Variable declarations**: Group related declarations together
 
 ### Object Orientation
-- **First line rule**: The first line of any method should be `var self = this`
-- **Never use `this` directly**: Always use `self` to refer to the instance
-- **Use `makeSubclass`**: For class hierarchies, with `Object` as superclass for toplevel classes
-- **Superclass access**: Use `self.super` to access methods in superclasses
+- **Class syntax**: Use ES6 `class` syntax for new code
+- **Legacy code pattern**: Existing code uses `var self = this` and `makeSubclass` — maintain consistency when modifying existing files
+- **Superclass access**: Use `super` in ES6 classes, or `self.super` in legacy code
 
 ### Argument Handling
+- **Default parameters**: Use ES6 default parameters where appropriate
 - **Check arguments first**: Validate required arguments at the start of functions
-- **Set defaults after validation**: After checking validity, set default values
-- **Array from arguments**: Use `var args = Array.prototype.slice.call(arguments)` for argument passing
+- **Rest parameters**: Use `...args` instead of `Array.prototype.slice.call(arguments)`
 
 ### Logging & Error Handling
 - **No direct `console` usage**: Use `log` for normal messages, `debug` for debugging, `logAsync()` for async operations
@@ -174,7 +178,7 @@ Use GNU Make for all build operations:
 - [ ] **Dead Code**: Removed or archived appropriately?
 - [ ] **Accessibility**: ARIA labels and semantic HTML implemented?
 - [ ] **I18N**: User-facing text externalized for translation?
-- [ ] **IE10**: No ES6+ syntax (no arrow functions, template literals, let/const)?
-- [ ] **OOP**: Methods use `var self = this` pattern?
+- [ ] **Modern JS**: Using ES6+ syntax (const/let, arrow functions, template literals)?
+- [ ] **Consistency**: Matches style of surrounding code in existing files?
 - [ ] **Lint**: Run `npm run lint`
 - [ ] **Test**: Run `make test`

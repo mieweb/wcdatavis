@@ -73,3 +73,9 @@ GridRendererDummy.prototype.draw = function (root, opts, cont) {
 // Registry {{{2
 
 GridRenderer.registry.set('dummy', GridRendererDummy);
+
+// Exports {{{1
+
+export {
+	GridRendererDummy,
+};
