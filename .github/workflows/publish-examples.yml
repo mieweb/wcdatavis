@@ -7,10 +7,30 @@ on:
 jobs:
   build:
 
-    runs-on: [ self-hosted ]
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Set up SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+      shell: bash
+
+    - name: Checkout DataVis Repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+        submodules: recursive
+        ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Replace GITHUB_TOKEN in .npmrc
+      run: |
+        sed -i "s/GITHUB_TOKEN/$GITHUB_TOKEN/" .npmrc
+        cat .npmrc
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
       run: make setup

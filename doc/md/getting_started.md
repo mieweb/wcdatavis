@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
     "rollup": "rollup --bundleConfigAsCjs -c rollup.config.js",
   },
   "dependencies": {
-    "wcdatavis": "git+ssh://git@github.mieweb.com:datavis/wcdatavis.git"
+    "wcdatavis": "git+ssh://git@github.com:mieweb/wcdatavis.git"
   },
   "devDependencies": {
     "@babel/core": "=7.24.9",
