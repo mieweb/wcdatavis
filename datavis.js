@@ -8,6 +8,7 @@ import original_jQuery from './global-jquery.js';
 
 import 'block-ui';
 import 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 import 'jquery-ui/dist/jquery-ui.min.js';
 import 'jquery-contextmenu';
 import 'sumoselect';

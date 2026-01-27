@@ -23,12 +23,16 @@ import { Perspective } from './src/perspective.js';
 // We left the global jQuery around long enough for jQuery UI to install itself, and that same
 // jQuery object has been used by all other plugins and DataVis code.  Now that we're all done,
 // make it so nobody can access our jQuery, to avoid conflicts.
+//
+// Note: We use Reflect.deleteProperty instead of the delete operator because Rspack's
+// ProvidePlugin transforms `window.jQuery` into a variable identifier, and using `delete`
+// on an identifier is illegal in strict mode.
 
 if (original_jQuery != null) {
   window.jQuery = original_jQuery;
 }
 else {
-  delete window.jQuery;
+  Reflect.deleteProperty(window, 'jQuery');
 }
 
 export {

@@ -475,7 +475,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 			}
 			tr.attr('data-wcdv-expanded', op === 'show' ? '1' : '0');
 			elt.attr('data-wcdv-expanded', op === 'show' ? '1' : '0');
-			elt.html(fontAwesome(op === 'show' ? 'fa-minus-square-o' : 'fa-plus-square-o'));
+			elt.html(fontAwesome(op === 'show' ? 'fa-square-minus' : 'fa-square-plus'));
 		});
 	}
 
@@ -573,7 +573,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
                     'class': 'wcdv_icon_button wcdv_expand_button',
                     'data-wcdv-expanded': isExpanded,
                     'disabled': disabled
-                }).html(fontAwesome(isExpanded === '1' ? (disabled ? 'fa-square-o':'fa-minus-square-o' ) : (disabled ? 'fa-square-o' : 'fa-plus-square-o')));
+                }).html(fontAwesome(isExpanded === '1' ? (disabled ? 'fa-square':'fa-square-minus' ) : (disabled ? 'fa-square' : 'fa-square-plus')));
 
 				jQuery('<th>', {'class': 'wcdv_group_col_spacer'})
 					.append(expandBtn)
@@ -663,7 +663,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				}
 				if(self.defn.table.whenGroup.showExpandedGroups){
 					afterElement = render(childMetadataNode.id, 0, childTr);
-					
+
 				} else {
 					afterElement = childTr;
 				}

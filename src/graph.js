@@ -811,6 +811,8 @@ Graph.prototype.redraw = function () {
 		self.renderer = new ctor(self, self.ui.graph, self.view, self.opts);
 		self.renderer.on('draw', function (config) {
 			self.syncDrawnGraphConfigWithUi(config);
+			// Hide spinner after graph is drawn
+			self._hideSpinner();
 		});
 		self._setGraphTypeOptions();
 		self.drawFromConfig();
@@ -926,7 +928,7 @@ Graph.prototype._setSpinner = function (what) {
 		self.ui.spinner.html(fontAwesome('fa-ban', null, 'Not Loaded'));
 		break;
 	case 'working':
-		self.ui.spinner.html(fontAwesome('fa-circle-o-notch', 'fa-spin', 'Working...'));
+		self.ui.spinner.html(fontAwesome('fa-circle-notch', 'fa-spin', 'Working...'));
 		break;
 	}
 };
