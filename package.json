@@ -86,7 +86,7 @@
     "selenium-webdriver": "=4.39.0",
     "serve": "=14.2.5",
     "serve-handler": "=6.1.6",
-    "svelte": "=4.2.19",
+    "svelte": "=5.53.0",
     "svelte-preprocess": "=6.0.3",
     "typescript": "=5.9.3",
     "uglify-js": "=3.19.3",
