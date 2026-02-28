@@ -80,7 +80,7 @@
     "lodash": "=4.17.21",
     "mermaid": "=11.12.2",
     "mocha": "=11.7.5",
-    "rollup": "=4.55.1",
+    "rollup": "=4.59.0",
     "rollup-plugin-postcss": "=4.0.2",
     "rollup-plugin-svelte": "=7.2.3",
     "selenium-webdriver": "=4.39.0",
