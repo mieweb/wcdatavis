@@ -55,7 +55,7 @@
     "squirrelly": "=9.1.0",
     "svelte-gantt": "=4.4.3",
     "sumoselect": "https://github.com/mieweb/jquery.sumoselect.git",
-    "underscore": "=1.13.7"
+    "underscore": "=1.13.8"
   },
   "devDependencies": {
     "@babel/core": "=7.28.5",
