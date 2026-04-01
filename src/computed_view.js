@@ -1461,7 +1461,7 @@ ComputedView.prototype.filter = function (cont) {
 		};
 
 		pred['$contains'] = function (operand) {
-			return isString && datum.indexOf(operand.toString().toLowerCase()) >= 0;
+			return isString && datum.toLowerCase().indexOf(operand.toString().toLowerCase()) >= 0;
 		};
 
 		pred['$notcontains'] = function (operand) {
