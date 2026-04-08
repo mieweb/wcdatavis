@@ -13,6 +13,13 @@ main() {
 			make datavis
 			make tests
 		;;
+		bash)
+			/bin/bash
+		;;
+		*)
+			echo "Warning command $1.  I just you want the command to run?"
+			echo "Usage: build-docs | build-examples | bash"
+			exec "$@"
 	esac
 }
 
