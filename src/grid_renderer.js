@@ -54,12 +54,14 @@ var GridRenderer = (function () {
 		self.timing = timing;
 		self.colConfig = colConfig;
 		self.hasRendered = false;
+		self._destroyed = false;
 
 		self._validateFeatures();
 
 		self.drawLock = new Lock('GridRenderer/draw');
 
 		self.grid.on('colConfigUpdate', function (newColConfig, initColConfig, shouldRedraw) {
+			if (self._destroyed) { return; }
 			self.logDebug(self.makeLogTag() + ' Received new colConfig: %O', newColConfig);
 			self.colConfig = newColConfig;
 			if (self.hasRendered && shouldRedraw) {
@@ -100,6 +102,8 @@ GridRenderer.prototype.draw = function (root, opts, cont1) {
 	var self = this;
 	var args = Array.prototype.slice.call(arguments);
 
+	if (self._destroyed) { return; }
+
 	self.logDebug(self.makeLogTag() + ' Beginning draw operation; opts = %O', opts);
 
 	opts = opts || {};
@@ -109,6 +113,7 @@ GridRenderer.prototype.draw = function (root, opts, cont1) {
 
 	if (self.drawLock.isLocked()) {
 		return self.drawLock.onUnlock(function () {
+			if (self._destroyed) { return; }
 			GridRenderer.prototype.draw.apply(self, args);
 		});
 	}
@@ -118,6 +123,7 @@ GridRenderer.prototype.draw = function (root, opts, cont1) {
 	self.clear();
 
 	return self.view.getData(function (ok, data) {
+		if (self._destroyed) { return; }
 		if (!ok) {
 			return cont1(false);
 		}
@@ -184,6 +190,7 @@ GridRenderer.prototype.clear = function () {
 GridRenderer.prototype.destroy = function () {
 	var self = this;
 
+	self._destroyed = true;
 	self.clear();
 	self.grid.off('*', self);
 };

@@ -376,6 +376,7 @@ GridTableGroupSummary.prototype.addWorkHandler = function () {
 	var self = this;
 
 	self.view.on(ComputedView.events.workEnd, function (info, ops) {
+		if (self._destroyed) { return; }
 		self.logDebug(self.makeLogTag('handler(workEnd)') + ' ComputedView has finished doing work');
 
 		if (!ops.group || ops.pivot) {
