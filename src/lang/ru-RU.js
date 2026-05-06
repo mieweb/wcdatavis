@@ -101,6 +101,7 @@ export default {
   'GRID.TABLE.SORT_MENU.ASCENDING': '%s, по возрастанию',
   'GRID.TABLE.SORT_MENU.DESCENDING': '%s, по убыванию',
   'GRID.TABLE.SORT_MENU.RESET_SORT': 'Сбросить сортировку',
+  'GRID.TABLE.SORT_MENU.TOOLTIP': 'Нажмите для сортировки',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER': 'После',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER_GROUP': 'После группы',
   'GRID.TEMPLATE_EDITOR.CONFIG.BEFORE': 'До',

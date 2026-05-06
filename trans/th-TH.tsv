@@ -130,6 +130,7 @@ AGGREGATE.HEADER_DISPLAY	%s ของ %s
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	คลิกเพื่อเรียงลำดับ	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, น้อยไปมาก	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, มากไปน้อย	
 GRID.TABLE.SORT_MENU.RESET_SORT	รีเซ็ตการเรียงลำดับ	

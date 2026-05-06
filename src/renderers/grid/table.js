@@ -627,15 +627,20 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 		ascArrow.classList.add('fa');
 		ascArrow.classList.add('fa-sort-asc');
 		ascArrow.classList.add('fa-stack-1x');
+		ascArrow.setAttribute('aria-hidden', 'true');
 
 		descArrow = document.createElement('span');
 		descArrow.classList.add('fa');
 		descArrow.classList.add('fa-sort-desc');
 		descArrow.classList.add('fa-stack-1x');
+		descArrow.setAttribute('aria-hidden', 'true');
 
 		sortIcon_class = gensym();
 
 		sortIcon_span = fontAwesome('fa-stack', orientation === 'horizontal' ? 'fa-rotate-270' : null).get(0);
+		sortIcon_span.setAttribute('role', 'button');
+		sortIcon_span.setAttribute('tabindex', '0');
+		sortIcon_span.setAttribute('title', trans('GRID.TABLE.SORT_MENU.TOOLTIP'));
 		sortIcon_span.classList.add(sortIcon_class);
 		sortIcon_span.classList.add(sortIcon_orientationClass);
 		sortIcon_span.classList.add('wcdv_sort_icon');
@@ -646,14 +651,19 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 		ascArrow = document.createElement('span');
 		ascArrow.classList.add('fa');
 		ascArrow.classList.add('fa-sort-asc');
+		ascArrow.setAttribute('aria-hidden', 'true');
 
 		descArrow = document.createElement('span');
 		descArrow.classList.add('fa');
 		descArrow.classList.add('fa-sort-desc');
+		descArrow.setAttribute('aria-hidden', 'true');
 
 		sortIcon_class = gensym();
 
 		sortIcon_span = document.createElement('span');
+		sortIcon_span.setAttribute('role', 'button');
+		sortIcon_span.setAttribute('tabindex', '0');
+		sortIcon_span.setAttribute('title', trans('GRID.TABLE.SORT_MENU.TOOLTIP'));
 		sortIcon_span.classList.add('fa-layers');
 		if (orientation === 'horizontal') {
 			sortIcon_span.classList.add('fa-rotate-270');
@@ -786,6 +796,19 @@ GridTable.prototype._addSortingToHeader = function (data, orientation, spec, con
 	self.contextMenuSelectors.push('.' + sortIcon_class);
 
 	container.appendChild(sortIcon_span);
+
+	// Set aria-labelledby on the <th> so screen readers announce only the column name,
+	// not the sort button, when reading the table header.
+	var th = container.closest('th');
+	if (th != null) {
+		var titleSpan = th.querySelector('.wcdv_heading_title');
+		if (titleSpan != null) {
+			if (!titleSpan.id) {
+				titleSpan.id = gensym('colhdrlbl-');
+			}
+			th.setAttribute('aria-labelledby', titleSpan.id);
+		}
+	}
 
 	// Now check the existing sort specification in the view to see if any of the sort icons that we
 	// just created should be lit up.

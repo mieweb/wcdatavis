@@ -101,6 +101,7 @@ export default {
   'GRID.TABLE.SORT_MENU.ASCENDING': '%s, Ascendente',
   'GRID.TABLE.SORT_MENU.DESCENDING': '%s, Descendente',
   'GRID.TABLE.SORT_MENU.RESET_SORT': 'Redefinir Ordenação',
+  'GRID.TABLE.SORT_MENU.TOOLTIP': 'Clique para ordenar',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER': 'Depois',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER_GROUP': 'Depois do Grupo',
   'GRID.TEMPLATE_EDITOR.CONFIG.BEFORE': 'Antes',

@@ -101,6 +101,7 @@ export default {
   'GRID.TABLE.SORT_MENU.ASCENDING': '%s, croissant',
   'GRID.TABLE.SORT_MENU.DESCENDING': '%s, décroissant',
   'GRID.TABLE.SORT_MENU.RESET_SORT': 'Réinitialiser le tri',
+  'GRID.TABLE.SORT_MENU.TOOLTIP': 'Cliquez pour trier',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER': 'Après',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER_GROUP': 'Après le groupe',
   'GRID.TEMPLATE_EDITOR.CONFIG.BEFORE': 'Avant',
