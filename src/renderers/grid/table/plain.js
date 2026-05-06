@@ -138,7 +138,7 @@ GridTablePlain.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 				self.checkAll(evt);
 			});
 
-		headingTh = jQuery('<th>')
+		headingTh = jQuery('<th>', { scope: 'col' })
 			.addClass('wcdv_group_col_spacer')
 			.append(self.ui.checkAll_thead)
 			.appendTo(headingTr);
@@ -208,7 +208,7 @@ GridTablePlain.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 			.addClass('wcdv_heading_container')
 			.append(headingSpan, headingThControls);
 
-		var headingTh = jQuery('<th>', { id: gensym() })
+		var headingTh = jQuery('<th>', { id: gensym(), scope: 'col' })
 			.css(headingThCss)
 			.append(headingThContainer);
 
@@ -306,7 +306,7 @@ GridTablePlain.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 	 */
 
 	if (self.features.rowReorder) {
-		headingTh = jQuery('<th>')
+		headingTh = jQuery('<th>', { scope: 'col' })
 			.text('Options')
 			.appendTo(headingTr);
 		if (self.opts.drawInternalBorders) {

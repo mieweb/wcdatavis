@@ -114,7 +114,7 @@ GridTableGroupSummary.prototype.drawHeader = function (columns, data, typeInfo, 
 						.addClass('wcdv_heading_container')
 						.append(headingSpan, headingThControls);
 
-					headingTh = jQuery('<th>')
+					headingTh = jQuery('<th>', { scope: 'col' })
 						.append(headingThContainer);
 
 					self.csv.addCol(fcc.displayText || field);
