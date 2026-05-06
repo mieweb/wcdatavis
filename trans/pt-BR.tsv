@@ -130,6 +130,7 @@ AGGREGATE.HEADER_DISPLAY	%s de %s
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	Clique para ordenar	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, Ascendente	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, Descendente	
 GRID.TABLE.SORT_MENU.RESET_SORT	Redefinir Ordenação	
