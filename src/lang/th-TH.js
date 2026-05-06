@@ -109,6 +109,7 @@ export default {
   'GRID.TABLE.SORT_MENU.ASCENDING': '%s, น้อยไปมาก',
   'GRID.TABLE.SORT_MENU.DESCENDING': '%s, มากไปน้อย',
   'GRID.TABLE.SORT_MENU.RESET_SORT': 'รีเซ็ตการเรียงลำดับ',
+  'GRID.TABLE.SORT_MENU.TOOLTIP': 'คลิกเพื่อเรียงลำดับ',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER': 'หลัง',
   'GRID.TEMPLATE_EDITOR.CONFIG.AFTER_GROUP': 'หลังกกลุ่ม',
   'GRID.TEMPLATE_EDITOR.CONFIG.BEFORE': 'ก่อน',

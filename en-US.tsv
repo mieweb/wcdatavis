@@ -48,10 +48,10 @@ GRID_TOOLBAR.PLAIN.SHOW_MORE_ON_SCROLL	Show More on Scroll
 GRID_TOOLBAR.PLAIN.SHOW_ALL_ROWS	Show All Rows	
 GRID_TOOLBAR.PLAIN.COLUMNS	Columns	
 GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR	Templates Editor	"Handlebars" is the name of a JavaScript library, not the part on a bicycle.
-GRID_TOOLBAR.PLAIN.ROW_MODE	Row Mode
+GRID_TOOLBAR.PLAIN.ROW_MODE	Row Mode	
 GRID_TOOLBAR.PLAIN.ROW_MODE.WRAPPED	Wrapped	Cells wrap text to multiple lines
 GRID_TOOLBAR.PLAIN.ROW_MODE.CLIPPED	Clipped	Single-line cells with text truncated
-GRID_TOOLBAR.PLAIN.AUTO_RESIZE_COLUMNS	Auto-resize Columns
+GRID_TOOLBAR.PLAIN.AUTO_RESIZE_COLUMNS	Auto-resize Columns	
 		
 GRID_TOOLBAR.GROUP.MODE.SUMMARY	Summary	
 GRID_TOOLBAR.GROUP.MODE.DETAIL	Detail	
@@ -146,6 +146,7 @@ AGGREGATE.HEADER_DISPLAY	%s of %s	Used to display the header item for an aggrega
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	Click to sort	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, Ascending	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, Descending	
 GRID.TABLE.SORT_MENU.RESET_SORT	Reset Sort	
@@ -153,9 +154,9 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Reset Sort
 GRID.TABLE.DRAGGABLE_FIELD_HELP	You can drag & drop this field into the grid controls above to filter, group or pivot.	
 GRID.TABLE.ADD_FILTER_HELP	Click to add a filter for "%s"	
 		
-GRID.TABLE.RESIZE_COLUMN	Drag to resize column
-GRID.TABLE.REORDER_COLUMN	Drag to reorder column
-
+GRID.TABLE.RESIZE_COLUMN	Drag to resize column	
+GRID.TABLE.REORDER_COLUMN	Drag to reorder column	
+		
 // Group Functions		
 		
 GRID.GROUP_FUN.DIALOG.TITLE	Apply Function to %s	
@@ -220,10 +221,10 @@ FILTER.DATE.OPERATOR.EVERY	every
 FILTER.DATE.OPERATOR.CURRENT	current	
 FILTER.DATE.OPERATOR.LAST	last	
 FILTER.DATE.OPERATOR.AND	and	
-FILTER.STRING.OPERATOR.IN	in
-FILTER.STRING.OPERATOR.NOT_IN	not in
-FILTER.STRING.OPERATOR.BLANK	blank
-FILTER.STRING.OPERATOR.NOT_BLANK	not blank
+FILTER.STRING.OPERATOR.IN	in	
+FILTER.STRING.OPERATOR.NOT_IN	not in	
+FILTER.STRING.OPERATOR.BLANK	blank	
+FILTER.STRING.OPERATOR.NOT_BLANK	not blank	
 		
 CALENDAR.DATE	date	
 CALENDAR.DAY	day	
@@ -231,8 +232,8 @@ CALENDAR.WEEK	week
 CALENDAR.MONTH	month	
 CALENDAR.QUARTER	quarter	
 CALENDAR.YEAR	year	
-
-DATA.NO_DATA	No Data
-DATA.NOTHING_TO_GRAPH	Nothing to Graph
-
-PREFS.MAIN_PERSPECTIVE	Main Perspective
+		
+DATA.NO_DATA	No Data	
+DATA.NOTHING_TO_GRAPH	Nothing to Graph	
+		
+PREFS.MAIN_PERSPECTIVE	Main Perspective	

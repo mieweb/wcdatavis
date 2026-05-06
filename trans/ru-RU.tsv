@@ -146,6 +146,7 @@ AGGREGATE.HEADER_DISPLAY	%s по %s
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	Нажмите для сортировки	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, по возрастанию	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, по убыванию	
 GRID.TABLE.SORT_MENU.RESET_SORT	Сбросить сортировку	

@@ -146,6 +146,7 @@ AGGREGATE.HEADER_DISPLAY	%s van %s
 	
 // Grid Table Output	
 	
+GRID.TABLE.SORT_MENU.TOOLTIP	Klik om te sorteren
 GRID.TABLE.SORT_MENU.ASCENDING	%s, oplopend
 GRID.TABLE.SORT_MENU.DESCENDING	%s, aflopend
 GRID.TABLE.SORT_MENU.RESET_SORT	Sortering resetten

@@ -146,6 +146,7 @@ AGGREGATE.HEADER_DISPLAY	%s de %s
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	Cliquez pour trier	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, croissant	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, décroissant	
 GRID.TABLE.SORT_MENU.RESET_SORT	Réinitialiser le tri	
