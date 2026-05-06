@@ -43,23 +43,26 @@ update_package_json() {
     jq '.version = "'"$version"'"' < package.json.bak > package.json
     rm package.json.bak
     npm install
-    make clean
-    make teardown
-    make setup
-    make tests
-    make test || {
-        read -p 'Tests failed... continue? (yes/no) '
-        if [[ "$REPLY" != 'yes' ]] ; then
-            echo "$version" > .release-version
-            errmsg 'Fix any issues, then rerun with --continue.'
-            exit 1
-        fi
-    }
+    if [[ "$run_tests" = 1 ]]; then
+        make clean
+        make teardown
+        make setup
+        make tests
+        make test || {
+            read -p 'Tests failed... continue? (yes/no) '
+            if [[ "$REPLY" != 'yes' ]] ; then
+                echo "$version" > .release-version
+                errmsg 'Fix any issues, then rerun with --continue.'
+                exit 1
+            fi
+        }
+    fi
     commit_tag_push "$version"
 }
 
 main() {
-    OPTIONS=$(getopt --options='ach' --longoptions='abort,continue,help' --name="$0" -- "$@")
+    OPTIONS=$(getopt --options='ach' --longoptions='abort,continue,no-test,help' --name="$0" -- "$@")
+    run_tests=1
     if [ $? -ne 0 ]; then
         errmsg 'Error parsing arguments'
         exit 1
@@ -82,6 +85,10 @@ main() {
             read version < .release-version
             commit_tag_push "$version"
             exit 0
+            ;;
+        --no-test)
+            shift
+            run_tests=0
             ;;
         -h|--help)
             shift
