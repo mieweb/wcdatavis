@@ -1585,7 +1585,7 @@ GridTable.prototype.drawHeader_aggregates = function (data, tr, displayOrderInde
 			headingThContainer = jQuery('<div>')
 				.addClass('wcdv_heading_container')
 				.append(span, headingThControls),
-			th = jQuery('<th>')
+			th = jQuery('<th>', { scope: 'col' })
 				.append(headingThContainer)
 				.appendTo(tr);
 
@@ -1621,7 +1621,7 @@ GridTable.prototype.drawHeader_addCols = function (tr, typeInfo, opts) {
 			span = jQuery('<span>')
 				.text(addCol.name);
 
-			th = jQuery('<th>')
+			th = jQuery('<th>', { scope: 'col' })
 				.append(span)
 				.appendTo(tr);
 
@@ -1735,6 +1735,7 @@ GridTable.prototype.drawBody_rowVals = function (data, tr, rowValIndex) {
 		headingThContainer.appendChild(headingThControls);
 
 		th[i] = document.createElement('th');
+		th[i].setAttribute('scope', 'row');
 		th[i].appendChild(headingThContainer);
 
 		if (v instanceof jQuery) {
