@@ -130,6 +130,7 @@ AGGREGATE.HEADER_DISPLAY	%s of %s	Used to display the header item for an aggrega
 		
 // Grid Table Output		
 		
+GRID.TABLE.SORT_MENU.TOOLTIP	Click to sort	
 GRID.TABLE.SORT_MENU.ASCENDING	%s, Ascending	
 GRID.TABLE.SORT_MENU.DESCENDING	%s, Descending	
 GRID.TABLE.SORT_MENU.RESET_SORT	Reset Sort	
