@@ -113,7 +113,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 				.addClass('wcdv_heading_container')
 				.append(span, headingThControls);
 
-			th = jQuery('<th>')
+			th = jQuery('<th>', { scope: 'col' })
 				.dvAttr({
 					'gfi': fieldIdx,
 					'field': field,
@@ -190,7 +190,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 			.addClass('wcdv_heading_container')
 			.append(span, headingThControls);
 
-		var th = jQuery('<th>')
+		var th = jQuery('<th>', { scope: 'col' })
 			.dvAttr({
 				'field': pivotField,
 				'draggable-origin': 'GRID_TABLE_HEADER'
@@ -273,7 +273,7 @@ GridTablePivot.prototype.drawHeader = function (columns, data, typeInfo, opts) {
 					.addClass('wcdv_heading_container')
 					.append(span, headingThControls);
 
-				th = jQuery('<th>')
+				th = jQuery('<th>', { scope: 'col' })
 					.dvAttr('cvi', colValIndex)
 					.append(headingThContainer);
 

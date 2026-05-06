@@ -110,7 +110,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 						self.checkAll(evt);
 					});
 
-				headingTh = jQuery('<th>')
+				headingTh = jQuery('<th>', { scope: 'col' })
 					.addClass('wcdv_group_col_spacer')
 					.append(self.ui.checkAll_thead)
 					.appendTo(headingTr);
@@ -152,7 +152,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 			.addClass('wcdv_heading_container')
 			.append(headingSpan, headingThControls);
 
-		headingTh = jQuery('<th>')
+		headingTh = jQuery('<th>', { scope: 'col' })
 			.attr('colspan', columns.length - fieldIdx)
 			.css(headingThCss)
 			.append(headingThContainer)
@@ -210,7 +210,7 @@ GridTableGroupDetail.prototype.drawHeader = function (columns, data, typeInfo, o
 			.addClass('wcdv_heading_container')
 			.append(headingSpan, headingThControls);
 
-		headingTh = jQuery('<th>')
+		headingTh = jQuery('<th>', { scope: 'col' })
 			.css(headingThCss)
 			.append(headingThContainer);
 
@@ -639,6 +639,7 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 
 				jQuery('<th>', {
 					'class': 'wcdv_group_value',
+					'scope': 'row',
 					'data-wcdv-field': childMetadataNode.groupField,
 					'colspan': columns.length - childMetadataNode.groupFieldIndex
 				})
