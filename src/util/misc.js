@@ -2693,6 +2693,12 @@ export function makeOperationButton(type, op, index, opts) {
 	btn.setAttribute('type', 'button');
 	btn.setAttribute('data-operation-type', type);
 	btn.setAttribute('data-operation-index', index);
+	if (op.label) {
+		btn.setAttribute('aria-label', op.label);
+	}
+	else if (op.tooltip) {
+		btn.setAttribute('aria-label', op.tooltip);
+	}
 	btn.classList.add('wcdv_operation');
 	// Cell operations don't get labels, because they would take up too much space.
 	if (type === 'cell') {

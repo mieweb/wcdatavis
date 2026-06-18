@@ -72,13 +72,15 @@ var GroupFunWin = makeSubclass('GroupFunWin', Object, function (title, groupFuns
 	// Go through each group function and create the UI for it, plus add it to the appropriate column.
 
 	groupFuns.each(function (gf, gfName) {
+		var groupFunLabel = gf.getTransName();
 		self.buttons[gfName] = jQuery('<button>', {
 			'type': 'button',
 			'class': 'wcdv_option',
 			'data-wcdv-groupfunname': gfName,
-			'title': gf.getTransName()
+			'title': groupFunLabel,
+			'aria-label': groupFunLabel
 		})
-			.text(gf.getTransName())
+			.text(groupFunLabel)
 			.on('click', function () {
 				selected = gfName;
 				self.win.dialog('close');
@@ -100,13 +102,16 @@ var GroupFunWin = makeSubclass('GroupFunWin', Object, function (title, groupFuns
 
 	// Add the "None" button to use no function.
 
+	var noGroupFunLabel = trans('GRID.GROUP_FUN.NONE');
+
 	self.buttons['none'] = jQuery('<button>', {
 		'type': 'button',
 		'class': 'wcdv_option',
 		'data-wcdv-groupfunname': 'none',
-		'title': trans('GRID.GROUP_FUN.NONE')
+		'title': noGroupFunLabel,
+		'aria-label': noGroupFunLabel
 	})
-		.text(trans('GRID.GROUP_FUN.NONE'))
+		.text(noGroupFunLabel)
 		.on('click', function () {
 			selected = 'none';
 			self.win.dialog('close');

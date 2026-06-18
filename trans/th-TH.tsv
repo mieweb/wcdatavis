@@ -8,6 +8,7 @@ DIALOG.CANCEL	ยกเลิก
 		
 GRAPH.TITLEBAR.SHOW_HIDE	แสดง/ซ่อนกราฟ	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	แสดง/ซ่อนตัวควบคุมกราฟ	
+GRAPH.TITLEBAR.EXPORT_IMAGE	ส่งออกกราฟเป็นไฟล์รูปภาพ
 		
 GRID.TITLEBAR.CANCEL	ยกเลิก	
 GRID.TITLEBAR.LOADING	กำลังโหลด...	
@@ -101,6 +102,7 @@ GRID_CONTROL.GROUP.TITLE	ฟิลด์กลุ่ม
 GRID_CONTROL.PIVOT.TITLE	ฟิลด์ Pivot	
 GRID_CONTROL.AGGREGATE.TITLE	การรวม	
 GRID_CONTROL.FIELD.REMOVE	ลบ	
+GRID_CONTROL.CLEAR	ล้าง
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	แสดงฟังก์ชันที่ใช้ได้สำหรับฟิลด์นี้	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	แก้ไขตัวเลือก	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	ตัวเลือกสำหรับ %s	
@@ -137,6 +139,9 @@ GRID.TABLE.SORT_MENU.RESET_SORT	รีเซ็ตการเรียงลำ
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	คุณสามารถลากและวางฟิลด์นี้ไปยังตัวควบคุมตารางด้านบนเพื่อกรอง จัดกลุ่ม หรือ Pivot	
 GRID.TABLE.ADD_FILTER_HELP	คลิกเพื่อเพิ่มตัวกรองสำหรับ "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	โหลดเพิ่มอีก %s แถว
+GRID.TABLE.LOAD_ALL_ROWS	โหลดทุกแถว
+GRID.TABLE.SHOWING_ROWS	กำลังแสดงแถว 1–%s จาก %s
 		
 // Group Functions		
 		

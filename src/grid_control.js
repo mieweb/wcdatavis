@@ -127,9 +127,10 @@ GridControlField.prototype.draw = function () {
 	var self = this;
 	var label = self.displayText || (self.colConfig && self.colConfig.displayText) || self.field.field;
 
-	self.ui.removeButton = jQuery('<button>', {'type': 'button'})
+	var removeLabel = trans('GRID_CONTROL.FIELD.REMOVE');
+
+	self.ui.removeButton = jQuery('<button>', {'type': 'button', 'title': removeLabel, 'aria-label': removeLabel})
 		.append(fontAwesome('fa-minus-square'))
-		.attr('title', trans('GRID_CONTROL.FIELD.REMOVE'))
 		.addClass('wcdv_icon_button wcdv_remove wcdv_text-primary')
 		.on('click', function () {
 			self.control.removeField(self);
@@ -257,7 +258,8 @@ FunGridControlField.prototype.draw = function () {
 		self.ui.groupFunWinBtn = jQuery('<button>', {
 			'type': 'button',
 			'data-wcdv-role': 'set-group-fun',
-			title: trans('GRID_CONTROL.FIELD.SHOW_FUNCTIONS')
+			title: trans('GRID_CONTROL.FIELD.SHOW_FUNCTIONS'),
+			'aria-label': trans('GRID_CONTROL.FIELD.SHOW_FUNCTIONS')
 		})
 			.addClass('wcdv_icon_button wcdv_button_left wcdv_text-primary')
 			.on('click', function () {
@@ -453,7 +455,8 @@ AggregateControlField.prototype.draw = function () {
 	if (aggDefn.prototype.options != null) {
 		jQuery('<button>', {
 			'type': 'button',
-			title: trans('GRID_CONTROL.AGGREGATE.EDIT_OPTIONS')
+			title: trans('GRID_CONTROL.AGGREGATE.EDIT_OPTIONS'),
+			'aria-label': trans('GRID_CONTROL.AGGREGATE.EDIT_OPTIONS')
 		})
 			.addClass('wcdv_icon_button wcdv_button_left wcdv_text-primary')
 			.on('click', function () {
@@ -535,14 +538,17 @@ AggregateControlField.prototype._makeOptionsDialog = function (aggDefn) {
 		.addClass('wcdv_button_bar')
 		.appendTo(self.ui.optionsDiv);
 
+	var aggregateDialogOkLabel = trans('DIALOG.OK');
+
 	jQuery('<button>', {
 		'type': 'button',
 		'class': '',
-		'title': trans('DIALOG.OK'),
+		'title': aggregateDialogOkLabel,
+		'aria-label': aggregateDialogOkLabel,
 		'data-role': 'ok'
 	})
 		.append(fontAwesome('fa-check'))
-		.append(trans('DIALOG.OK'))
+		.append(aggregateDialogOkLabel)
 		.on('click', function () {
 			self.aggFunOpts = opts;
 			self.control.updateView();
@@ -550,14 +556,17 @@ AggregateControlField.prototype._makeOptionsDialog = function (aggDefn) {
 		})
 		.appendTo(buttonBar);
 
+	var aggregateDialogCancelLabel = trans('DIALOG.CANCEL');
+
 	jQuery('<button>', {
 		'type': 'button',
 		'class': '',
-		'title': trans('DIALOG.CANCEL'),
+		'title': aggregateDialogCancelLabel,
+		'aria-label': aggregateDialogCancelLabel,
 		'data-role': 'cancel'
 	})
 		.append(fontAwesome('fa-ban'))
-		.append(trans('DIALOG.CANCEL'))
+		.append(aggregateDialogCancelLabel)
 		.on('click', function () {
 			self.ui.optionsDialog.dialog('close');
 		})
@@ -760,7 +769,11 @@ mixinEventHandling(GridControl, [
 GridControl.prototype.makeClearButton = function (target) {
 	var self = this;
 
-	return jQuery('<button>')
+	return jQuery('<button>', {
+		'type': 'button',
+		'title': trans('GRID_CONTROL.CLEAR'),
+		'aria-label': trans('GRID_CONTROL.CLEAR')
+	})
 		.addClass('wcdv_icon_button wcdv_text-primary wcdv_control_clear_button')
 		.append(fontAwesome('fa-ban'))
 		.hide()
