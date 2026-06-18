@@ -8,6 +8,7 @@ DIALOG.CANCEL	Cancelar
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Mostrar/Ocultar Gráfica	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Mostrar/Ocultar Controles de Gráfica	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Exportar gráfica como archivo de imagen
 		
 GRID.TITLEBAR.CANCEL	Cancelar	
 GRID.TITLEBAR.LOADING	Cargando...	
@@ -101,6 +102,7 @@ GRID_CONTROL.GROUP.TITLE	Campos de grupo
 GRID_CONTROL.PIVOT.TITLE	Campos de pivote	
 GRID_CONTROL.AGGREGATE.TITLE	Agregado	
 GRID_CONTROL.FIELD.REMOVE	Eliminar	
+GRID_CONTROL.CLEAR	Limpiar
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Mostrar funciones disponibles para este campo	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Editar opciones	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Opciones para %s	
@@ -137,6 +139,9 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Restablecer orden
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Puedes arrastrar y soltar este campo en los controles de la tabla de arriba para filtrar, agrupar o pivotar.	
 GRID.TABLE.ADD_FILTER_HELP	Haz clic para agregar un filtro para "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Cargar %s filas más
+GRID.TABLE.LOAD_ALL_ROWS	Cargar todas las filas
+GRID.TABLE.SHOWING_ROWS	Mostrando filas 1–%s de %s.
 		
 // Group Functions		
 		

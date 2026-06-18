@@ -8,6 +8,7 @@ DIALOG.CANCEL	Annuleren
 	
 GRAPH.TITLEBAR.SHOW_HIDE	Grafiek tonen/verbergen
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Grafiekbediening tonen/verbergen
+GRAPH.TITLEBAR.EXPORT_IMAGE	Grafiek exporteren als afbeeldingsbestand
 	
 GRID.TITLEBAR.CANCEL	Annuleren
 GRID.TITLEBAR.LOADING	Laden...
@@ -101,6 +102,7 @@ GRID_CONTROL.GROUP.TITLE	Groepeer velden
 GRID_CONTROL.PIVOT.TITLE	Pivot-velden
 GRID_CONTROL.AGGREGATE.TITLE	Aggregatie
 GRID_CONTROL.FIELD.REMOVE	Verwijderen
+GRID_CONTROL.CLEAR	Wissen
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Toon beschikbare functies voor dit veld
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Opties bewerken
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Opties voor %s
@@ -137,6 +139,9 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Sortering resetten
 	
 GRID.TABLE.DRAGGABLE_FIELD_HELP	U kunt dit veld slepen en neerzetten in de bovenstaande rasterbediening om te filteren, groeperen of pivoteren.
 GRID.TABLE.ADD_FILTER_HELP	Klik om een filter toe te voegen voor "%s"
+GRID.TABLE.LOAD_MORE_ROWS	Laad nog %s rijen
+GRID.TABLE.LOAD_ALL_ROWS	Laad alle rijen
+GRID.TABLE.SHOWING_ROWS	Rijen 1–%s van %s worden weergegeven.
 	
 // Group Functions	
 	

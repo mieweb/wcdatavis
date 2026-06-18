@@ -97,7 +97,8 @@ OperationsPalette.prototype.drawPalette = function () {
 			var btn = jQuery('<button>', {
 				'type': 'button',
 				'class': 'wcdv_operation',
-				'data-operation-index': op.idx
+				'data-operation-index': op.idx,
+				'aria-label': op.label || op.tooltip
 			}).appendTo(catDiv);
 			if (op.label == null) {
 				btn.addClass('no_label');

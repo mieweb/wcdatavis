@@ -8,6 +8,7 @@ DIALOG.CANCEL	Отмена
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Показать/Скрыть график	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Показать/Скрыть элементы управления графиком	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Экспортировать график как файл изображения
 		
 GRID.TITLEBAR.CANCEL	Отмена	
 GRID.TITLEBAR.LOADING	Загрузка...	
@@ -101,6 +102,7 @@ GRID_CONTROL.GROUP.TITLE	Групповые поля
 GRID_CONTROL.PIVOT.TITLE	Поля сводной таблицы	
 GRID_CONTROL.AGGREGATE.TITLE	Агрегат	
 GRID_CONTROL.FIELD.REMOVE	Удалить	
+GRID_CONTROL.CLEAR	Очистить
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Показать доступные функции для этого поля	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Изменить параметры	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Параметры для %s	
@@ -137,6 +139,9 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Сбросить сортировку
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Вы можете перетащить это поле в элементы управления таблицей выше для фильтрации, группировки или сводки.	
 GRID.TABLE.ADD_FILTER_HELP	Нажмите, чтобы добавить фильтр для «%s»	
+GRID.TABLE.LOAD_MORE_ROWS	Загрузить ещё %s строк
+GRID.TABLE.LOAD_ALL_ROWS	Загрузить все строки
+GRID.TABLE.SHOWING_ROWS	Показаны строки 1–%s из %s.
 		
 // Group Functions		
 		
