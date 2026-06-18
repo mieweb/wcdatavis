@@ -174,13 +174,15 @@ DebugWin.prototype.show = function (grid, view, source) {
 		.appendTo(win);
 
 	var words = ['Very Cool', 'Thanks', 'Nice!', 'All Right', 'Whatever'];
+	var closeLabel = words[Math.floor(Math.random() * words.length)];
 	jQuery('<button>', {
 		'type': 'button',
 		'class': '',
-		'title': 'Very Cool'
+		'title': closeLabel,
+		'aria-label': closeLabel
 	})
 		.append(fontAwesome('fa-thumbs-up'))
-		.append(words[Math.floor(Math.random() * words.length)])
+		.append(closeLabel)
 		.on('click', function () {
 			win.dialog('close');
 		})

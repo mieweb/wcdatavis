@@ -99,7 +99,8 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 
 		jQuery('<button>', {
 			'type': 'button',
-			'title': trans('GRID.COLCONFIG_WIN.REORDER_COLS')
+			'title': trans('GRID.COLCONFIG_WIN.REORDER_COLS'),
+			'aria-label': trans('GRID.COLCONFIG_WIN.REORDER_COLS')
 		})
 			.addClass('wcdv_icon_button drag-handle wcdv_button_right')
 			.append(fontAwesome('fa-bars'))
@@ -121,7 +122,8 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 
 		var renameBtn = jQuery('<button>', {
 			'type': 'button',
-			'title': trans('GRID.COLCONFIG_WIN.RENAME_COL')
+			'title': trans('GRID.COLCONFIG_WIN.RENAME_COL'),
+			'aria-label': trans('GRID.COLCONFIG_WIN.RENAME_COL')
 		})
 			.addClass('wcdv_icon_button')
 			.append(fontAwesome('fa-pencil'))
@@ -249,7 +251,8 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 
 		jQuery('<button>', {
 			'type': 'button',
-			'title': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_TOP')
+			'title': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_TOP'),
+			'aria-label': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_TOP')
 		})
 			.addClass('wcdv_icon_button wcdv_button_left')
 			.on('click', function () {
@@ -269,7 +272,8 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 
 		jQuery('<button>', {
 			'type': 'button',
-			'title': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_BOTTOM')
+			'title': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_BOTTOM'),
+			'aria-label': trans('GRID.COLCONFIG_WIN.MOVE_COL_TO_BOTTOM')
 		})
 			.addClass('wcdv_icon_button wcdv_button_left')
 			.on('click', function () {
@@ -306,13 +310,16 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 		.appendTo(orderWin);
 
 	if (self.initColConfig) {
+		var resetColOrderLabel = trans('GRID.COLCONFIG_WIN.RESET_COL_ORDER');
+
 		jQuery('<button>', {
 			'type': 'button',
 			'class': '',
-			'title': trans('GRID.COLCONFIG_WIN.RESET_COL_ORDER')
+			'title': resetColOrderLabel,
+			'aria-label': resetColOrderLabel
 		})
 			.append(fontAwesome('fa-undo'))
-			.append(trans('GRID.COLCONFIG_WIN.RESET_COL_ORDER'))
+			.append(resetColOrderLabel)
 			.on('click', function (evt) {
 				keys = self.initColConfig.keys();
 				_.each(keys, function (k) {
@@ -325,14 +332,17 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 			.appendTo(buttonBar);
 	}
 
+	var dialogOkLabel = trans('DIALOG.OK');
+
 	jQuery('<button>', {
 		'type': 'button',
 		'class': '',
-		'title': trans('DIALOG.OK'),
+		'title': dialogOkLabel,
+		'aria-label': dialogOkLabel,
 		'data-role': 'ok'
 	})
 		.append(fontAwesome('fa-check'))
-		.append(trans('DIALOG.OK'))
+		.append(dialogOkLabel)
 		.on('click', function () {
 			// Overwrite the "initial" configuration with one derived from the current one, based on the
 			// order of the keys saved by the reordering the table rows.
@@ -349,14 +359,17 @@ ColConfigWin.prototype.show = function (posElt, onSave) {
 		})
 		.appendTo(buttonBar);
 
+	var dialogCancelLabel = trans('DIALOG.CANCEL');
+
 	jQuery('<button>', {
 		'type': 'button',
 		'class': '',
-		'title': trans('DIALOG.CANCEL'),
+		'title': dialogCancelLabel,
+		'aria-label': dialogCancelLabel,
 		'data-role': 'cancel'
 	})
 		.append(fontAwesome('fa-ban'))
-		.append(trans('DIALOG.CANCEL'))
+		.append(dialogCancelLabel)
 		.on('click', function () {
 			orderWin.dialog('close');
 		})
