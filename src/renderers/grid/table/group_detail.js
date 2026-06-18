@@ -711,11 +711,21 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 					'colspan': colSpan
 				})
 					.append(fontAwesome('fa-chevron-circle-down'))
-					.append(jQuery('<span>Showing rows 1–' + i + ' of ' + childRowValEltsLen + '.</span>')
+					.append(jQuery('<span>')
+						.text(trans('GRID.TABLE.SHOWING_ROWS', i, childRowValEltsLen))
 						.css({'padding-left': '0.5em'}))
-					.append(jQuery('<button type="button">Load ' + limitConfig.chunkSize + ' more rows.</button>')
+					.append(jQuery('<button>', {
+						'type': 'button',
+						'aria-label': trans('GRID.TABLE.LOAD_MORE_ROWS', limitConfig.chunkSize)
+					})
+						.text(trans('GRID.TABLE.LOAD_MORE_ROWS', limitConfig.chunkSize))
 						.css({'margin-left': '0.5em'}))
-					.append(jQuery('<button type="button" class="wcdv_show_all">Load all rows.</button>')
+					.append(jQuery('<button>', {
+						'type': 'button',
+						'class': 'wcdv_show_all',
+						'aria-label': trans('GRID.TABLE.LOAD_ALL_ROWS')
+					})
+						.text(trans('GRID.TABLE.LOAD_ALL_ROWS'))
 						.css({'margin-left': '0.5em'})
 					)
 					.append(spinnerDiv)
@@ -862,11 +872,21 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 					'colspan': colSpan
 				})
 					.append(fontAwesome('fa-chevron-circle-down'))
-					.append(jQuery('<span>Showing rows 1–' + i + ' of ' + metadataNode.rows.length + '.</span>')
+					.append(jQuery('<span>')
+						.text(trans('GRID.TABLE.SHOWING_ROWS', i, metadataNode.rows.length))
 						.css({'padding-left': '0.5em'}))
-					.append(jQuery('<button type="button">Load ' + limitConfig.chunkSize + ' more rows.</button>')
+					.append(jQuery('<button>', {
+						'type': 'button',
+						'aria-label': trans('GRID.TABLE.LOAD_MORE_ROWS', limitConfig.chunkSize)
+					})
+						.text(trans('GRID.TABLE.LOAD_MORE_ROWS', limitConfig.chunkSize))
 						.css({'margin-left': '0.5em'}))
-					.append(jQuery('<button type="button" class="wcdv_show_all">Load all rows.</button>')
+					.append(jQuery('<button>', {
+						'type': 'button',
+						'class': 'wcdv_show_all',
+						'aria-label': trans('GRID.TABLE.LOAD_ALL_ROWS')
+					})
+						.text(trans('GRID.TABLE.LOAD_ALL_ROWS'))
 						.css({'margin-left': '0.5em'})
 					)
 					.append(spinnerDiv)

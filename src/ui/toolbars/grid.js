@@ -49,7 +49,9 @@ var PlainToolbar = makeSubclass('PlainToolbar', ToolbarSection, function (grid) 
 	// re-enabled if we switch grid tables and come back - as "limit" feature will be reset to its
 	// default value).
 
-	jQuery('<button>', {'type': 'button'})
+	var showAllRowsLabel = trans('GRID_TOOLBAR.PLAIN.SHOW_ALL_ROWS');
+
+	jQuery('<button>', {'type': 'button', 'aria-label': showAllRowsLabel})
 		.on('click', function (evt) {
 			grid.renderer.updateFeatures({
 				'block': true,
@@ -57,16 +59,19 @@ var PlainToolbar = makeSubclass('PlainToolbar', ToolbarSection, function (grid) 
 				'limit': false
 			});
 		})
-		.text(trans('GRID_TOOLBAR.PLAIN.SHOW_ALL_ROWS'))
+		.text(showAllRowsLabel)
 		.appendTo(grid.ui.limit_div)
 	;
 
+	var columnConfigLabel = trans('GRID_TOOLBAR.PLAIN.COLUMNS');
+
 	self.ui.columnConfig = jQuery('<button>', {
 		'type': 'button',
-		'title': trans('GRID_TOOLBAR.PLAIN.COLUMNS')
+		'title': columnConfigLabel,
+		'aria-label': columnConfigLabel
 	})
 		.append(fontAwesome('fa-columns'))
-		.append(trans('GRID_TOOLBAR.PLAIN.COLUMNS'))
+		.append(columnConfigLabel)
 		.on('click', function (evt) {
 			grid.colConfigWin.show(grid.ui.controls, function (colConfig, opts) {
 				if (opts.clearRenderCache) {
@@ -80,11 +85,14 @@ var PlainToolbar = makeSubclass('PlainToolbar', ToolbarSection, function (grid) 
 		.appendTo(self.ui.root)
 	;
 
+	var templatesEditorLabel = trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR');
+
 	self.ui.TemplatesEditor = jQuery('<button>', {
-		'type': 'button'
+		'type': 'button',
+		'aria-label': templatesEditorLabel
 	})
 		.append(fontAwesome('fa-pencil'))
-		.append(trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR'))
+		.append(templatesEditorLabel)
 		.on('click', function (evt) {
 			grid.TemplatesEditor.show();
 		})
@@ -107,12 +115,15 @@ var PlainToolbar = makeSubclass('PlainToolbar', ToolbarSection, function (grid) 
 		, self.ui.root
 	);
 
+	var autoResizeColumnsLabel = trans('GRID_TOOLBAR.PLAIN.AUTO_RESIZE_COLUMNS');
+
 	self.ui.autoResizeColumns = jQuery('<button>', {
 		'type': 'button',
-		'title': trans('GRID_TOOLBAR.PLAIN.AUTO_RESIZE_COLUMNS')
+		'title': autoResizeColumnsLabel,
+		'aria-label': autoResizeColumnsLabel
 	})
 		.append(fontAwesome('fa-arrows-h'))
-		.append(trans('GRID_TOOLBAR.PLAIN.AUTO_RESIZE_COLUMNS'))
+		.append(autoResizeColumnsLabel)
 		.on('click', function (evt) {
 			var colConfig = grid.colConfig.clone();
 			colConfig.each(function (fcc) {
@@ -253,11 +264,14 @@ var GroupToolbar = makeSubclass('GroupToolbar', ToolbarSection, function (grid) 
 
 	//make a toggle for expanded groups
 
+	var groupColumnConfigLabel = trans('GRID_TOOLBAR.PLAIN.COLUMNS');
+
 	self.ui.columnConfig = jQuery('<button>', {
-		'type': 'button'
+		'type': 'button',
+		'aria-label': groupColumnConfigLabel
 	})
 		.append(fontAwesome('fa-columns'))
-		.append(trans('GRID_TOOLBAR.PLAIN.COLUMNS'))
+		.append(groupColumnConfigLabel)
 		.on('click', function (evt) {
 			grid.colConfigWin.show(grid.ui.controls, function (colConfig) {
 				grid.setColConfig(colConfig, {
@@ -268,11 +282,14 @@ var GroupToolbar = makeSubclass('GroupToolbar', ToolbarSection, function (grid) 
 		.appendTo(self.ui.root)
 	;
 
+	var groupTemplatesEditorLabel = trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR');
+
 	self.ui.TemplatesEditor = jQuery('<button>', {
-		'type': 'button'
+		'type': 'button',
+		'aria-label': groupTemplatesEditorLabel
 	})
 		.append(fontAwesome('fa-pencil'))
-		.append(trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR'))
+		.append(groupTemplatesEditorLabel)
 		.on('click', function (evt) {
 			grid.TemplatesEditor.show();
 		})
@@ -370,11 +387,14 @@ var PivotToolbar = makeSubclass('PivotToolbar', ToolbarSection, function (grid) 
 		}
 	);
 
+	var pivotTemplatesEditorLabel = trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR');
+
 	self.ui.TemplatesEditor = jQuery('<button>', {
-		'type': 'button'
+		'type': 'button',
+		'aria-label': pivotTemplatesEditorLabel
 	})
 		.append(fontAwesome('fa-pencil'))
-		.append(trans('GRID_TOOLBAR.PLAIN.TEMPLATES_EDITOR'))
+		.append(pivotTemplatesEditorLabel)
 		.on('click', function (evt) {
 			grid.TemplatesEditor.show();
 		})
@@ -453,7 +473,8 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 	// many different perspectives set, but I feel better having it as a safety in case your prefs
 	// somehow get really messed up and don't work at all anymore.  This button is always shown.
 
-	var resetBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.PREFS.RESET.TOOLTIP')})
+	var resetTooltip = trans('GRID_TOOLBAR.PREFS.RESET.TOOLTIP');
+	var resetBtn = jQuery('<button>', {'type': 'button', 'title': resetTooltip, 'aria-label': resetTooltip})
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.append(fontAwesome('fa-undo'))
 		.on('click', function (evt) {
@@ -465,9 +486,9 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 		.appendTo(div)
 	;
 
-	var backBtn = jQuery('<button>', {'type': 'button'})
+	var backTooltip = trans('GRID_TOOLBAR.PREFS.BACK.TOOLTIP');
+	var backBtn = jQuery('<button>', {'type': 'button', 'title': backTooltip, 'aria-label': backTooltip})
 		.append(fontAwesome('fa-chevron-circle-left'))
-		.attr('title', trans('GRID_TOOLBAR.PREFS.BACK.TOOLTIP'))
 		.attr('disabled', true)
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.on('click', function (evt) {
@@ -477,9 +498,9 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 		.appendTo(div)
 	;
 
-	var forwardBtn = jQuery('<button>', {'type': 'button'})
+	var forwardTooltip = trans('GRID_TOOLBAR.PREFS.FORWARD.TOOLTIP');
+	var forwardBtn = jQuery('<button>', {'type': 'button', 'title': forwardTooltip, 'aria-label': forwardTooltip})
 		.append(fontAwesome('fa-chevron-circle-right'))
-		.attr('title', trans('GRID_TOOLBAR.PREFS.FORWARD.TOOLTIP'))
 		.attr('disabled', true)
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.on('click', function (evt) {
@@ -560,7 +581,8 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 		.append(fontAwesome('fa-info-circle').css('padding-right', '0.25em').addClass('wcdv_text-primary'))
 		.append(trans('GRID_TOOLBAR.PREFS.SAVE_AS.HELP'));
 
-	var saveAsBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.PREFS.SAVE_AS.TOOLTIP')})
+	var saveAsTooltip = trans('GRID_TOOLBAR.PREFS.SAVE_AS.TOOLTIP');
+	var saveAsBtn = jQuery('<button>', {'type': 'button', 'title': saveAsTooltip, 'aria-label': saveAsTooltip})
 		.append(fontAwesome('fa-save'))
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.tooltip({
@@ -583,7 +605,8 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 		.append(fontAwesome('fa-info-circle').css('padding-right', '0.25em').addClass('wcdv_text-primary'))
 		.append(trans('GRID_TOOLBAR.PREFS.SAVE.HELP'));
 
-	var saveBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.PREFS.SAVE.TOOLTIP')})
+	var saveTooltip = trans('GRID_TOOLBAR.PREFS.SAVE.TOOLTIP');
+	var saveBtn = jQuery('<button>', {'type': 'button', 'title': saveTooltip, 'aria-label': saveTooltip})
 		.append(fontAwesome('fa-save'))
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.hide()
@@ -611,7 +634,8 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 	// XXX: What if the user types in "Main Perspective" ?
 	// XXX: What if the user types in "NEW" ?
 
-	var renameBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.PREFS.RENAME.TOOLTIP')})
+	var renameTooltip = trans('GRID_TOOLBAR.PREFS.RENAME.TOOLTIP');
+	var renameBtn = jQuery('<button>', {'type': 'button', 'title': renameTooltip, 'aria-label': renameTooltip})
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.append(fontAwesome('fa-pencil'))
 		.on('click', function (evt) {
@@ -638,7 +662,8 @@ var PrefsToolbar = makeSubclass('PrefsToolbar', ToolbarSection, function (grid) 
 	// Perspective".  It is only shown when the currently selected perspective is not "Main
 	// Perspective" as it cannot be deleted.
 
-	var deleteBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.PREFS.DELETE.TOOLTIP')})
+	var deleteTooltip = trans('GRID_TOOLBAR.PREFS.DELETE.TOOLTIP');
+	var deleteBtn = jQuery('<button>', {'type': 'button', 'title': deleteTooltip, 'aria-label': deleteTooltip})
 		.addClass('wcdv_icon_button wcdv_text-primary')
 		.append(fontAwesome('fa-trash'))
 		.on('click', function (evt) {
@@ -769,9 +794,10 @@ var RendererToolbar = makeSubclass('RendererToolbar', ToolbarSection, function (
 		.appendTo(self.ui.root)
 	;
 
-	var configBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.RENDERER.DISPLAY_OPTIONS')})
+	var displayOptionsLabel = trans('GRID_TOOLBAR.RENDERER.DISPLAY_OPTIONS');
+	var configBtn = jQuery('<button>', {'type': 'button', 'title': displayOptionsLabel, 'aria-label': displayOptionsLabel})
 		.append(fontAwesome('fa-table'))
-		.append(trans('GRID_TOOLBAR.RENDERER.DISPLAY_OPTIONS'))
+		.append(displayOptionsLabel)
 		.on('click', function () {
 			var gridTableOptsWin = new GridTableOptsWin(grid.renderer);
 			gridTableOptsWin.show(function (newOpts) {
@@ -816,9 +842,10 @@ var ComputedViewToolbar = makeSubclass('ComputedViewToolbar', ToolbarSection, fu
 	// This button creates a MirageView from the current view, and switches my grid's view to the new
 	// MirageView.  If an error occurs, it should abort and leave things the way they are.
 
-	self.ui.storeMirageBtn = jQuery('<button>', {'type': 'button', 'title': trans('GRID_TOOLBAR.MIRAGE.STORE_DISPLAYED_DATA')})
+	var storeDisplayedDataLabel = trans('GRID_TOOLBAR.MIRAGE.STORE_DISPLAYED_DATA');
+	self.ui.storeMirageBtn = jQuery('<button>', {'type': 'button', 'title': storeDisplayedDataLabel, 'aria-label': storeDisplayedDataLabel})
 		.append(fontAwesome('fa-save'))
-		.append(trans('GRID_TOOLBAR.MIRAGE.STORE_DISPLAYED_DATA'))
+		.append(storeDisplayedDataLabel)
 		.on('click', function () {
 			var perspectiveName = prompt(trans('GRID_TOOLBAR.PREFS.NEW_PERSPECTIVE.PROMPT'), grid.prefs.currentPerspective.name);
 			if (perspectiveName != null) {

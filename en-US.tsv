@@ -8,6 +8,7 @@ DIALOG.CANCEL	Cancel
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Show/Hide Graph	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Show/Hide Graph Controls	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Export graph as image file	
 		
 GRID.TITLEBAR.CANCEL	Cancel	
 GRID.TITLEBAR.LOADING	Loading...	
@@ -117,6 +118,7 @@ GRID_CONTROL.GROUP.TITLE	Group Fields
 GRID_CONTROL.PIVOT.TITLE	Pivot Fields	
 GRID_CONTROL.AGGREGATE.TITLE	Aggregate	
 GRID_CONTROL.FIELD.REMOVE	Remove	
+GRID_CONTROL.CLEAR	Clear	
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Show functions available for this field	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Edit options	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Options for %s	
@@ -153,9 +155,16 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Reset Sort
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	You can drag & drop this field into the grid controls above to filter, group or pivot.	
 GRID.TABLE.ADD_FILTER_HELP	Click to add a filter for "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Load %s more rows	Text for the button or clickable control that loads the next chunk of rows; %s is the row count.
+GRID.TABLE.LOAD_ALL_ROWS	Load all rows	Text for the button that loads all remaining rows.
+GRID.TABLE.SHOWING_ROWS	Showing rows 1–%s of %s.	Text shown before the load-more control; first %s is the number of rows currently shown, second %s is the total number of rows.
 		
 GRID.TABLE.RESIZE_COLUMN	Drag to resize column	
 GRID.TABLE.REORDER_COLUMN	Drag to reorder column	
+		
+// Slider		
+		
+SLIDER.CLOSE	Close	Accessible label for the slider close button.
 		
 // Group Functions		
 		

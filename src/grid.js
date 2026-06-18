@@ -1252,7 +1252,8 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 
 	self.ui.cancelFetchBtn = jQuery('<button>', {
 		'type': 'button',
-		'title': trans('GRID.TITLEBAR.CANCEL')
+		'title': trans('GRID.TITLEBAR.CANCEL'),
+		'aria-label': trans('GRID.TITLEBAR.CANCEL')
 	})
 		.css({'margin-left': '0.5em'})
 		.text(trans('GRID.TITLEBAR.CANCEL'))
@@ -1295,9 +1296,10 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 		jQuery('<button>', {
 			'type': 'button',
 			'style': 'font-size: 18px',
-			'class': 'wcdv_icon_button wcdv_text-primary'
+			'class': 'wcdv_icon_button wcdv_text-primary',
+			'title': trans('GRID.TITLEBAR.SHOW_DEBUG_INFO'),
+			'aria-label': trans('GRID.TITLEBAR.SHOW_DEBUG_INFO')
 		})
-			.attr('title', trans('GRID.TITLEBAR.SHOW_DEBUG_INFO'))
 			.click(function (evt) {
 				evt.stopPropagation();
 				self.debugWin.show(self, self.view, self.view.source);
@@ -1311,7 +1313,9 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 	self.ui.exportBtn = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRID.TITLEBAR.GENERATE_CSV'),
+		'aria-label': trans('GRID.TITLEBAR.GENERATE_CSV')
 	})
 		.on('click', function (evt) {
 			evt.stopPropagation();
@@ -1327,9 +1331,10 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 	self.ui.refreshBtn = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRID.TITLEBAR.REFRESH'),
+		'aria-label': trans('GRID.TITLEBAR.REFRESH')
 	})
-		.attr('title', trans('GRID.TITLEBAR.REFRESH'))
 		.on('click', function (evt) {
 			evt.stopPropagation();
 			self.refresh();
@@ -1370,9 +1375,10 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 	jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRID.TITLEBAR.SHOW_HIDE_CONTROLS'),
+		'aria-label': trans('GRID.TITLEBAR.SHOW_HIDE_CONTROLS')
 	})
-		.attr('title', trans('GRID.TITLEBAR.SHOW_HIDE_CONTROLS'))
 		.click(function (evt) {
 			evt.stopPropagation();
 			if (evt.shiftKey) {
@@ -1399,9 +1405,10 @@ Grid.prototype._addTitleWidgets = function (titlebar, doingServerFilter, id) {
 	self.ui.showHideButton = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary showhide'
+		'class': 'wcdv_icon_button wcdv_text-primary showhide',
+		'title': trans('GRID.TITLEBAR.SHOW_HIDE'),
+		'aria-label': trans('GRID.TITLEBAR.SHOW_HIDE')
 	})
-		.attr('title', trans('GRID.TITLEBAR.SHOW_HIDE'))
 		.click(function (evt) {
 			evt.stopPropagation();
 			self.toggle();
@@ -2222,12 +2229,14 @@ Grid.prototype._setExportStatus = function (status) {
 	case 'notReady':
 		self.csvReady = false;
 		self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.GENERATE_CSV'));
+		self.ui.exportBtn.attr('aria-label', trans('GRID.TITLEBAR.GENERATE_CSV'));
 		self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
 		self.ui.exportBtn.append(fontAwesome('fa-file-o'));
 		break;
 	case 'ready':
 		self.csvReady = true;
 		self.ui.exportBtn.attr('title', trans('GRID.TITLEBAR.DOWNLOAD_CSV'));
+		self.ui.exportBtn.attr('aria-label', trans('GRID.TITLEBAR.DOWNLOAD_CSV'));
 		self.ui.exportBtn.children('span.fa, svg.svg-inline--fa').remove();
 		self.ui.exportBtn.append(fontAwesome('fa-download'));
 		break;

@@ -8,6 +8,7 @@ DIALOG.CANCEL	Annuler
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Afficher/Masquer le graphique	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Afficher/Masquer les contrôles du graphique	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Exporter le graphique comme fichier image	
 		
 GRID.TITLEBAR.CANCEL	Annuler	
 GRID.TITLEBAR.LOADING	Chargement...	
@@ -117,6 +118,7 @@ GRID_CONTROL.GROUP.TITLE	Champs de regroupement
 GRID_CONTROL.PIVOT.TITLE	Champs de pivot	
 GRID_CONTROL.AGGREGATE.TITLE	Agrégat	
 GRID_CONTROL.FIELD.REMOVE	Supprimer	
+GRID_CONTROL.CLEAR	Effacer	
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Afficher les fonctions disponibles pour ce champ	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Modifier les options	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Options pour %s	
@@ -153,9 +155,16 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Réinitialiser le tri
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Vous pouvez faire glisser ce champ dans les contrôles de la grille ci-dessus pour filtrer, regrouper ou pivoter.	
 GRID.TABLE.ADD_FILTER_HELP	Cliquez pour ajouter un filtre pour "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Charger %s lignes de plus	
+GRID.TABLE.LOAD_ALL_ROWS	Charger toutes les lignes	
+GRID.TABLE.SHOWING_ROWS	Affichage des lignes 1–%s sur %s.	
 		
 GRID.TABLE.RESIZE_COLUMN	Glisser pour redimensionner la colonne
 GRID.TABLE.REORDER_COLUMN	Glisser pour réorganiser la colonne
+		
+// Slider		
+		
+SLIDER.CLOSE	Fermer	
 		
 // Group Functions		
 		

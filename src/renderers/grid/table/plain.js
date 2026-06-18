@@ -760,16 +760,13 @@ GridTablePlain.prototype.drawBody = function (data, typeInfo, columns, cont, opt
 		})
 			.on('click', showMore)
 			.append(fontAwesome('fa-chevron-circle-down'))
-			.append(jQuery('<span>Showing rows '
-											+ '1–'
-											+ (rowNum + 1)
-											+ ' of '
-											+ data.data.length
-											+ '.</span>')
+			.append(jQuery('<span>')
+						.text(trans('GRID.TABLE.SHOWING_ROWS', rowNum + 1, data.data.length))
 								.css({
 								'padding-left': '0.5em',
 							}))
-			.append(jQuery('<span>Click to load ' + limitConfig.chunkSize + ' more rows.</span>')
+			.append(jQuery('<span>')
+						.text(trans('GRID.TABLE.LOAD_MORE_ROWS', limitConfig.chunkSize))
 							.css({
 								'padding-left': '0.5em',
 								'padding-right': '0.5em'
@@ -1292,6 +1289,7 @@ GridTablePlain.prototype.makeRowReorderBtn = function () {
 	var self = this;
 
 	return jQuery('<button type="button" class="drag-handle fa">')
+		.attr('aria-label', 'Drag or press up/down arrows to move')
 		.html(fontAwesome('fa-arrows-v',null,'Drag or press up/down arrows to move'));
 };
 

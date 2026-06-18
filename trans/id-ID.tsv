@@ -8,6 +8,7 @@ DIALOG.CANCEL	Batal
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Tampilkan/Sembunyikan Grafik	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Tampilkan/Sembunyikan Kontrol Grafik	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Ekspor grafik sebagai file gambar	
 		
 GRID.TITLEBAR.CANCEL	Batal	
 GRID.TITLEBAR.LOADING	Memuat...	
@@ -117,6 +118,7 @@ GRID_CONTROL.GROUP.TITLE	Grup Bidang
 GRID_CONTROL.PIVOT.TITLE	Pivot Bidang	
 GRID_CONTROL.AGGREGATE.TITLE	Agregat	
 GRID_CONTROL.FIELD.REMOVE	Hapus	
+GRID_CONTROL.CLEAR	Bersihkan	
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Tampilkan fungsi yang tersedia untuk bidang ini	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Edit opsi	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Opsi untuk %s	
@@ -153,9 +155,16 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Atur Ulang Urutan
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Anda dapat menyeret & melepaskan bidang ini ke kontrol grid di atas untuk memfilter, mengelompokkan, atau pivot.	
 GRID.TABLE.ADD_FILTER_HELP	Klik untuk menambah filter untuk "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Muat %s baris lagi	
+GRID.TABLE.LOAD_ALL_ROWS	Muat semua baris	
+GRID.TABLE.SHOWING_ROWS	Menampilkan baris 1–%s dari %s.	
 		
 GRID.TABLE.RESIZE_COLUMN	Seret untuk mengubah ukuran kolom
 GRID.TABLE.REORDER_COLUMN	Seret untuk mengurutkan ulang kolom
+		
+// Slider		
+		
+SLIDER.CLOSE	Tutup	
 		
 // Group Functions		
 		

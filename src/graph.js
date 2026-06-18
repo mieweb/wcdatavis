@@ -366,7 +366,9 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 	self.ui.exportBtn = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRAPH.TITLEBAR.EXPORT_IMAGE'),
+		'aria-label': trans('GRAPH.TITLEBAR.EXPORT_IMAGE')
 	})
 		.on('click', function (evt) {
 			evt.stopPropagation();
@@ -381,9 +383,10 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 	self.ui.refreshBtn = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRID.TITLEBAR.REFRESH'),
+		'aria-label': trans('GRID.TITLEBAR.REFRESH')
 	})
-		.attr('title', 'Refresh')
 		.on('click', function (evt) {
 			evt.stopPropagation();
 			self.refresh();
@@ -399,9 +402,10 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 	jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary'
+		'class': 'wcdv_icon_button wcdv_text-primary',
+		'title': trans('GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS'),
+		'aria-label': trans('GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS')
 	})
-		.attr('title', trans('GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS'))
 		.click(function (evt) {
 			evt.stopPropagation();
 			self.ui.toolbar.toggle();
@@ -415,9 +419,10 @@ Graph.prototype._addTitleWidgets = function (titlebar) {
 	self.ui.showHideButton = jQuery('<button>', {
 		'type': 'button',
 		'style': 'font-size: 18px',
-		'class': 'wcdv_icon_button wcdv_text-primary showhide'
+		'class': 'wcdv_icon_button wcdv_text-primary showhide',
+		'title': trans('GRAPH.TITLEBAR.SHOW_HIDE'),
+		'aria-label': trans('GRAPH.TITLEBAR.SHOW_HIDE')
 	})
-		.attr('title', trans('GRAPH.TITLEBAR.SHOW_HIDE'))
 		.click(function (evt) {
 			evt.stopPropagation();
 			self.toggle();

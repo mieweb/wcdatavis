@@ -190,7 +190,8 @@ jQuery.fn.extend({
 			var button = jQuery('<button>', {
 				'type': 'button',
 				'disabled': jQuery(self).prop('disabled'),
-				'title': self.attr('title')
+				'title': self.attr('title'),
+				'aria-label': self.attr('title')
 			})
 				.addClass('wcdv_icon_button wcdv_button_left')
 				.on('click', function () {

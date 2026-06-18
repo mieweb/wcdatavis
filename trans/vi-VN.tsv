@@ -8,6 +8,7 @@ DIALOG.CANCEL	Hủy
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Hiện/Ẩn Biểu Đồ	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Hiện/Ẩn Điều Khiển Biểu Đồ	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Xuất biểu đồ dưới dạng tệp hình ảnh	
 		
 GRID.TITLEBAR.CANCEL	Hủy	
 GRID.TITLEBAR.LOADING	Đang tải...	
@@ -117,6 +118,7 @@ GRID_CONTROL.GROUP.TITLE	Trường nhóm
 GRID_CONTROL.PIVOT.TITLE	Trường xoay	
 GRID_CONTROL.AGGREGATE.TITLE	Tổng hợp	
 GRID_CONTROL.FIELD.REMOVE	Xóa	
+GRID_CONTROL.CLEAR	Xóa	
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Hiển thị chức năng cho trường này	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Chỉnh sửa tùy chọn	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Tùy chọn cho %s	
@@ -153,9 +155,16 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Đặt lại sắp xếp
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Bạn có thể kéo & thả trường này vào các điều khiển lưới phía trên để lọc, nhóm hoặc xoay.	
 GRID.TABLE.ADD_FILTER_HELP	Nhấn để thêm bộ lọc cho "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Tải thêm %s hàng	
+GRID.TABLE.LOAD_ALL_ROWS	Tải tất cả các hàng	
+GRID.TABLE.SHOWING_ROWS	Đang hiển thị hàng 1–%s trong tổng số %s.	
 		
 GRID.TABLE.RESIZE_COLUMN	Kéo để thay đổi kích thước cột
 GRID.TABLE.REORDER_COLUMN	Kéo để sắp xếp lại cột
+		
+// Slider		
+		
+SLIDER.CLOSE	Đóng	
 		
 // Group Functions		
 		

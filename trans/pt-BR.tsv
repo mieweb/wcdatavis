@@ -8,6 +8,7 @@ DIALOG.CANCEL	Cancelar
 		
 GRAPH.TITLEBAR.SHOW_HIDE	Mostrar/Ocultar Gráfico	
 GRAPH.TITLEBAR.SHOW_HIDE_CONTROLS	Mostrar/Ocultar Controles do Gráfico	
+GRAPH.TITLEBAR.EXPORT_IMAGE	Exportar gráfico como arquivo de imagem	
 		
 GRID.TITLEBAR.CANCEL	Cancelar	
 GRID.TITLEBAR.LOADING	Carregando...	
@@ -117,6 +118,7 @@ GRID_CONTROL.GROUP.TITLE	Agrupar Campos
 GRID_CONTROL.PIVOT.TITLE	Campos de Pivô	
 GRID_CONTROL.AGGREGATE.TITLE	Agregado	
 GRID_CONTROL.FIELD.REMOVE	Remover	
+GRID_CONTROL.CLEAR	Limpar	
 GRID_CONTROL.FIELD.SHOW_FUNCTIONS	Mostrar funções disponíveis para este campo	
 GRID_CONTROL.AGGREGATE.EDIT_OPTIONS	Editar opções	
 GRID_CONTROL.AGGREGATE.OPTIONS_DIALOG.TITLE	Opções para %s	
@@ -153,9 +155,16 @@ GRID.TABLE.SORT_MENU.RESET_SORT	Redefinir Ordenação
 		
 GRID.TABLE.DRAGGABLE_FIELD_HELP	Você pode arrastar e soltar este campo nos controles da grade acima para filtrar, agrupar ou pivotar.	
 GRID.TABLE.ADD_FILTER_HELP	Clique para adicionar um filtro para "%s"	
+GRID.TABLE.LOAD_MORE_ROWS	Carregar mais %s linhas	
+GRID.TABLE.LOAD_ALL_ROWS	Carregar todas as linhas	
+GRID.TABLE.SHOWING_ROWS	Mostrando linhas de 1 a %s de %s.	
 		
 GRID.TABLE.RESIZE_COLUMN	Arraste para redimensionar coluna
 GRID.TABLE.REORDER_COLUMN	Arraste para reordenar coluna
+		
+// Slider		
+		
+SLIDER.CLOSE	Fechar	
 		
 // Group Functions		
 		
