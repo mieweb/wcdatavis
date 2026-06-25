@@ -614,13 +614,16 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 					rowValEltSpan.text(rowValElt);
 				}
 
+				var infoTransLbl;
+
 				infoText = '(';
 				if (childMetadataNode.children != null) {
-					infoText += childMetadataNode.numChildren + ' ';
-					infoText += (childMetadataNode.numChildren === 1 ? 'group' : 'groups') + ', ';
+					infoTransLbl = childMetadataNode.numChildren === 1 ? 'GRID.TITLEBAR.GROUP_COUNT_SINGULAR' : 'GRID.TITLEBAR.GROUP_COUNT_PLURAL';
+					infoText += trans(infoTransLbl, childMetadataNode.numChildren);
+					infoText += ', ';
 				}
-				infoText += childMetadataNode.numRows + ' ';
-				infoText += childMetadataNode.numRows === 1 ? 'row' : 'rows';
+				infoTransLbl = childMetadataNode.numRows === 1 ? 'GRID.TITLEBAR.RECORD_COUNT_SINGULAR' : 'GRID.TITLEBAR.RECORD_COUNT_PLURAL';
+				infoText += trans(infoTransLbl, childMetadataNode.numRows);
 				infoText += ')';
 
 				infoTextSpan = jQuery('<span>').css({'margin-left': '0.5em'}).text(infoText);
