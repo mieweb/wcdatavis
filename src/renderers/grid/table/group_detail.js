@@ -34,6 +34,7 @@ import {GridFilterSet} from '../../../grid_filter.js';
 import {GridRenderer} from '../../../grid_renderer.js';
 import {ComputedView} from '../../../computed_view.js';
 import {GROUP_FUNCTION_REGISTRY} from '../../../group_fun.js';
+import {Source} from '../../../source.js';
 
 import handlebarsUtil from '../../../util/handlebars.js';
 import GridTable from '../table.js';
@@ -536,13 +537,6 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 			var showMoreTd;
 			var colSpan;
 
-			var trans = {
-				'group:singular': 'group',
-				'group:plural': 'groups',
-				'row:singular': 'row',
-				'row:plural': 'rows'
-			};
-
 			var childRowValElts = mergeSort2(_.pluck(metadataNode.children, 'rowValElt'));
 			var childRowValEltsLen = childRowValElts.length;
 
@@ -620,10 +614,10 @@ GridTableGroupDetail.prototype.drawBody = function (data, typeInfo, columns, con
 				infoText = '(';
 				if (childMetadataNode.children != null) {
 					infoText += childMetadataNode.numChildren + ' ';
-					infoText += (childMetadataNode.numChildren === 1 ? trans['group:singular'] : trans['group:plural']) + ', ';
+					infoText += (childMetadataNode.numChildren === 1 ? 'group' : 'groups') + ', ';
 				}
 				infoText += childMetadataNode.numRows + ' ';
-				infoText += childMetadataNode.numRows === 1 ? trans['row:singular'] : trans['row:plural'];
+				infoText += childMetadataNode.numRows === 1 ? 'row' : 'rows';
 				infoText += ')';
 
 				infoTextSpan = jQuery('<span>').css({'margin-left': '0.5em'}).text(infoText);
