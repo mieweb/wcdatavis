@@ -2602,6 +2602,7 @@ export function setTableCell(cell, value, opts) {
 		}
 
 		var showValueBtn = document.createElement('button');
+		showValueBtn.setAttribute('type', 'button');
 		showValueBtn.setAttribute('title', 'Full value has been truncated; click to show it.');
 		showValueBtn.classList.add('wcdv_icon_button');
 		showValueBtn.classList.add('wcdv_icon_button_incell');
