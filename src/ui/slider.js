@@ -61,6 +61,7 @@ Slider.prototype.draw = function (root) {
 	});
 	self.ui.header = jQuery('<h1>');
 	self.ui.closeBtn = jQuery('<button>', {
+		'type': 'button',
 		'class': 'wcdv-slider-close',
 		'title': trans('SLIDER.CLOSE'),
 		'aria-label': trans('SLIDER.CLOSE')

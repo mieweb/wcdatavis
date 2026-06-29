@@ -1154,7 +1154,8 @@ GridTable.prototype._addFilterToHeader = function (container, field, displayText
 
 	jQuery('<button>', {
 		'title': addFilterLabel,
-		'aria-label': addFilterLabel
+		'aria-label': addFilterLabel,
+		'type': 'button',
 	})
 		.addClass('wcdv_icon_button')
 		.css({'color': '#FFF'})
