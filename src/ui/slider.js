@@ -3,6 +3,7 @@ import {
 	makeSubclass,
 	mixinEventHandling,
 } from '../util/misc.js';
+import { trans } from '../trans.js';
 
 // Constructor {{{1
 
